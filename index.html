@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet"> <!--Link to the CSS font for the title-->
     <link rel="stylesheet" href="styles.css">
     <title>Website</title>
 </head>
+
 <body>
     <nav class="top-bar" id="top-bar">
-        <span><p>Save Point</p></span>
+        <span><p>Save👾Point</p></span>
         <span><input type="text" placeholder="🔍Search for a post.."><button>Search</button></span>
         <a href="#">Login</a>
         <button id="mode-button"onclick="switchMode()">🌙 Dark mode</button>
     </nav>
 
-    <div>
+    <div class="content" id="content">
+        <nav class="button-container">
+            <button>Feed</button>
+            <button>Following</button>
+            <button>People</button>
+        </nav>
 
+        <div class="posts" id="posts">
+
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
