@@ -9,7 +9,8 @@ body{
     align-items: center;
     font-size: 1.3rem;
     min-height: 3rem;
-    background-color: hsl(0, 96%, 54%);
+    background-color: hsl(0, 96%, 54%,0.7);
+    backdrop-filter: blur;
     border: 2px solid black;
     border-radius:1rem;
     padding: 0 1rem;
@@ -68,21 +69,20 @@ body{
 .button-container{
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
     align-items: center;
     min-height: 3rem;
     padding: 0 1rem;
-    max-width:50rem;
+    width:50%;
     margin:0 auto;
 }
 
 .button-container button{
+    width:33%;
     font-family: "verdana", sans-serif;
     font-size: 1.3rem;
     height: 2.3rem;
     background-color: white;
-    border-radius:20px;
-    box-shadow: 0 0 10px black;
+    border:none;
 }
 
 .button-container button:hover{
@@ -92,9 +92,112 @@ body{
     text-decoration: underline;
 }
 
-.posts{
-    border: 1px solid black;
+.feed-posts{
+    height:100%;
     width:90%;
     margin:0 auto;
     float:right;
 }
+
+.feed-posts .post{
+    border:2px solid black;
+    border-radius:1rem;
+    margin-top: 10px;
+    width:80%;
+    margin:0 auto;
+    box-shadow: 0 0 10px black;
+}
+
+.post .post-head{
+    display:flex;
+    flex-direction: row;
+}
+
+.post-head .profile-img{
+    width:4rem;
+    border:1px solid black;
+    border-radius:50%;
+    margin-left:5px;
+    margin-top:5px;
+}
+
+.post-head p{
+    padding-left: 10px;
+    font-size:1.5rem;
+}
+
+.post-head button{
+    margin-left:auto;
+    margin-right: 50px;
+    height:3rem;
+    width:20%;
+    align-self: center;
+    border-radius: 1rem;
+    color: hsl(0, 96%, 54%);
+    font-size:1rem;
+    border: 2px solid hsl(0, 96%, 54%);
+    background:none;
+}
+
+.post-head button:hover{
+    cursor: pointer;
+    background-color: hsl(0, 96%, 54%);
+    color:white;
+}
+
+.post .post-content{
+    padding-left: 10px;
+}
+
+.post-info{
+    display: flex;
+    flex-direction: row;
+    height:auto;
+    font-size: 12px;
+}
+
+.post-info p{
+    margin: 0 auto;
+}
+
+.post .post-bottom{
+    width:100%
+}
+
+.post-bottom button{
+    width:33%;
+    border:none;
+    border-radius: 1rem;
+    font-size: 1rem;
+    height:2rem;
+}
+
+.post-bottom button:hover{
+    cursor:pointer;
+    background-color: hsl(0, 96%, 54%);
+}
+
+.post .post-comment{
+    display:flex;
+    flex-direction: row;
+    padding-bottom:10px;
+}
+
+.post-comment input{
+    margin: 0 auto;
+    width:90%;
+    height:1.5rem;
+}
+
+.post-comment button{
+    margin-right:20px;
+    border-radius:1rem;
+}
+
+.post-comment button:hover{
+    cursor:pointer;
+    background-color: hsl(0, 96%, 54%);
+    color:white;
+}
+
+
