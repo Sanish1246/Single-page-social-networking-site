@@ -12,3 +12,13 @@ function switchMode(){
         top_bar.style.borderColor="black";
     }
 }
+
+document.querySelectorAll('.section-button').forEach(button => {
+    button.addEventListener('click', function() {
+        // Remove the active class from all buttons
+        document.querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
+        
+        // Add the active class to the clicked button
+        this.classList.add('active');
+    });
+});
