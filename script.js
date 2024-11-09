@@ -22,3 +22,13 @@ document.querySelectorAll('.section-button').forEach(button => {
         this.classList.add('active');
     });
 });
+
+function openNav() {
+    document.getElementById("side-menu").style.width = "250px";
+    document.getElementById("menu-opener").style.opacity = "0";
+  }
+  
+  function closeNav() {
+    document.getElementById("side-menu").style.width = "0";
+    document.getElementById("menu-opener").style.opacity = "1";
+  }

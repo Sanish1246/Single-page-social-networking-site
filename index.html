@@ -18,12 +18,33 @@
 
     <div class="content" id="content">
         <nav class="button-container">
+            <span style="font-size:30px;cursor:pointer" onclick="openNav()" id="menu-opener" class="menu-opener">&#9776</span>
             <button id="feed-button" class="section-button">Feed</button>
             <button id="following-button" class="section-button">Following</button>
             <button id="people-button" class="section-button">People</button>
         </nav>
 
-        <div class="feed-posts" id="posts">
+        <div class="side-menu" id="side-menu">
+            <hr>
+            <div class ="user-container">
+                <img src="" class="user-img"><a>No user</a>
+            </div>
+            
+            <hr>
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#">🏠︎ Home</a>
+            <hr>
+            <a href="#">✎ Your posts</a>
+            <hr>
+            <a href="#">⚲ Saved posts</a>
+            <hr>
+            <a href="#">✖ Log out</a>
+            <hr>
+            <a href="#">🗑 Delete account</a>
+            <hr>
+        </div>
+
+        <div class="feed-posts" id="feed-posts">
             <div class="post">
                 <div class="post-head">
                     <img src="" class="profile-img">
@@ -66,6 +87,7 @@
                 <div class="post-info">
                     <p>Level: 0</p>
                     <p>Comments: 0</p>
+                    <p>12:00</p>
                 </div>
                 <hr>
                 <div class="post-bottom">
@@ -78,7 +100,9 @@
                     <input type="text" placeholder="💬Leave a comment."><button>Post</button>
                 </div>
             </div>
+
         </div>
+
     </div>
     <script src="script.js"></script>
 </body>

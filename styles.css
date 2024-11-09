@@ -95,11 +95,68 @@ body{
     border-bottom: 4px solid red;
 }
 
+.menu-opener{
+    transform: translateX(-370px);
+}
+
+.side-menu {
+    height:100%;
+    width: 0;
+    position: absolute;
+    z-index: 1;
+    top: 110px;
+    left: 0;
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
+    border-radius: 10px;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    border:2px solid black;
+}
+
+.user-container{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+    height:auto;
+}
+
+.side-menu .user-img{
+    width:50%;
+    margin: 0 auto;
+    height:7rem;
+    border:1px solid black;
+    border-radius:50%;
+}
+  
+.side-menu a {
+    margin: 0 auto;
+    text-decoration: none;
+    font-size: 25px;
+    color:black;
+    display: block;
+    transition: 0.3s;
+}
+  
+.side-menu a:hover {
+    color: #f1f1f1;
+    cursor: pointer;
+    background-color: red;
+
+}
+  
+.side-menu .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
 .feed-posts{
     height:100%;
-    width:90%;
+    width:80%;
     margin:0 auto;
-    float:right;
 }
 
 .feed-posts .post{
