@@ -9,8 +9,7 @@ body{
     align-items: center;
     font-size: 1.3rem;
     min-height: 3rem;
-    background-color: hsl(0, 96%, 54%,0.7);
-    backdrop-filter: blur;
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 65%, 0.7));
     border: 2px solid black;
     border-radius:1rem;
     padding: 0 1rem;
@@ -83,13 +82,15 @@ body{
     height: 2.3rem;
     background-color: white;
     border:none;
+    border-bottom: 4px solid red;
 }
 
 .button-container button:hover{
     cursor:pointer;
-    background-color: hsl(0, 96%, 54%);
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
     color:white;
     text-decoration: underline;
+    border-bottom: 3px solid black;
 }
 
 .feed-posts{
@@ -106,6 +107,7 @@ body{
     width:80%;
     margin:0 auto;
     box-shadow: 0 0 10px black;
+    margin-bottom: 3rem;
 }
 
 .post .post-head{
@@ -126,6 +128,10 @@ body{
     font-size:1.5rem;
 }
 
+.post .post-date{
+    font-size: 1rem;
+}
+
 .post-head button{
     margin-left:auto;
     margin-right: 50px;
@@ -141,12 +147,13 @@ body{
 
 .post-head button:hover{
     cursor: pointer;
-    background-color: hsl(0, 96%, 54%);
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
     color:white;
 }
 
 .post .post-content{
     padding-left: 10px;
+    font-size: 1.1rem;
 }
 
 .post-info{
@@ -174,7 +181,7 @@ body{
 
 .post-bottom button:hover{
     cursor:pointer;
-    background-color: hsl(0, 96%, 54%);
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
 }
 
 .post .post-comment{
@@ -187,6 +194,9 @@ body{
     margin: 0 auto;
     width:90%;
     height:1.5rem;
+    border-radius:10px;
+    border: 1px solid black;
+    padding-left: 10px;
 }
 
 .post-comment button{
@@ -196,7 +206,7 @@ body{
 
 .post-comment button:hover{
     cursor:pointer;
-    background-color: hsl(0, 96%, 54%);
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
     color:white;
 }
 
