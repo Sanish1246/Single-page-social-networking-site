@@ -11,8 +11,9 @@
 <body>
     <nav class="top-bar" id="top-bar">
         <span><p>Save👾Point</p></span>
-        <span><input type="text" placeholder="🔍Search for a post.."><button>Search</button></span>
+        <span class="search-bar"><input type="text" placeholder="🔍Search for a post.."><button>Search</button></span>
         <a href="#">Login</a>
+        <button>+ New Post</button>
         <button id="mode-button"onclick="switchMode()">🌙 Dark mode</button>
     </nav>
 
@@ -77,7 +78,7 @@
             <div class="post">
                 <div class="post-head">
                     <img src="" class="profile-img">
-                    <p>User1</p>
+                    <p>User1 <span class="post-date" id="post-date">on 01/01/2025</span></p>
                     <button>+ Follow</button>
                 </div>
                 <hr>
@@ -102,9 +103,28 @@
                     <input type="text" placeholder="💬Leave a comment."><button>Post</button>
                 </div>
             </div>
-
         </div>
+    </div>
 
+    <div id="login-popup" class="popup">
+        <div class="popup-content">
+            <span class="close-popup" onclick="closePopup()">&times;</span>
+            <h2>Login</h2>
+            <form class="login-form">
+                <p>Please enter your details to login.</p>
+          
+                <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter email" name="email" id="username" required>
+            
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" id="password" required>
+            
+                <p>Always remember to keep your credentials secure.</p>
+                <button type="submit" class="login" onclick="loginUser(event)">Login</button>
+      
+                <p>New Player? <a href="register.html">Register</a>.</p>
+            </form>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>

@@ -9,7 +9,7 @@ body{
     align-items: center;
     font-size: 1.3rem;
     min-height: 3rem;
-    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 65%, 0.7));
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.8), hsl(0, 96%, 65%, 0.8));
     border: 2px solid black;
     border-radius:1rem;
     padding: 0 1rem;
@@ -47,7 +47,7 @@ body{
     height: 2.3rem;
     background-color: white;
     border: 2px solid black;
-    border-radius:45%;
+    border-radius:1.5rem;
     margin-left: 10px;
     box-shadow: 0 0 10px black;
 }
@@ -268,8 +268,83 @@ body{
 
 .post-comment button:hover{
     cursor:pointer;
-    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 55%, 0.7));
     color:white;
 }
+
+/* Popup container - hidden by default */
+.popup {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.6); /* Black background with opacity */
+}
+
+/* Popup content */
+.popup-content {
+    position: relative;
+    margin: 7% auto;
+    padding: 20px;
+    height:70%;
+    width:20%;
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.9), hsl(0, 96%, 60%, 0.9));
+    border-radius: 10px;
+    text-align: center;
+    color:white;
+    border: 1px solid black;
+    font-size:1.1rem;
+
+}
+
+.login-form{
+    display: flex;
+    flex-direction: column;
+    padding-bottom:0px;
+    align-items: center;
+}
+
+.popup input[type=text], .popup input[type=password] { /* Full-width input fields */
+    width: 80%; /* 80% width within the container */
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    background: none;
+    border-bottom:1px solid white;
+}
+  
+.popup input[type=text]:focus, .popup input[type=password]:focus { /*When the field is selected, it will darken a bit */
+    background-color: #ddd; 
+}
+
+.popup .login{
+    background-color:white;
+    font-size: 1rem;
+    border-radius:1rem;
+    border: 1px solid black;
+    height:2rem;
+    width:5rem;
+}
+
+.popup .login:hover{
+    cursor: pointer;
+    background-color: black;
+    color:white;
+    border: 2px solid hsl(0, 96%, 40%, 0.9);
+}
+
+/* Close button */
+.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 25px;
+    cursor: pointer;
+}
+
 
 

@@ -32,3 +32,16 @@ function openNav() {
     document.getElementById("side-menu").style.width = "0";
     document.getElementById("menu-opener").style.opacity = "1";
   }
+
+// Open the login popup
+function openPopup() {
+    document.getElementById('login-popup').style.display = 'block';
+}
+
+// Close the login popup
+function closePopup() {
+    document.getElementById('login-popup').style.display = 'none';
+}
+
+// Attach the popup opening function to the login button
+document.querySelector('nav a[href="#"]').addEventListener('click', openPopup);
