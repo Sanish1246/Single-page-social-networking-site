@@ -81,7 +81,8 @@ body{
     font-size: 1.3rem;
     height: 2.3rem;
     background-color: white;
-    border: 1px solid red;
+    border: outset;
+    border-radius: 5px;
 
 }
 
@@ -107,7 +108,7 @@ body{
     z-index: 1;
     top: 110px;
     left: 0;
-    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.9), hsl(0, 96%, 60%, 0.9));
     border-radius: 10px;
     overflow-x: hidden;
     transition: 0.5s;
@@ -154,13 +155,13 @@ body{
     margin-left: 50px;
 }
 
-.feed-posts{
+.main-section{
     height:100%;
     width:80%;
     margin:0 auto;
 }
 
-.feed-posts .post{
+.main-section .post{
     border:2px solid black;
     border-radius:1rem;
     margin-top: 10px;
@@ -168,6 +169,10 @@ body{
     margin:0 auto;
     box-shadow: 0 0 10px black;
     margin-bottom: 3rem;
+}
+
+#following-posts{
+    display:none;
 }
 
 .post .post-head{

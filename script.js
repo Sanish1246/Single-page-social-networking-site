@@ -20,6 +20,12 @@ document.querySelectorAll('.section-button').forEach(button => {
         
         // Add the active class to the clicked button
         this.classList.add('active');
+
+        if (this.id=='feed-button'){
+            openFeed();
+        } else {
+            openFollowing();
+        }
     });
 });
 
@@ -55,3 +61,18 @@ document.querySelectorAll('.login-link').forEach(function(element) {
     element.addEventListener('click', openLogin);
 });
 document.querySelector('.register-link').addEventListener('click', openRegister);
+
+function closeSection(){
+    document.getElementById('feed-posts').style.display = 'none';
+    document.getElementById('following-posts').style.display = 'none';
+}
+
+function openFollowing(){
+    closeSection();
+    document.getElementById('following-posts').style.display = 'block';
+}
+
+function openFeed(){
+    closeSection();
+    document.getElementById('feed-posts').style.display = 'block';
+}
