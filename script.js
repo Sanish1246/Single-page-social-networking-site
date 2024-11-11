@@ -34,14 +34,24 @@ function openNav() {
   }
 
 // Open the login popup
-function openPopup() {
+function openLogin() {
+    closePopup();
     document.getElementById('login-popup').style.display = 'block';
 }
 
 // Close the login popup
 function closePopup() {
     document.getElementById('login-popup').style.display = 'none';
+    document.getElementById('register-popup').style.display = 'none';
 }
 
-// Attach the popup opening function to the login button
-document.querySelector('nav a[href="#"]').addEventListener('click', openPopup);
+function openRegister(){
+    closePopup();
+    document.getElementById('register-popup').style.display = 'block';
+}
+
+// Attach the popup function to the login button
+document.querySelectorAll('.login-link').forEach(function(element) {
+    element.addEventListener('click', openLogin);
+});
+document.querySelector('.register-link').addEventListener('click', openRegister);

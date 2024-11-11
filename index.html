@@ -12,7 +12,7 @@
     <nav class="top-bar" id="top-bar">
         <span><p>Save👾Point</p></span>
         <span class="search-bar"><input type="text" placeholder="🔍Search for a post.."><button>Search</button></span>
-        <a href="#">Login</a>
+        <a href="#" class="login-link" id="login-link">Login</a>
         <button>+ New Post</button>
         <button id="mode-button"onclick="switchMode()">🌙 Dark mode</button>
     </nav>
@@ -84,6 +84,7 @@
                 <hr>
                 <div class="post-content">
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga expedita iste ullam voluptatum rem ratione nostrum modi harum excepturi recusandae, explicabo vel ea. Enim sapiente placeat temporibus ipsum tempore aspernatur!</p>
+                    <img src="./images/VR46.jpg">
                 </div>
                 <hr>
                 <div class="post-info">
@@ -103,7 +104,41 @@
                     <input type="text" placeholder="💬Leave a comment."><button>Post</button>
                 </div>
             </div>
+
+            <div class="post">
+                <div class="post-head">
+                    <img src="" class="profile-img">
+                    <p>User1 <span class="post-date" id="post-date">on 01/01/2025</span></p>
+                    <button>+ Follow</button>
+                </div>
+                <hr>
+                <div class="post-content">
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga expedita iste ullam voluptatum rem ratione nostrum modi harum excepturi recusandae, explicabo vel ea. Enim sapiente placeat temporibus ipsum tempore aspernatur!</p>
+                    <video controls>
+                        <source src="./videos/test.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <hr>
+                <div class="post-info">
+                    <p>Level: 0</p>
+                    <p>Comments: 0</p>
+                    <p>12:00</p>
+                </div>
+                <hr>
+                <div class="post-bottom">
+                    <button>⬆️Level up</button>
+                    <button>⬇️Level down</button>
+                    <button>💬Comments</button>
+                    <button>⚲Save</button>
+                </div>
+                <hr>
+                <div class="post-comment">
+                    <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+                </div>
+            </div>
+
         </div>
+
     </div>
 
     <div id="login-popup" class="popup">
@@ -122,7 +157,31 @@
                 <p>Always remember to keep your credentials secure.</p>
                 <button type="submit" class="login" onclick="loginUser(event)">Login</button>
       
-                <p>New Player? <a href="register.html">Register</a>.</p>
+                <p>New user? <a href='#'  class="register-link">Register</a>.</p>
+            </form>
+        </div>
+    </div>
+
+    <div id="register-popup" class="popup">
+        <div class="popup-content" id="register">
+            <span class="close-popup" onclick="closePopup()">&times;</span>
+            <h2>Register</h2>
+            <form class="login-form">
+                <p>Please enter your details to register.</p>
+          
+                <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter email" name="email" id="newUsername" required>
+            
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" id="newPassword" required>
+
+                <label for="psw"><b>Confirm password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" id="confirmPassword" required>
+            
+                <p>Always remember to keep your credentials secure.</p>
+                <button type="submit" class="login" onclick="loginUser(event)">Login</button>
+
+                <p>Existing user? <a href='#' class="login-link">Login</a></p>
             </form>
         </div>
     </div>

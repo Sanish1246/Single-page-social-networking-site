@@ -215,6 +215,17 @@ body{
     font-size: 1.1rem;
 }
 
+.post-content img{
+    margin: 0 auto;
+    display: block;
+}
+
+.post-content video{
+    margin: 0 auto;
+    display: block;
+    max-width:70%;
+}
+
 .post-info{
     display: flex;
     flex-direction: row;
@@ -298,6 +309,11 @@ body{
     border: 1px solid black;
     font-size:1.1rem;
 
+}
+
+#register{
+    height:80%;
+    margin: 3% auto;
 }
 
 .login-form{
