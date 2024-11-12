@@ -212,7 +212,7 @@ body{
 
 .post-head button:hover{
     cursor: pointer;
-    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
+    background: linear-gradient(90deg, hsl(268, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
     color:white;
 }
 
@@ -289,6 +289,60 @@ body{
     color:white;
 }
 
+#people-section h1{
+    text-align:center;
+}
+
+.friend, 
+.person{
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 2px solid;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px black;
+    margin-bottom:1.5rem;
+}
+
+.friend .profile-img, 
+.person .profile-img{
+    width:4rem;
+    border:1px solid black;
+    height:4rem;
+    border-radius:50%;
+    margin-left:5px;
+    margin-top:5px;
+}
+
+.friend p,
+.person p{
+    padding-left: 10px;
+    font-size:1.5rem;
+}
+
+.friend button,
+.person button{
+    margin-left:auto;
+    margin-right: 50px;
+    height:3rem;
+    width:20%;
+    align-self: center;
+    border-radius: 1rem;
+    color: hsl(0, 96%, 54%);
+    font-size:1rem;
+    border: 2px solid hsl(0, 96%, 54%);
+    background:none;
+}
+
+.friend button:hover,
+.person button:hover{
+    cursor: pointer;
+    background: linear-gradient(90deg, hsla(270, 100%, 50%, 0.7), hsl(0, 96%, 60%, 0.7));
+    color:white;
+}
+
+
 /* Popup container - hidden by default */
 .popup {
     display: none; /* Hidden by default */
@@ -308,7 +362,7 @@ body{
     padding: 20px;
     height:70%;
     width:20%;
-    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.9), hsl(0, 96%, 60%, 0.9));
+    background: linear-gradient(90deg, hsl(300, 96%, 40%, 0.9), hsl(0, 96%, 60%, 0.9));
     border-radius: 10px;
     text-align: center;
     color:white;

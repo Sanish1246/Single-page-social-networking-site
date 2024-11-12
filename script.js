@@ -23,6 +23,8 @@ document.querySelectorAll('.section-button').forEach(button => {
 
         if (this.id=='feed-button'){
             openFeed();
+        } else if (this.id=='people-button'){
+            openPeople();
         } else {
             openFollowing();
         }
@@ -65,6 +67,7 @@ document.querySelector('.register-link').addEventListener('click', openRegister)
 function closeSection(){
     document.getElementById('feed-posts').style.display = 'none';
     document.getElementById('following-posts').style.display = 'none';
+    document.getElementById('people-section').style.display = 'none';
 }
 
 function openFollowing(){
@@ -75,4 +78,9 @@ function openFollowing(){
 function openFeed(){
     closeSection();
     document.getElementById('feed-posts').style.display = 'block';
+}
+
+function openPeople(){
+    closeSection();
+    document.getElementById('people-section').style.display = 'block';
 }
