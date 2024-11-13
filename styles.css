@@ -300,6 +300,10 @@ body{
     color:white;
 }
 
+#people-section{
+    display:none;
+}
+
 #people-section h1{
     text-align:center;
 }
