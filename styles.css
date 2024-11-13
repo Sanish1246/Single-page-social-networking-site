@@ -216,6 +216,17 @@ body{
     color:white;
 }
 
+.post .title-section{
+    padding-left: 10px;
+    font-size: 1.2rem;
+    max-height: 1rem;
+    font-weight: bold;
+}
+
+.post .post-title{
+    margin-top:0;
+}
+
 .post .post-content{
     padding-left: 10px;
     font-size: 1.1rem;
@@ -362,7 +373,7 @@ body{
     padding: 20px;
     height:70%;
     width:20%;
-    background: linear-gradient(90deg, hsl(300, 96%, 40%, 0.9), hsl(0, 96%, 60%, 0.9));
+    background: linear-gradient(90deg, hsl(290, 96%, 40%, 0.9), hsl(0, 96%, 60%, 0.9));
     border-radius: 10px;
     text-align: center;
     color:white;
