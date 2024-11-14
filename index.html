@@ -274,15 +274,15 @@
             <h2>Register</h2>
             <form class="login-form">
                 <p>Please enter your details to register.</p>
+
+                <label for="username"><b>username</b></label>
+                <input type="text" placeholder="Enter Username" name="username" id="newUsername" required>
           
                 <label for="email"><b>Email</b></label>
-                <input type="text" placeholder="Enter email" name="email" id="newUsername" required>
+                <input type="text" placeholder="Enter Email" name="email" id="newEmail" required>
             
                 <label for="psw"><b>Password</b></label>
                 <input type="password" placeholder="Enter Password" name="psw" id="newPassword" required>
-
-                <label for="psw"><b>Confirm password</b></label>
-                <input type="password" placeholder="Enter Password" name="psw" id="confirmPassword" required>
             
                 <p>Always remember to keep your credentials secure.</p>
                 <button type="submit" class="login" onclick="loginUser(event)">Login</button>
