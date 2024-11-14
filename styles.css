@@ -318,6 +318,7 @@ body{
     border-radius: 1rem;
     box-shadow: 0 0 10px black;
     margin-bottom:1.5rem;
+    width:80%;
 }
 
 .friend .profile-img, 

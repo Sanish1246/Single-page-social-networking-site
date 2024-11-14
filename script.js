@@ -70,7 +70,6 @@ function closePopup() {
 
 // Handle popstate event for when the user navigates using the browser back button
 window.addEventListener('popstate', function(event) {
-    // If a popup is open, close it when the user clicks back
     if (document.getElementById('login-popup').style.display === 'block' || 
         document.getElementById('register-popup').style.display === 'block') {
         closePopup();
