@@ -51,7 +51,7 @@ function openLogin() {
     document.getElementById('login-popup').style.display = 'block';
 
     // Add "/login" to the URL without reloading the page
-    history.pushState(null, '', '/M0098001/login');
+    history.pushState(null, '', '/M00980001/login');
 }
 
 // Open the register popup and update the URL to "/register"
@@ -60,7 +60,7 @@ function openRegister() {
     document.getElementById('register-popup').style.display = 'block';
 
     // Add "/register" to the URL without reloading the page
-    history.pushState(null, '', '/M0098001/register');
+    history.pushState(null, '', '/M00980001/register');
 }
 
 // Close both the login and register popups and restore the original URL
@@ -68,7 +68,7 @@ function closePopup() {
     document.getElementById('login-popup').style.display = 'none';
     document.getElementById('register-popup').style.display = 'none';
 
-    history.replaceState(null, '', '/M0098001');
+    history.replaceState(null, '', '/M00980001');
 }
 
 // Handle popstate event for when the user navigates using the browser back button
