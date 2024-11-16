@@ -10,17 +10,30 @@ const port = 8000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/M00980001', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-
 async function startServer() {
   try {
     const client = await connectToDb();
     const db = client.db("CurrentUser");
+
+    app.post('/M00980001/register', (req, res) => {
+      const user=req.body
+      
+      db.collection('Users')
+        .insertOne(user)
+        .then(result=>{
+          res.status(201).json(result)
+        })
+        .catch(err => {
+          res.status(500).json({error:"invalid data"})
+        })
+    });
 
     // Seleziona una collezione
     const collection = db.collection('CurrentUser');
