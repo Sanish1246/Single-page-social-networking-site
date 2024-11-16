@@ -1,5 +1,7 @@
 const modeButton=document.getElementById("mode-button");
 const top_bar=document.getElementById("top-bar");
+const systemMessage=document.getElementById('system-message');
+const loginLink=document.getElementById('login-link')
 
 window.onload=()=>{
     history.pushState(null, '', '/M00980001');
@@ -115,4 +117,60 @@ function openPeople(){
     closeSection();
     document.getElementById('people-section').style.display = 'block';
     history.pushState(null, '', '/M00980001/people');
+}
+
+function closeMessage(){
+    systemMessage.style.opacity='0';
+}
+
+function registerUser(event){
+    event.preventDefault();
+    const newUsername= document.getElementById('newUsername').value;
+    const newEmail=document.getElementById('newEmail').value;
+    const newPassword=document.getElementById('newPassword').value;
+
+    if (!newUsername || !newEmail || !newPassword) {
+        systemMessage.innerText='❌ All fields must be filled';
+        systemMessage.style.opacity='1';
+        setTimeout(closeMessage,2000);
+    } else {
+        const user = {
+            username: newUsername,
+            email: newEmail,
+            password: newPassword
+          };
+        
+          // using Fetch to make the AJAX post request
+          fetch('http://localhost:8000/M00980001/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.userId) {
+              closePopup();
+              systemMessage.innerText='✅ Account created successfully';
+              systemMessage.style.opacity='1';
+              setTimeout(closeMessage,2000);
+    
+            } else {
+              systemMessage.innerText='❌ Falied to register' + data.error;
+              systemMessage.style.opacity='1';
+              setTimeout(closeMessage,2000);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            systemMessage.innerText='❌ Error' + error;
+            systemMessage.style.opacity='1';
+            setTimeout(closeMessage,2000);
+          });
+    }
+
+      document.getElementById('newUsername').value="";
+      document.getElementById('newEmail').value="";
+      document.getElementById('newPassword').value="";
 }

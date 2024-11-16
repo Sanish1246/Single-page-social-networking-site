@@ -23,16 +23,19 @@ async function startServer() {
     const db = client.db("CurrentUser");
 
     app.post('/M00980001/register', (req, res) => {
-      const user=req.body
-      
+      const user = req.body;
+
       db.collection('Users')
         .insertOne(user)
-        .then(result=>{
-          res.status(201).json(result)
+        .then(result => {
+          res.status(201).json({
+            message: "User registered successfully",
+            userId: result.insertedId  // Invia solo l'ID dell'utente inserito
+          });
         })
         .catch(err => {
-          res.status(500).json({error:"invalid data"})
-        })
+          res.status(500).json({ error: "Invalid data" });
+        });
     });
 
     // Seleziona una collezione

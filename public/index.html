@@ -285,11 +285,15 @@
                 <input type="password" placeholder="Enter Password" name="psw" id="newPassword" required>
             
                 <p>Always remember to keep your credentials secure.</p>
-                <button type="submit" class="login" onclick="registerUser()">Register</button>
+                <button type="submit" class="login" onclick="registerUser(event)">Register</button>
 
                 <p>Existing user? <a href='#' class="login-link">Login</a></p>
             </form>
         </div>
+    </div>
+
+    <div id="system-message">
+        <p>Account created successfully</p>
     </div>
     <script src="script.js"></script>
 </body>
