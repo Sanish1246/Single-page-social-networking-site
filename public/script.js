@@ -174,3 +174,45 @@ function registerUser(event){
       document.getElementById('newEmail').value="";
       document.getElementById('newPassword').value="";
 }
+
+function loginUser(event){
+    event.preventDefault();
+    const newEmail=document.getElementById('email').value;
+    const newPassword=document.getElementById('password').value;
+
+    const user={
+        email:newEmail,
+        password:newPassword
+    }
+
+    fetch('http://localhost:8000/M00980001/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.userId) {
+          closePopup();
+          systemMessage.innerText='✅ User logged in successfully';
+          systemMessage.style.opacity='1';
+          setTimeout(closeMessage,2000);
+
+        } else {
+          systemMessage.innerText='❌ ' + data.error;
+          systemMessage.style.opacity='1';
+          setTimeout(closeMessage,2000);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        systemMessage.innerText='❌ Error: ' + error;
+        systemMessage.style.opacity='1';
+        setTimeout(closeMessage,2000);
+      });
+
+      document.getElementById('email').value="";
+      document.getElementById('password').value="";
+}
