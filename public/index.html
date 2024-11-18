@@ -291,6 +291,18 @@
         </div>
     </div>
 
+    <div id="logout-popup" class="popup">
+        <div class="popup-content" id="logout">
+            <span class="close-popup" onclick="closePopup()">&times;</span>
+            <h2>Do you want to Log out?</h2>
+            <div class="choice-buttons">
+                <button class="choice-button" id="yes" onclick="logOutUser()">Yes</button>
+                <button class="choice-button" id="no" onclick="closePopup()">No</button>
+            </div>
+        </div>
+        <span class="close-popup" onclick="closePopup()">&times;</span>
+    </div>
+
     <div id="system-message">
         <p>Account created successfully</p>
     </div>

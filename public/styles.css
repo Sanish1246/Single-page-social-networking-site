@@ -392,6 +392,40 @@ body{
     margin: 3% auto;
 }
 
+#logout{
+    height:20%;
+}
+
+.choice-buttons{
+    height:100%;
+}
+
+.choice-button{
+    width:40%;
+    font-size: 1.7rem;
+    border-radius: 1.5rem;
+    background: none;
+    border: 2px solid
+}
+
+#yes{
+    border-color: hsl(120, 100%, 25%,0.9);
+}
+
+#no{
+    border-color: hsl(0, 100%, 50%,0.9);
+}
+
+#yes:hover{
+    cursor:pointer;
+    background-color: hsl(120, 100%, 25%,0.9);
+}
+
+#no:hover{
+    cursor:pointer;
+    background-color: hsl(0, 100%, 50%,0.9);
+}
+
 .login-form{
     display: flex;
     flex-direction: column;

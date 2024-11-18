@@ -88,14 +88,15 @@ async function startServer() {
         });
     });
 
-    // Seleziona una collezione
-    const collection = db.collection('CurrentUser');
+    app.post('/M00980001/logout', (req, res) => {
+      req.session.destroy(err => {
+        if (err) {
+          return res.status(500).json({ error: "Logout failed" });
+        }
+        res.status(200).json({ message: "✅ User logged out successfully" });
+      });
+    });
 
-    // Esegui un'operazione (ad esempio, trovare documenti)
-    const documents = await collection.find({}).toArray();
-    console.log("Documents:", documents);
-
-    // Avvia il server Express
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
     });

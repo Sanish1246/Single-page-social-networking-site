@@ -50,10 +50,14 @@ function openNav() {
 // Open the login popup and update the URL to "/login"
 function openLogin() {
     closePopup();
-    document.getElementById('login-popup').style.display = 'block';
+    if (loginLink.innerText=="Log out"){
+      openLogOut();
+    } else{
+      document.getElementById('login-popup').style.display = 'block';
 
-    // Add "/login" to the URL without reloading the page
-    history.pushState(null, '', '/M00980001/login');
+      // Add "/login" to the URL without reloading the page
+      history.pushState(null, '', '/M00980001/login');
+    };
 }
 
 // Open the register popup and update the URL to "/register"
@@ -69,14 +73,49 @@ function openRegister() {
 function closePopup() {
     document.getElementById('login-popup').style.display = 'none';
     document.getElementById('register-popup').style.display = 'none';
+    document.getElementById('logout-popup').style.display = 'none';
 
     history.replaceState(null, '', '/M00980001');
+}
+
+function openLogOut(){
+  document.getElementById('logout-popup').style.display = 'block';
+
+  // Add "/logout" to the URL without reloading the page
+  history.pushState(null, '', '/M00980001/logout');
+}
+
+function logOutUser(){
+  fetch('http://localhost:8000/M00980001/logout', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+      .then(message => {
+        if (message.message) {
+          closePopup();
+          systemMessage.innerText=message.message;
+          systemMessage.style.opacity='1';
+          setTimeout(closeMessage,2000);
+          loginLink.innerText="Login";
+
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        systemMessage.innerText='❌ Error: ' + error;
+        systemMessage.style.opacity='1';
+        setTimeout(closeMessage,2000);
+      });
 }
 
 // Handle popstate event for when the user navigates using the browser back button
 window.addEventListener('popstate', function(event) {
     if (document.getElementById('login-popup').style.display === 'block' || 
-        document.getElementById('register-popup').style.display === 'block') {
+        document.getElementById('register-popup').style.display === 'block'||
+        document.getElementById('logout-popup').style.display === 'block') {
         closePopup();
     }
 });
