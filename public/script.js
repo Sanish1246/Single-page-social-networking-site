@@ -93,6 +93,7 @@ function closePopup() {
     document.getElementById('login-popup').style.display = 'none';
     document.getElementById('register-popup').style.display = 'none';
     document.getElementById('logout-popup').style.display = 'none';
+    document.getElementById('upload-popup').style.display = 'none';
 
     history.replaceState(null, '', '/M00980001');
 }
@@ -136,7 +137,8 @@ function logOutUser(){
 window.addEventListener('popstate', function(event) {
     if (document.getElementById('login-popup').style.display === 'block' || 
         document.getElementById('register-popup').style.display === 'block'||
-        document.getElementById('logout-popup').style.display === 'block') {
+        document.getElementById('logout-popup').style.display === 'block'||
+        document.getElementById('upload-popup').style.display === 'block') {
         closePopup();
     }
 });
@@ -177,6 +179,10 @@ function openPeople(){
     closeSection();
     document.getElementById('people-section').style.display = 'block';
     history.pushState(null, '', '/M00980001/people');
+}
+
+function openUpload(){
+  document.getElementById('upload-popup').style.display = 'block';
 }
 
 function closeMessage(){
@@ -307,5 +313,5 @@ function loginUser(event){
 }
 
 function createPost(){
-  
+
 }

@@ -13,7 +13,7 @@
         <span><p>Save👾Point</p></span>
         <span class="search-bar"><input type="text" placeholder="🔍Search for a post.."><button>Search</button></span>
         <a href="#" class="login-link" id="login-link">Login</a>
-        <button>+ New Post</button>
+        <button onclick="openUpload()">+ New Post</button>
         <button id="mode-button"onclick="switchMode()">🌙 Dark mode</button>
     </nav>
 
@@ -306,6 +306,31 @@
     <div id="system-message">
         <p>Account created successfully</p>
     </div>
+
+    <div id="upload-popup" class="popup">
+        <div class="popup-content" id="upload">
+            <form action="/upload_post" method="POST" enctype="multipart/form-data" class="upload-form">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" class="title" required maxlength="100">
+        
+                <label for="content">Content:</label>
+                <textarea id="description" name="description" rows="4" maxlength="500" class="post-content" required></textarea>
+                
+                <br>
+                <label for="tags">Tags (optionals):</label>
+                <input type="text" id="tags" name="tags" placeholder="Add tags separated by commas">
+              
+                <br>
+                <label for="media">Upload media (photo or video):</label>
+                <input type="file" id="media" name="media" accept="image/*, video/*" multiple>
+                <br>
+              
+                <!-- Pulsante di invio -->
+                <button type="submit" class="publish-button">Publish</button>
+              </form>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
