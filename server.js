@@ -24,6 +24,14 @@ app.get('/M00980001', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/M00980001/user', (req, res) => {
+  if (req.session.user) {
+    return res.status(200).json(req.session.user);
+  } else {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+});
+
 async function startServer() {
   try {
     const client = await connectToDb();

@@ -1,10 +1,29 @@
 const modeButton=document.getElementById("mode-button");
 const top_bar=document.getElementById("top-bar");
 const systemMessage=document.getElementById('system-message');
-const loginLink=document.getElementById('login-link')
+const loginLink=document.getElementById('login-link');
+const currentUser=document.getElementById('currentUser');
 
-window.onload=()=>{
-    history.pushState(null, '', '/M00980001');
+window.onload = () => {
+  history.pushState(null, '', '/M00980001');
+  checkCurrentUser();
+};
+
+async function checkCurrentUser() {
+  try {
+    const response = await fetch('http://localhost:8000/M00980001/user');
+    const data = await response.json();
+    if (data.username) {
+      document.getElementById('currentUser').innerText = data.username;
+      return true;
+    } else {
+      document.getElementById('currentUser').innerText = "No user";
+      return false;
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    return false;
+  }
 }
 
 function switchMode(){
@@ -109,6 +128,8 @@ function logOutUser(){
         systemMessage.style.opacity='1';
         setTimeout(closeMessage,2000);
       });
+
+  checkCurrentUser();
 }
 
 // Handle popstate event for when the user navigates using the browser back button
@@ -199,7 +220,13 @@ function registerUser(event){
               systemMessage.innerText='✅ Account created successfully';
               systemMessage.style.opacity='1';
               setTimeout(closeMessage,2000);
-              loginLink.innerText="Log out";
+              checkCurrentUser().then(isUserLoggedIn => {
+                if (isUserLoggedIn) {
+                  loginLink.innerText = "Log out";
+                } else {
+                  loginLink.innerText = "Log in";
+                }
+              });
     
             };
             if(data.error=="Username already in use!"){
@@ -252,7 +279,13 @@ function loginUser(event){
           systemMessage.innerText='✅ User logged in successfully';
           systemMessage.style.opacity='1';
           setTimeout(closeMessage,2000);
-          loginLink.innerText="Log out";
+          checkCurrentUser().then(isUserLoggedIn => {
+            if (isUserLoggedIn) {
+              loginLink.innerText = "Log out";
+            } else {
+              loginLink.innerText = "Log in";
+            }
+          });
 
         } else {
           if(data.error=="Invalid email"){
@@ -271,4 +304,8 @@ function loginUser(event){
 
       document.getElementById('email').value="";
       document.getElementById('password').value="";
+}
+
+function createPost(){
+  
 }
