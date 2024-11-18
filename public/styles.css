@@ -399,6 +399,10 @@ body{
     align-items: center;
 }
 
+.login-error{
+    color:red
+}
+
 .popup input[type=text], .popup input[type=password] { /* Full-width input fields */
     width: 80%; /* 80% width within the container */
     padding: 15px;

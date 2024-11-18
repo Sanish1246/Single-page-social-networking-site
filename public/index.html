@@ -254,10 +254,10 @@
             <form class="login-form" method="post">
                 <p>Please enter your details to login.</p>
           
-                <label for="email"><b>Email</b></label>
+                <label for="email"><b>Email</b><span id="emailError" class="login-error"></span></label>
                 <input type="text" placeholder="Enter email" name="email" id="email" required>
             
-                <label for="psw"><b>Password</b></label>
+                <label for="psw"><b>Password</b><span id="passwordError" class="login-error"></span></label>
                 <input type="password" placeholder="Enter Password" name="psw" id="password" required>
             
                 <p>Always remember to keep your credentials secure.</p>
@@ -274,11 +274,10 @@
             <h2>Register</h2>
             <form class="login-form" method="post">
                 <p>Please enter your details to register.</p>
-
-                <label for="username"><b>Username</b></label>
+                <label for="username"><b>Username</b><span id="newUsernameError" class="login-error"></span></label>
                 <input type="text" placeholder="Enter Username" name="username" id="newUsername" required>
           
-                <label for="email"><b>Email</b></label>
+                <label for="email"><b>Email</b><span id="newEmailError" class="login-error"></span></label>
                 <input type="text" placeholder="Enter Email" name="email" id="newEmail" required>
             
                 <label for="psw"><b>Password</b></label>

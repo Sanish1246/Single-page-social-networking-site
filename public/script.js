@@ -128,6 +128,11 @@ function registerUser(event){
     const newUsername= document.getElementById('newUsername').value;
     const newEmail=document.getElementById('newEmail').value;
     const newPassword=document.getElementById('newPassword').value;
+    const newUsernameError=document.getElementById('newUsernameError');
+    const newEmailError=document.getElementById('newEmailError');
+    
+    newUsernameError.innerText="";
+    newEmailError.innerText="";
 
     if (!newUsername || !newEmail || !newPassword) {
         systemMessage.innerText='❌ All fields must be filled';
@@ -155,11 +160,15 @@ function registerUser(event){
               systemMessage.innerText='✅ Account created successfully';
               systemMessage.style.opacity='1';
               setTimeout(closeMessage,2000);
+              loginLink.innerText="Log out";
     
+            };
+            if(data.error=="Username already in use!"){
+              newUsernameError.innerText=' ❌ ' + data.error;
             } else {
-              systemMessage.innerText='❌ Falied to register' + data.error;
-              systemMessage.style.opacity='1';
-              setTimeout(closeMessage,2000);
+              if(data.error=="Email already in use!"){
+                newEmailError.innerText=' ❌ ' + data.error;
+              }
             }
           })
           .catch(error => {
@@ -179,6 +188,11 @@ function loginUser(event){
     event.preventDefault();
     const newEmail=document.getElementById('email').value;
     const newPassword=document.getElementById('password').value;
+    const emailError=document.getElementById('emailError');
+    const passwordError=document.getElementById('passwordError');
+
+    emailError.innerText="";
+    passwordError.innerText="";
 
     const user={
         email:newEmail,
@@ -199,11 +213,14 @@ function loginUser(event){
           systemMessage.innerText='✅ User logged in successfully';
           systemMessage.style.opacity='1';
           setTimeout(closeMessage,2000);
+          loginLink.innerText="Log out";
 
         } else {
-          systemMessage.innerText='❌ ' + data.error;
-          systemMessage.style.opacity='1';
-          setTimeout(closeMessage,2000);
+          if(data.error=="Invalid email"){
+            emailError.innerText=' ❌ ' + data.error;
+          } else {
+            passwordError.innerText=' ❌ ' + data.error;
+          }
         }
       })
       .catch(error => {

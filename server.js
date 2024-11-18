@@ -29,26 +29,37 @@ async function startServer() {
     const client = await connectToDb();
     const db = client.db("CurrentUser");
 
-    app.post('/M00980001/register', (req, res) => {
+    app.post('/M00980001/register', async (req, res) => {
       const user = req.body;
-
-      db.collection('Users')
-        .insertOne(user)
-        .then(result => {
-          res.status(201).json({
-            message: "User registered successfully",
-            userId: result.insertedId  
-          });
-          req.session.user = {
-            username: result.username,
-            email: result.email,
-            password: result.password 
-          };
-        })
-        .catch(err => {
-          res.status(500).json({ error: "Invalid data" });
+    
+      try {
+        const usernameExists = await db.collection('Users').findOne({ username: user.username });
+        if (usernameExists) {
+          return res.status(401).json({ error: "Username already in use!" });
+        }
+    
+        const emailExists = await db.collection('Users').findOne({ email: user.email });
+        if (emailExists) {
+          return res.status(401).json({ error: "Email already in use!" });
+        }
+    
+        const result = await db.collection('Users').insertOne(user);
+        res.status(201).json({
+          message: "User registered successfully",
+          userId: result.insertedId
         });
+    
+        req.session.user = {
+          username: user.username,
+          email: user.email,
+          password: user.password
+        };
+    
+      } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+      }
     });
+    
 
     app.post('/M00980001/login', (req, res) => {
       const user = req.body;
