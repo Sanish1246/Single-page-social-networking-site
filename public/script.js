@@ -161,6 +161,7 @@ function closeSection(){
     document.getElementById('feed-posts').style.display = 'none';
     document.getElementById('following-posts').style.display = 'none';
     document.getElementById('people-section').style.display = 'none';
+    
 }
 
 function openFollowing(){
@@ -182,8 +183,15 @@ function openPeople(){
 }
 
 function openUpload(){
-  document.getElementById('upload-popup').style.display = 'block';
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      document.getElementById('upload-popup').style.display = 'block';
+    } else {
+      openLogin();
+    }
+  });
 }
+
 
 function closeMessage(){
     systemMessage.style.opacity='0';
@@ -312,16 +320,62 @@ function loginUser(event){
       document.getElementById('password').value="";
 }
 
-function publishPost(event){
+function publishPost(event) {
   event.preventDefault();
-  const owner=document.getElementById('currentUser').innerText;
-  const newTitle=document.getElementById("upload-title");
-  const newContent=document.getElementById("upload-content");
-  const newTags=document.getElementById("tags");
+  
+  const newOwner = document.getElementById('currentUser').innerText;
+  const newTitle = document.getElementById("upload-title").value;
+  const newContent = document.getElementById("upload-content").value;
+  const newTags = document.getElementById("tags").value;
+  const mediaFiles = document.getElementById("media").files; // Ottieni i file
 
-  console.log(newTitle.value);
-  console.log(owner);
-  console.log(newContent.value);
-  console.log(newTags.value);
+  // Ottieni la data e l'ora correnti
+  const now = new Date();
+  
+  // Formatta la data come dd/mm/yy
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Mesi partono da 0
+  const year = String(now.getFullYear()); // Prendi solo le ultime due cifre dell'anno
+  const formattedDate = `${day}/${month}/${year}`;
+
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const formattedTime = `${hours}:${minutes}`;
+
+  const formData = new FormData();
+  
+  // Aggiungi i dati testuali al FormData
+  formData.append('owner', newOwner);
+  formData.append('title', newTitle);
+  formData.append('content', newContent);
+  formData.append('tags', newTags);
+  formData.append('level',0);
+  formData.append('date', formattedDate); // Aggiungi la data
+  formData.append('time', formattedTime);
+
+  // Aggiungi i file (se presenti) al FormData
+  for (let i = 0; i < mediaFiles.length; i++) {
+    formData.append('media', mediaFiles[i]); // Puoi anche cambiare 'media' con 'media[]' per un array lato server
+  }
+
+  // Effettua la richiesta fetch con il FormData
+  fetch('http://localhost:8000/M00980001/publish', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(message => {
+    systemMessage.innerText=message.message;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+    console.log(formData);
+  })
+  .catch(error => {
+    systemMessage.innerText='❌ Error: ' + error;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+  });
 
 }

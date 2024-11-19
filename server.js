@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { connectToDb } from './db.js';
 import session from 'express-session';
+import { error } from 'console';
 
 const app = express();
 const hostname = 'localhost';
@@ -103,6 +104,62 @@ async function startServer() {
         }
         res.status(200).json({ message: "✅ User logged out successfully" });
       });
+    });
+
+    app.post('/M00980001/publish', (req, res) => {
+      // Recupera i dati dal form
+      const { title, content, tags, owner, date, time } = req.body;
+      
+      // Verifica se un file è stato caricato
+      if (req.files && req.files.media) {
+        const media = req.files.media; // Gestisce un singolo file o array di file
+    
+        // Percorso dove salvare i file localmente
+        const uploadPath = path.join(__dirname, 'uploads', media.name);
+        
+        // Salva il file localmente
+        media.mv(uploadPath, (err) => {
+          if (err) {
+            return res.status(500).send(err);
+          }
+    
+          // Salva i dati del post e il percorso del file su MongoDB
+          const post = {
+            owner,
+            title,
+            content,
+            tags: tags.split(','), // Trasforma la stringa dei tag in array
+            date,
+            time,
+            mediaPath: uploadPath // Salva il percorso del file nel database
+          };
+    
+          db.collection('Posts').insertOne(post, (err, result) => {
+            if (err) {
+              return res.status(500).send({ error: "An error has occurred" });
+            }
+            res.send({ message: "Post uploaded" });
+          });
+        });
+      } else {
+        // Se non ci sono file, salva solo i dati testuali
+        const post = {
+          owner,
+          title,
+          content,
+          tags: tags.split(','),
+          date,
+          time,
+          mediaPath: null // Nessun file, quindi nessun percorso media
+        };
+    
+        db.collection('Posts').insertOne(post, (err, result) => {
+          if (err) {
+            return res.status(500).send({ error: "An error has occurred" });
+          }
+          res.send({ message: "Post uploaded" });
+        });
+      }
     });
 
     app.listen(port, () => {
