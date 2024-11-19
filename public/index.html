@@ -309,12 +309,13 @@
 
     <div id="upload-popup" class="popup">
         <div class="popup-content" id="upload">
-            <form action="/upload_post" method="POST" enctype="multipart/form-data" class="upload-form">
+            <span class="close-popup" onclick="closePopup()">&times;</span>
+            <form  enctype="multipart/form-data" class="upload-form">
                 <label for="title">Title:</label>
-                <input type="text" id="title" name="title" class="title" required maxlength="100">
+                <input type="text" id="upload-title" name="title" class="title" required maxlength="100">
         
                 <label for="content">Content:</label>
-                <textarea id="description" name="description" rows="4" maxlength="500" class="post-content" required></textarea>
+                <textarea id="upload-content" name="content" rows="4" maxlength="500" class="post-content" required></textarea>
                 
                 <br>
                 <label for="tags">Tags (optionals):</label>
@@ -326,7 +327,7 @@
                 <br>
               
                 <!-- Pulsante di invio -->
-                <button type="submit" class="publish-button">Publish</button>
+                <button type="submit" class="publish-button" onclick="publishPost(event)">Publish</button>
               </form>
         </div>
     </div>

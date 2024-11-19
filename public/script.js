@@ -312,6 +312,16 @@ function loginUser(event){
       document.getElementById('password').value="";
 }
 
-function createPost(){
+function publishPost(event){
+  event.preventDefault();
+  const owner=document.getElementById('currentUser').innerText;
+  const newTitle=document.getElementById("upload-title");
+  const newContent=document.getElementById("upload-content");
+  const newTags=document.getElementById("tags");
+
+  console.log(newTitle.value);
+  console.log(owner);
+  console.log(newContent.value);
+  console.log(newTags.value);
 
 }
