@@ -419,3 +419,7 @@ document.getElementById("upload-content").value=null;
 document.getElementById("tags").value=null;
 document.getElementById("media").value=null; 
 }
+
+function displayUserPage(){
+  
+}
