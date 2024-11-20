@@ -109,7 +109,7 @@ function openLogOut(){
 
 function logOutUser(){
   fetch('http://localhost:8000/M00980001/logout', {
-    method: 'POST',
+    method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     }
@@ -174,7 +174,7 @@ function openFollowing(){
         document.getElementById('following-posts').style.display = 'block';
         history.pushState(null, '', '/M00980001/following');
       } else {
-        systemMessage.innerText='❌ You must login to wiew this';
+        systemMessage.innerText='❌ You must login to view this';
         systemMessage.style.opacity='1';
         setTimeout(closeMessage,2000);
         closePopup();
@@ -195,7 +195,7 @@ function openPeople(){
         document.getElementById('people-section').style.display = 'block';
         history.pushState(null, '', '/M00980001/people');
       } else {
-        systemMessage.innerText='❌ You must login to wiew this';
+        systemMessage.innerText='❌ You must login to view this';
         systemMessage.style.opacity='1';
         setTimeout(closeMessage,2000);
         closePopup();
@@ -210,7 +210,7 @@ function openRecommended(){
       document.getElementById('recommended-section').style.display = 'block';
       history.pushState(null, '', '/M00980001/recommended');
     } else {
-      systemMessage.innerText='❌ You must login to wiew this';
+      systemMessage.innerText='❌ You must login to view this';
       systemMessage.style.opacity='1';
       setTimeout(closeMessage,2000);
       closePopup();

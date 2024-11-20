@@ -100,7 +100,7 @@ async function startServer() {
         });
     });
 
-    app.post('/M00980001/logout', (req, res) => {
+    app.delete('/M00980001/logout', (req, res) => {
       req.session.destroy(err => {
         if (err) {
           return res.status(500).json({ error: "Logout failed" });
