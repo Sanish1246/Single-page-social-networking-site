@@ -50,8 +50,10 @@ document.querySelectorAll('.section-button').forEach(button => {
             openFeed();
         } else if (this.id=='people-button'){
             openPeople();
-        } else {
+        } else if(this.id=="following-button") {
             openFollowing();
+        } else {
+          openRecommended();
         }
     });
 });
@@ -161,6 +163,7 @@ function closeSection(){
     document.getElementById('feed-posts').style.display = 'none';
     document.getElementById('following-posts').style.display = 'none';
     document.getElementById('people-section').style.display = 'none';
+    document.getElementById('recommended-section').style.display = 'none';
     
 }
 
@@ -180,6 +183,12 @@ function openPeople(){
     closeSection();
     document.getElementById('people-section').style.display = 'block';
     history.pushState(null, '', '/M00980001/people');
+}
+
+function openRecommended(){
+  closeSection();
+  document.getElementById('recommended-section').style.display = 'block';
+  history.pushState(null, '', '/M00980001/recommended');
 }
 
 function openUpload(){
@@ -327,15 +336,15 @@ function publishPost(event) {
   const newTitle = document.getElementById("upload-title").value;
   const newContent = document.getElementById("upload-content").value;
   const newTags = document.getElementById("tags").value;
-  const mediaFiles = document.getElementById("media").files; // Ottieni i file
+  const mediaFiles = document.getElementById("media").files; 
 
-  // Ottieni la data e l'ora correnti
+ 
   const now = new Date();
   
-  // Formatta la data come dd/mm/yy
+ 
   const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Mesi partono da 0
-  const year = String(now.getFullYear()); // Prendi solo le ultime due cifre dell'anno
+  const month = String(now.getMonth() + 1).padStart(2, '0'); 
+  const year = String(now.getFullYear());
   const formattedDate = `${day}/${month}/${year}`;
 
   const hours = String(now.getHours()).padStart(2, '0');
@@ -344,21 +353,21 @@ function publishPost(event) {
 
   const formData = new FormData();
   
-  // Aggiungi i dati testuali al FormData
+
   formData.append('owner', newOwner);
   formData.append('title', newTitle);
   formData.append('content', newContent);
   formData.append('tags', newTags);
   formData.append('level',0);
-  formData.append('date', formattedDate); // Aggiungi la data
+  formData.append('date', formattedDate); 
   formData.append('time', formattedTime);
 
-  // Aggiungi i file (se presenti) al FormData
+
   for (let i = 0; i < mediaFiles.length; i++) {
-    formData.append('media', mediaFiles[i]); // Puoi anche cambiare 'media' con 'media[]' per un array lato server
+    formData.append('media', mediaFiles[i]); 
   }
 
-  // Effettua la richiesta fetch con il FormData
+ 
   fetch('http://localhost:8000/M00980001/publish', {
     method: 'POST',
     body: formData
@@ -369,7 +378,6 @@ function publishPost(event) {
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
     closePopup();
-    console.log(formData);
   })
   .catch(error => {
     systemMessage.innerText='❌ Error: ' + error;
@@ -378,4 +386,9 @@ function publishPost(event) {
     closePopup();
   });
 
+
+document.getElementById("upload-title").value=null;
+document.getElementById("upload-content").value=null;
+document.getElementById("tags").value=null;
+document.getElementById("media").value=null; 
 }

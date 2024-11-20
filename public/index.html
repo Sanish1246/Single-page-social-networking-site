@@ -23,6 +23,7 @@
             <button id="feed-button" class="section-button">Feed</button>
             <button id="following-button" class="section-button">Following</button>
             <button id="people-button" class="section-button">People</button>
+            <button id="recommended-button" class="section-button">Recommended</button>
         </nav>
 
         <div class="side-menu" id="side-menu">
@@ -38,6 +39,8 @@
             <a href="#">✎ Your posts</a>
             <hr>
             <a href="#">⚲ Saved posts</a>
+            <hr>
+            <a href="#">☆ Favourite games</a>
             <hr>
             <a href="#">✖ Log out</a>
             <hr>
@@ -243,7 +246,44 @@
             <p>User1</p>               
             <button>+ Follow</button>
         </div>
+     </div>
     </div>
+
+    <div class="main-section" id="recommended-section">
+        <h1>Here are some games we recommend you, based on your recent activity</h1>
+
+        <div class="game">
+            <div class="game-title">
+                <p>Fire Emblem Three Houses</p>  
+                <button>+ Add to favourites</button>
+            </div>  
+            <hr>           
+            <div class="genres">
+                <p>Genres: <span id="genre-list">RPG, SRPG, Strategy</span></p>
+            </div>
+        </div>
+
+        <div class="game">
+            <div class="game-title">
+                <p>Xenoblade Chronicles 3</p>  
+                <button>+ Add to favourites</button>
+            </div>  
+            <hr>           
+            <div class="genres">
+                <p>Genres: <span id="genre-list">RPG, Action, Open world</span></p>
+            </div>
+        </div>
+
+        <div class="game">
+            <div class="game-title">
+                <p>The Great Ace Attorney: Chronicles</p>  
+                <button>+ Add to favourites</button>
+            </div>  
+            <hr>           
+            <div class="genres">
+                <p>Genres: <span id="genre-list">Visual Novel, Mystery</span></p>
+            </div>
+        </div>
 
     </div>
 
@@ -326,7 +366,6 @@
                 <input type="file" id="media" name="media" accept="image/*, video/*" multiple>
                 <br>
               
-                <!-- Pulsante di invio -->
                 <button type="submit" class="publish-button" onclick="publishPost(event)">Publish</button>
               </form>
         </div>

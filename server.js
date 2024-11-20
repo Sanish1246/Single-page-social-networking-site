@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 import { connectToDb } from './db.js';
 import session from 'express-session';
 import { error } from 'console';
+import fileUpload from 'express-fileupload';
+import fs from 'fs';
 
 const app = express();
 const hostname = 'localhost';
@@ -11,6 +13,7 @@ const port = 8000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+app.use(fileUpload());
 
 app.use(express.json());
 app.use(session({
@@ -106,62 +109,59 @@ async function startServer() {
       });
     });
 
-    app.post('/M00980001/publish', (req, res) => {
-      // Recupera i dati dal form
-      const { title, content, tags, owner, date, time } = req.body;
-      
-      // Verifica se un file è stato caricato
-      if (req.files && req.files.media) {
-        const media = req.files.media; // Gestisce un singolo file o array di file
+    app.post('/M00980001/publish', async (req, res) => {
+      try {
+        const { owner, title, content, tags, date, time, level } = req.body;
     
-        // Percorso dove salvare i file localmente
-        const uploadPath = path.join(__dirname, 'uploads', media.name);
-        
-        // Salva il file localmente
-        media.mv(uploadPath, (err) => {
-          if (err) {
-            return res.status(500).send(err);
+        // Controlla se ci sono file caricati
+        let mediaFiles = req.files ? req.files.media : null;
+    
+        const uploadDir = path.join(__dirname, 'uploads');
+    
+        // Verifica se la cartella di destinazione esiste, altrimenti la crea
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir);
+        }
+    
+        // Se vengono caricati file, salvali sul server
+        const savedFiles = [];
+        if (mediaFiles) {
+          const fileArray = Array.isArray(mediaFiles) ? mediaFiles : [mediaFiles];
+          for (const file of fileArray) {
+            const filePath = path.join(uploadDir, file.name);
+            await file.mv(filePath);  // Salva il file
+            savedFiles.push({
+              name: file.name,
+              path: filePath
+            });
           }
+        }
     
-          // Salva i dati del post e il percorso del file su MongoDB
-          const post = {
-            owner,
-            title,
-            content,
-            tags: tags.split(','), // Trasforma la stringa dei tag in array
-            date,
-            time,
-            mediaPath: uploadPath // Salva il percorso del file nel database
-          };
-    
-          db.collection('Posts').insertOne(post, (err, result) => {
-            if (err) {
-              return res.status(500).send({ error: "An error has occurred" });
-            }
-            res.send({ message: "Post uploaded" });
-          });
-        });
-      } else {
-        // Se non ci sono file, salva solo i dati testuali
-        const post = {
+        // Crea un nuovo oggetto post (incluso solo se i file sono presenti)
+        const newPost = {
           owner,
           title,
           content,
-          tags: tags.split(','),
+          tags,
+          level: parseInt(level),
           date,
           time,
-          mediaPath: null // Nessun file, quindi nessun percorso media
+          media: savedFiles.length ? savedFiles : undefined  // Salva solo se ci sono file
         };
     
-        db.collection('Posts').insertOne(post, (err, result) => {
-          if (err) {
-            return res.status(500).send({ error: "An error has occurred" });
-          }
-          res.send({ message: "Post uploaded" });
-        });
+        // Inserisci il post nella collezione di MongoDB
+        await db.collection('Posts').insertOne(newPost);
+    
+        // Risposta di successo
+        res.json({ message: '✅ Post pubblicato con successo!' });
+    
+      } catch (error) {
+        console.error('Errore nella pubblicazione del post:', error);  // Log dell'errore completo
+        res.status(500).json({ message: '❌ Errore durante la pubblicazione del post.', error: error.message });
       }
     });
-
+    
+    
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
     });
