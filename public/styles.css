@@ -108,7 +108,7 @@ body{
     z-index: 1;
     top: 110px;
     left: 0;
-    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.9), hsl(0, 96%, 60%, 0.9));
+    background: linear-gradient(90deg, hsl(268, 96%, 40%, 0.8), hsl(0, 96%, 60%, 0.8));
     border-radius: 10px;
     overflow-x: hidden;
     transition: 0.5s;

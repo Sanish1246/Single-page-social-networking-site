@@ -169,8 +169,17 @@ function closeSection(){
 
 function openFollowing(){
     closeSection();
-    document.getElementById('following-posts').style.display = 'block';
-    history.pushState(null, '', '/M00980001/following');
+    checkCurrentUser().then(isUserLoggedIn => {
+      if (isUserLoggedIn) {
+        document.getElementById('following-posts').style.display = 'block';
+        history.pushState(null, '', '/M00980001/following');
+      } else {
+        systemMessage.innerText='❌ You must login to wiew this';
+        systemMessage.style.opacity='1';
+        setTimeout(closeMessage,2000);
+        closePopup();
+      }
+    });
 }
 
 function openFeed(){
@@ -181,14 +190,32 @@ function openFeed(){
 
 function openPeople(){
     closeSection();
-    document.getElementById('people-section').style.display = 'block';
-    history.pushState(null, '', '/M00980001/people');
+    checkCurrentUser().then(isUserLoggedIn => {
+      if (isUserLoggedIn) {
+        document.getElementById('people-section').style.display = 'block';
+        history.pushState(null, '', '/M00980001/people');
+      } else {
+        systemMessage.innerText='❌ You must login to wiew this';
+        systemMessage.style.opacity='1';
+        setTimeout(closeMessage,2000);
+        closePopup();
+      }
+    });
 }
 
 function openRecommended(){
   closeSection();
-  document.getElementById('recommended-section').style.display = 'block';
-  history.pushState(null, '', '/M00980001/recommended');
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      document.getElementById('recommended-section').style.display = 'block';
+      history.pushState(null, '', '/M00980001/recommended');
+    } else {
+      systemMessage.innerText='❌ You must login to wiew this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
 }
 
 function openUpload(){
