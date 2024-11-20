@@ -15,9 +15,11 @@ async function checkCurrentUser() {
     const data = await response.json();
     if (data.username) {
       document.getElementById('currentUser').innerText = data.username;
+      console.log(data.username);
       return true;
     } else {
       document.getElementById('currentUser').innerText = "No user";
+      console.log(data.username);
       return false;
     }
   } catch (error) {
@@ -153,6 +155,13 @@ document.querySelectorAll('.login-link').forEach(function(element) {
     });
 });
 
+document.getElementById('profile-button').addEventListener('click', function(event){
+  event.preventDefault();
+  closeSection();
+  closeSectionButton();
+  openProfile();
+
+});
 document.querySelector('.register-link').addEventListener('click', function(event) {
     event.preventDefault(); // Prevent default link behavior
     openRegister();
@@ -160,11 +169,15 @@ document.querySelector('.register-link').addEventListener('click', function(even
 
 
 function closeSection(){
-    document.getElementById('feed-posts').style.display = 'none';
-    document.getElementById('following-posts').style.display = 'none';
-    document.getElementById('people-section').style.display = 'none';
-    document.getElementById('recommended-section').style.display = 'none';
-    
+  document.querySelectorAll('.main-section').forEach(sct => sct.style.display='none');
+}
+
+function closeSectionButton(){
+  document.querySelectorAll('.section-button').forEach(btn => btn.style.display='none');
+}
+
+function openProfile(){
+  document.getElementById('user-profile').style.display='block';
 }
 
 function openFollowing(){
@@ -252,7 +265,9 @@ function registerUser(event){
         const user = {
             username: newUsername,
             email: newEmail,
-            password: newPassword
+            password: newPassword,
+            followers:[],
+            following:[]
           };
         
           // using Fetch to make the AJAX post request
@@ -274,7 +289,7 @@ function registerUser(event){
                 if (isUserLoggedIn) {
                   loginLink.innerText = "Log out";
                 } else {
-                  loginLink.innerText = "Log in";
+                  loginLink.innerText = "Login";
                 }
               });
     
@@ -333,7 +348,7 @@ function loginUser(event){
             if (isUserLoggedIn) {
               loginLink.innerText = "Log out";
             } else {
-              loginLink.innerText = "Log in";
+              loginLink.innerText = "Login";
             }
           });
 

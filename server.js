@@ -54,6 +54,8 @@ async function startServer() {
         if (emailExists) {
           return res.status(401).json({ error: "Email already in use!" });
         }
+
+        user.profileImagePath = 'public/images/default-profile.png';
     
         const result = await db.collection('Users').insertOne(user);
         res.status(201).json({
@@ -64,7 +66,10 @@ async function startServer() {
         req.session.user = {
           username: user.username,
           email: user.email,
-          password: user.password
+          password: user.password,
+          followers:user.followers,
+          following:user.following,
+          profileImg:'public/images/default-profile.png',
         };
     
       } catch (err) {
@@ -88,7 +93,10 @@ async function startServer() {
           req.session.user = {
             username: result.username,
             email: result.email,
-            password: result.password 
+            password: result.password,
+            followers:result.followers,
+            following:result.following,
+            profileImg:result.profileImg
           };
           res.status(200).json({
             message: "User logged in! " + result.username,
@@ -153,11 +161,10 @@ async function startServer() {
         await db.collection('Posts').insertOne(newPost);
     
         // Risposta di successo
-        res.json({ message: '✅ Post pubblicato con successo!' });
+        res.json({ message: '✅ Post uploaded successfully!' });
     
       } catch (error) {
-        console.error('Errore nella pubblicazione del post:', error);  // Log dell'errore completo
-        res.status(500).json({ message: '❌ Errore durante la pubblicazione del post.', error: error.message });
+        res.status(500).json({ message: '❌ An error occurred.', error: error.message });
       }
     });
     

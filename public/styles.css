@@ -116,7 +116,7 @@ body{
     border:2px solid black;
 }
 
-.user-container{
+.current-user-container{
     width:100%;
     display:flex;
     flex-direction: column;
@@ -583,5 +583,21 @@ body{
 }
 
 
+#user-profile{
+    display:none;
+    display: flex; /* Attiva Flexbox */
+    justify-content: center; /* Centra orizzontalmente i figli */
+    align-items: center; /* Optional: Centra verticalmente */
+    flex-direction: column; /* Organizza i figli in colonna */
+    margin: 0 auto; /* Per sicurezza */
+    height: auto; /* Permetti all'altezza di adattarsi ai contenuti */
+    width: 100%; /* Assicura che occupi tutta la larghezza del genitore */
+}
+
+.user-data{
+    margin:0 auto;
+    width:80%;
+    text-align: center;
+}
 
 
