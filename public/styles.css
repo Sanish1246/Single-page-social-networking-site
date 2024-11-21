@@ -161,7 +161,8 @@ body{
     margin:0 auto;
 }
 
-.main-section .post{
+.main-section .post,
+#user-profile .post{
     border:2px solid black;
     border-radius:1rem;
     margin-top: 10px;
@@ -585,19 +586,47 @@ body{
 
 #user-profile{
     display:none;
-    display: flex; /* Attiva Flexbox */
-    justify-content: center; /* Centra orizzontalmente i figli */
-    align-items: center; /* Optional: Centra verticalmente */
-    flex-direction: column; /* Organizza i figli in colonna */
-    margin: 0 auto; /* Per sicurezza */
-    height: auto; /* Permetti all'altezza di adattarsi ai contenuti */
-    width: 100%; /* Assicura che occupi tutta la larghezza del genitore */
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    flex-direction: column; 
+    margin: 0 auto;
+    height: auto; 
+    width: 80%; 
 }
 
 .user-data{
     margin:0 auto;
     width:80%;
     text-align: center;
+    border:1px solid black;
+    border-radius: 5px;
+    background:linear-gradient(90deg, hsl(290, 96%, 40%, 1), hsl(0, 96%, 60%, 1));
+    margin-bottom: 3rem;
+}
+
+.user-data .img-section{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.user-data img {
+    top:10px;
+    width:10rem;
+    margin: 0 auto;
+    height:10rem;
+    border:1px solid black;
+    border-radius:50%;
+}
+
+.follow-info{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-around; 
+    align-items: center; 
+    font-size: 1.5rem;
 }
 
 

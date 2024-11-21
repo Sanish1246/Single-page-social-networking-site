@@ -160,8 +160,13 @@ document.getElementById('profile-button').addEventListener('click', function(eve
   closeSection();
   closeSectionButton();
   openProfile();
-
 });
+
+document.getElementById('home-button').addEventListener('click', function(event){
+  closeProfile();
+  openSections();
+});
+
 document.querySelector('.register-link').addEventListener('click', function(event) {
     event.preventDefault(); // Prevent default link behavior
     openRegister();
@@ -178,6 +183,16 @@ function closeSectionButton(){
 
 function openProfile(){
   document.getElementById('user-profile').style.display='block';
+}
+
+function closeProfile(){
+  document.getElementById('user-profile').style.display='none';
+}
+
+function openSections(){
+  document.querySelectorAll('.section-button').forEach(btn => btn.style.display='block');
+  document.getElementById("feed-posts").style.display="block";
+  document.querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
 }
 
 function openFollowing(){
