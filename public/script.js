@@ -6,7 +6,6 @@ const currentUser=document.getElementById('currentUser');
 
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
-  checkCurrentUser();
 };
 
 async function checkCurrentUser() {
@@ -15,11 +14,9 @@ async function checkCurrentUser() {
     const data = await response.json();
     if (data.username) {
       document.getElementById('currentUser').innerText = data.username;
-      console.log(data.username);
       return true;
     } else {
       document.getElementById('currentUser').innerText = "No user";
-      console.log(data.username);
       return false;
     }
   } catch (error) {
@@ -202,6 +199,7 @@ function closeSectionButton(){
 
 function openProfile(){
   document.getElementById('user-profile').style.display='block';
+  displayUserData();
 }
 
 function closeProfile(){
@@ -487,4 +485,70 @@ document.getElementById("upload-content").value=null;
 document.getElementById("tags").value=null;
 document.getElementById("media").value=null; 
 }
+
+async function displayUserData(){
+  try {
+    const response = await fetch('http://localhost:8000/M00980001/user');
+    const data = await response.json();
+    document.getElementById('profile-username').innerText = data.username;
+    document.getElementById('user-following').innerText = data.following.length;
+    document.getElementById('user-followers').innerText = data.followers.length;
+
+    const postsResponse = await fetch('http://localhost:8000/M00980001/user/posts');
+    const posts = await postsResponse.json();
+    console.log(posts)
+
+    // Display the posts
+    const postsContainer = document.getElementById('posts-container'); 
+    postsContainer.innerHTML = ''; // Clear previous posts if necessary
+
+    posts.forEach(post => {
+      // Create post HTML structure
+      const postElement = document.createElement('div');
+      postElement.classList.add('post');
+
+      // Construct the HTML for the post, checking if optional fields (video, image) exist
+      postElement.innerHTML = `
+        <div class="post-head">
+            <img src="${data.profileImg || './images/default-photo.jpg'}" class="profile-img">
+            <p>${data.username} <span class="post-date">on ${post.date}</span></p>
+        </div>
+        <hr>
+        <div class="title-section">
+            <p class="post-title">${post.title}</p>
+        </div>
+        <hr>
+        <div class="post-content">
+            <p>${post.content || ''}</p>
+            ${post.media && post.media.includes('.mp4') ? `<video controls><source src="${post.media}" type="video/mp4"></video>` : ''}
+            ${post.media && !post.media.includes('.mp4') ? `<img src="${post.media}" alt="Post Image" class="post-image">` : ''}
+        </div>
+        <hr>
+        <div class="post-info">
+            <p>Level: ${post.level || 0}</p>
+            <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+            <p>${post.time}</p>
+        </div>
+        <hr>
+        <div class="post-bottom">
+            <button>⬆️Level up</button>
+            <button>⬇️Level down</button>
+            <button>💬Comments</button>
+            <button>⚲Save</button>
+        </div>
+        <hr>
+        <div class="post-comment">
+            <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+        </div>
+      `;
+
+      // Append the post to the posts container
+      postsContainer.appendChild(postElement);
+    });
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+
 

@@ -34,15 +34,15 @@
             
             <hr>
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="#" id="home-button">🏠︎ Home</a>
+            <a id="home-button">🏠︎ Home</a>
             <hr>
-            <a href="#" id="profile-button">👤 Your Profile</a>
+            <a id="profile-button">👤 Your Profile</a>
             <hr>
-            <a href="#" id="saved-button">⚲ Saved posts</a>
+            <a id="saved-button">⚲ Saved posts</a>
             <hr>
-            <a href="#" id="favourite-button">☆ Favourite games</a>
+            <a id="favourite-button">☆ Favourite games</a>
             <hr>
-            <a href="#">✖ Log out</a>
+            <a>✖ Log out</a>
             <hr>
         </div>
 
@@ -386,46 +386,14 @@
                 <label for="media">Change picture</label>
                 <input type="file" id="media" name="media" accept="image/*">
             </div>
-            <h1>Username</h1>
+            <h1 id="profile-username">Username</h1>
             <div class="follow-info">
-                <p>Follows: 0</p>
-                <p>Followers: 0</p>
+                <p>Follows: <span id="user-following">0</span></p>
+                <p>Followers: <span id="user-followers">0</span></p>
             </div>
         </div>
 
-        <div class="post">
-            <div class="post-head">
-                <img src="" class="profile-img">
-                <p>User1 <span class="post-date" id="post-date">on 01/01/2025</span></p>
-            </div>
-            <hr>
-            <div class="title-section">
-                <p class="post-title">title of the post</p>
-            </div>
-            <hr>
-            <div class="post-content">
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga expedita iste ullam voluptatum rem ratione nostrum modi harum excepturi recusandae, explicabo vel ea. Enim sapiente placeat temporibus ipsum tempore aspernatur!</p>
-                <video controls>
-                    <source src="./videos/test.mp4" type="video/mp4">
-                </video>
-            </div>
-            <hr>
-            <div class="post-info">
-                <p>Level: 0</p>
-                <p>Comments: 0</p>
-                <p>12:00</p>
-            </div>
-            <hr>
-            <div class="post-bottom">
-                <button>⬆️Level up</button>
-                <button>⬇️Level down</button>
-                <button>💬Comments</button>
-                <button>⚲Save</button>
-            </div>
-            <hr>
-            <div class="post-comment">
-                <input type="text" placeholder="💬Leave a comment."><button>Post</button>
-            </div>
+        <div class="posts-container" id="posts-container">
         </div>
     </div>
 

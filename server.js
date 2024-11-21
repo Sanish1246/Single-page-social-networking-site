@@ -30,9 +30,16 @@ app.get('/M00980001', (req, res) => {
 
 app.get('/M00980001/user', (req, res) => {
   if (req.session.user) {
-    return res.status(200).json(req.session.user);
+    res.status(200).json({
+      username: req.session.user.username,
+      email: req.session.user.email,
+      password: req.session.user.password, 
+      followers: req.session.user.followers,
+      following: req.session.user.following,
+      profileImg: req.session.user.profileImg
+    });
   } else {
-    return res.status(401).json({ error: 'Not logged in' });
+    res.status(401).json({ error: "No user logged in" });
   }
 });
 
@@ -55,14 +62,11 @@ async function startServer() {
           return res.status(401).json({ error: "Email already in use!" });
         }
 
+        user.followers = [];
+        user.following = [];
         user.profileImagePath = 'public/images/default-profile.png';
     
         const result = await db.collection('Users').insertOne(user);
-        res.status(201).json({
-          message: "User registered successfully",
-          userId: result.insertedId
-        });
-    
         req.session.user = {
           username: user.username,
           email: user.email,
@@ -71,6 +75,10 @@ async function startServer() {
           following:user.following,
           profileImg:'public/images/default-profile.png',
         };
+        res.status(201).json({
+          message: "User registered successfully",
+          userId: result.insertedId
+        });
     
       } catch (err) {
         res.status(500).json({ error: "Internal server error" });
@@ -94,9 +102,9 @@ async function startServer() {
             username: result.username,
             email: result.email,
             password: result.password,
-            followers:result.followers,
-            following:result.following,
-            profileImg:result.profileImg
+            followers: result.followers || [], 
+            following: result.following || [], 
+            profileImg: result.profileImg || 'public/images/default-profile.png' 
           };
           res.status(200).json({
             message: "User logged in! " + result.username,
@@ -165,6 +173,21 @@ async function startServer() {
     
       } catch (error) {
         res.status(500).json({ message: '❌ An error occurred.', error: error.message });
+      }
+    });
+
+
+    app.get('/M00980001/user/posts', async (req, res) => {
+      console.log(req.session.user.username);
+      const currentUser=req.session.user.username;
+    
+      try {
+        const posts = await db.collection('Posts').find({ owner: currentUser }).toArray();
+        console.log("Posts for user:", currentUser);
+        res.status(200).json(posts);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        res.status(500).json({ error: 'Error fetching posts' });
       }
     });
     
