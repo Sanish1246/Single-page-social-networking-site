@@ -369,15 +369,29 @@ body{
 }
 
 .game{
+    display:flex;
+    flex-direction: row;
+    margin-bottom:1rem;
+}
+
+.game img{
+    height:10rem;
+    width:10rem;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.game-details{
     margin: 0 auto;
     border: 2px solid;
     border-radius: 1rem;
+    align-self: center;
     box-shadow: 0 0 10px black;
     margin-bottom:1.5rem;
-    width:75%;
+    width:70%;
 }
 
-.game p{
+.game-details p{
     padding-left: 10px;
     font-size:1.5rem;
 }
