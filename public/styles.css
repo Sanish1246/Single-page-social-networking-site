@@ -162,7 +162,8 @@ body{
 }
 
 .main-section .post,
-#user-profile .post{
+#user-profile .post,
+#saved-posts .post{
     border:2px solid black;
     border-radius:1rem;
     margin-top: 10px;
@@ -585,7 +586,6 @@ body{
 
 
 #user-profile{
-    display:none;
     display: flex; 
     justify-content: center; 
     align-items: center; 
@@ -593,6 +593,7 @@ body{
     margin: 0 auto;
     height: auto; 
     width: 80%; 
+    display:none;
 }
 
 .user-data{
@@ -628,5 +629,22 @@ body{
     align-items: center; 
     font-size: 1.5rem;
 }
+
+#saved-posts{
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    flex-direction: column; 
+    margin: 0 auto;
+    height: auto; 
+    width: 80%; 
+    display:none;
+}
+
+#saved-posts h1{
+    text-align: center;
+}
+
+
 
 
