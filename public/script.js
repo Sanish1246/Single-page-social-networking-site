@@ -164,6 +164,7 @@ document.getElementById('profile-button').addEventListener('click', function(eve
 });
 
 document.getElementById('home-button').addEventListener('click', function(event){
+  closeFavourite();
   closeProfile();
   closeSaved();
   openSections();
@@ -171,9 +172,18 @@ document.getElementById('home-button').addEventListener('click', function(event)
 
 document.getElementById('saved-button').addEventListener('click', function(event){
   closeProfile();
+  closeFavourite();
   closeSection();
   closeSectionButton();
   openSaved();
+});
+
+document.getElementById('favourite-button').addEventListener('click', function(event){
+  closeProfile();
+  closeSaved();
+  closeSection();
+  closeSectionButton();
+  openFavourite();
 });
 
 document.querySelector('.register-link').addEventListener('click', function(event) {
@@ -206,7 +216,16 @@ function closeSaved(){
   document.getElementById('saved-posts').style.display='none';
 }
 
+function openFavourite(){
+  document.getElementById('favourite-games').style.display='block';
+}
+
+function closeFavourite(){
+  document.getElementById('favourite-games').style.display='none';
+}
+
 function openSections(){
+  closeFavourite();
   closeSaved();
   closeProfile();
   document.querySelectorAll('.section-button').forEach(btn => btn.style.display='block');

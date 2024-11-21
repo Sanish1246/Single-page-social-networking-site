@@ -645,6 +645,18 @@ body{
     text-align: center;
 }
 
+#favourite-games{
+    display:none;
+}
+
+#favourite-games h1{
+    text-align: center;
+}
+
+#favourite-games .game{
+    width:60%;
+}
+
 
 
 
