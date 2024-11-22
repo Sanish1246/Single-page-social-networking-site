@@ -483,7 +483,7 @@ function publishPost(event) {
 document.getElementById("upload-title").value=null;
 document.getElementById("upload-content").value=null;
 document.getElementById("tags").value=null;
-document.getElementById("media").value=null; 
+document.getElementById("media").value=''; 
 }
 
 async function displayUserData(){
@@ -493,62 +493,69 @@ async function displayUserData(){
     document.getElementById('profile-username').innerText = data.username;
     document.getElementById('user-following').innerText = data.following.length;
     document.getElementById('user-followers').innerText = data.followers.length;
+    console.log(data.profileImg);
 
     const postsResponse = await fetch('http://localhost:8000/M00980001/user/posts');
     const posts = await postsResponse.json();
-    console.log(posts)
 
-    // Display the posts
-    const postsContainer = document.getElementById('posts-container'); 
-    postsContainer.innerHTML = ''; // Clear previous posts if necessary
-
-    posts.forEach(post => {
-      // Create post HTML structure
-      const postElement = document.createElement('div');
-      postElement.classList.add('post');
-
-      // Construct the HTML for the post, checking if optional fields (video, image) exist
-      postElement.innerHTML = `
-        <div class="post-head">
-            <img src="${data.profileImg || './images/default-photo.jpg'}" class="profile-img">
-            <p>${data.username} <span class="post-date">on ${post.date}</span></p>
-        </div>
-        <hr>
-        <div class="title-section">
-            <p class="post-title">${post.title}</p>
-        </div>
-        <hr>
-        <div class="post-content">
-            <p>${post.content || ''}</p>
-            ${post.media && post.media.includes('.mp4') ? `<video controls><source src="${post.media}" type="video/mp4"></video>` : ''}
-            ${post.media && !post.media.includes('.mp4') ? `<img src="${post.media}" alt="Post Image" class="post-image">` : ''}
-        </div>
-        <hr>
-        <div class="post-info">
-            <p>Level: ${post.level || 0}</p>
-            <p>Comments: ${post.comments ? post.comments.length : 0}</p>
-            <p>${post.time}</p>
-        </div>
-        <hr>
-        <div class="post-bottom">
-            <button>⬆️Level up</button>
-            <button>⬇️Level down</button>
-            <button>💬Comments</button>
-            <button>⚲Save</button>
-        </div>
-        <hr>
-        <div class="post-comment">
-            <input type="text" placeholder="💬Leave a comment."><button>Post</button>
-        </div>
-      `;
-
-      // Append the post to the posts container
-      postsContainer.appendChild(postElement);
-    });
+    loadYourPosts(posts, data);
   } catch (error) {
     console.error('Error:', error);
   }
 }
 
+async function loadYourPosts(posts, data) {
+  const postsContainer = document.getElementById('posts-container');
+  postsContainer.innerHTML = ''; // Clear previous posts if necessary
 
+  // Inverti l'array dei post per mostrarli dal più recente al più vecchio
+  posts = posts.reverse();
+
+  posts.forEach(post => {
+    // Crea la struttura HTML del post
+    const postElement = document.createElement('div');
+    postElement.classList.add('post');
+
+    // Costruisci l'HTML per il post
+    postElement.innerHTML = `
+      <div class="post-head">
+          <img src="${data.profileImg || './images/default-photo.jpg'}" class="profile-img">
+          <p>${data.username} <span class="post-date">on ${post.date}</span></p>
+      </div>
+      <hr>
+      <div class="title-section">
+          <p class="post-title">${post.title}</p>
+      </div>
+      <hr>
+      <div class="post-content">
+          <p>${post.content || ''}</p>
+          ${post.media && post.media.length ? post.media.map(file => 
+            file.path.endsWith('.mp4') 
+              ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
+              : `<img src="${file.path}" alt="Post Image" class="post-image">`
+          ).join('') : ''}
+      </div>
+      <hr>
+      <div class="post-info">
+          <p>Level: ${post.level || 0}</p>
+          <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+          <p>${post.time}</p>
+      </div>
+      <hr>
+      <div class="post-bottom">
+          <button>⬆️Level up</button>
+          <button>⬇️Level down</button>
+          <button>💬Comments</button>
+          <button>⚲Save</button>
+      </div>
+      <hr>
+      <div class="post-comment">
+          <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+      </div>
+    `;
+
+    // Aggiungi il post al contenitore dei post
+    postsContainer.appendChild(postElement);
+  });
+}
 

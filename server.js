@@ -3,7 +3,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { connectToDb } from './db.js';
 import session from 'express-session';
-import { error } from 'console';
 import fileUpload from 'express-fileupload';
 import fs from 'fs';
 
@@ -22,6 +21,8 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: false }    
 }));
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/M00980001', (req, res) => {
@@ -64,7 +65,6 @@ async function startServer() {
 
         user.followers = [];
         user.following = [];
-        user.profileImagePath = 'public/images/default-profile.png';
     
         const result = await db.collection('Users').insertOne(user);
         req.session.user = {
@@ -73,7 +73,7 @@ async function startServer() {
           password: user.password,
           followers:user.followers,
           following:user.following,
-          profileImg:'public/images/default-profile.png',
+          profileImg:'/images/default-photo.jpg',
         };
         res.status(201).json({
           message: "User registered successfully",
@@ -104,7 +104,7 @@ async function startServer() {
             password: result.password,
             followers: result.followers || [], 
             following: result.following || [], 
-            profileImg: result.profileImg || 'public/images/default-profile.png' 
+            profileImg: result.profileImg || '/images/default-photo.jpg'
           };
           res.status(200).json({
             message: "User logged in! " + result.username,
@@ -144,11 +144,11 @@ async function startServer() {
         if (mediaFiles) {
           const fileArray = Array.isArray(mediaFiles) ? mediaFiles : [mediaFiles];
           for (const file of fileArray) {
-            const filePath = path.join(uploadDir, file.name);
-            await file.mv(filePath);  // Salva il file
+            const filePath = path.join('/uploads', file.name);  // Percorso relativo da servire al client
+            await file.mv(path.join(uploadDir, file.name));  // Salva il file nel server
             savedFiles.push({
               name: file.name,
-              path: filePath
+              path: filePath  // Salva il percorso relativo nel DB
             });
           }
         }
@@ -178,7 +178,6 @@ async function startServer() {
 
 
     app.get('/M00980001/user/posts', async (req, res) => {
-      console.log(req.session.user.username);
       const currentUser=req.session.user.username;
     
       try {
