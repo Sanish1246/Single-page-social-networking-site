@@ -258,6 +258,7 @@ function openPeople(){
       if (isUserLoggedIn) {
         document.getElementById('people-section').style.display = 'block';
         history.pushState(null, '', '/M00980001/people');
+        fetchPeople();
       } else {
         systemMessage.innerText='❌ You must login to view this';
         systemMessage.style.opacity='1';
@@ -506,7 +507,7 @@ async function displayUserData(){
 
 async function loadYourPosts(posts, data) {
   const postsContainer = document.getElementById('posts-container');
-  postsContainer.innerHTML = ''; // Clear previous posts if necessary
+  postsContainer.innerHTML = ''; 
 
   // Inverti l'array dei post per mostrarli dal più recente al più vecchio
   posts = posts.reverse();
@@ -558,4 +559,39 @@ async function loadYourPosts(posts, data) {
     postsContainer.appendChild(postElement);
   });
 }
+
+async function fetchPeople(){
+  try{
+    const response = await fetch('http://localhost:8000/M00980001/people');
+    const people = await response.json();
+    const peopleContainer=document.getElementById('people-container');
+
+    peopleContainer.innerHTML = '';
+
+    // Crea e aggiungi l'elemento h1 prima di mostrare gli utenti
+    const header = document.createElement('h1');
+    header.textContent = 'People';
+    peopleContainer.appendChild(header);
+
+    people.forEach(person => {
+      // Crea la struttura HTML del post
+      const peopleElement = document.createElement('div');
+      peopleElement.classList.add('person');
+  
+      // Costruisci l'HTML per il post
+      peopleElement.innerHTML = `
+            <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
+            <p>${person.username}</p>               
+            <button>+ Follow</button>
+      `;
+  
+      // Aggiungi il post al contenitore dei post
+      peopleContainer.appendChild(peopleElement);
+    });
+    
+  } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
 

@@ -65,6 +65,7 @@ async function startServer() {
 
         user.followers = [];
         user.following = [];
+        user.profileImg='/images/default-photo.jpg'
     
         const result = await db.collection('Users').insertOne(user);
         req.session.user = {
@@ -190,6 +191,17 @@ async function startServer() {
       }
     });
     
+    app.get('/M00980001/people', async (req, res) => {
+      const currentUser=req.session.user.username;
+    
+      try {
+        const users = await db.collection('Users').find({ username: { $ne: currentUser } }).toArray();
+        res.status(200).json(users);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        res.status(500).json({ error: 'Error fetching posts' });
+      }
+    });
     
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
