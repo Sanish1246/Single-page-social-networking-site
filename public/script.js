@@ -152,6 +152,7 @@ document.querySelectorAll('.login-link').forEach(function(element) {
     });
 });
 
+
 document.getElementById('profile-button').addEventListener('click', function(event){
   event.preventDefault();
   closeSection();
@@ -582,16 +583,46 @@ async function fetchPeople(){
       peopleElement.innerHTML = `
             <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
             <p>${person.username}</p>               
-            <button>+ Follow</button>
+            <button class="follow-user" id=${person.username}>+ Follow</button>
       `;
-  
+
       // Aggiungi il post al contenitore dei post
       peopleContainer.appendChild(peopleElement);
+    });
+
+    document.querySelectorAll('.follow-user').forEach(function(element) {
+      element.addEventListener('click', function(event) {
+          event.preventDefault(); 
+          followUser(this.id);
+      });
     });
     
   } catch (error) {
       console.error('Error:', error);
     }
+  }
+
+  async function followUser(id){
+      fetch(`http://localhost:8000/M00980001/follow/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(message => {
+        systemMessage.innerText=message.message;
+        systemMessage.style.opacity='1';
+        setTimeout(closeMessage,2000);
+        closePopup();
+      })
+      .catch(error => {
+        systemMessage.innerText='❌ Error: ' + error;
+        systemMessage.style.opacity='1';
+        setTimeout(closeMessage,2000);
+        console.log(error);
+        closePopup();
+      });
   }
 
 
