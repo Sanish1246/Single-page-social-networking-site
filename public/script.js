@@ -200,8 +200,17 @@ function closeSectionButton(){
 }
 
 function openProfile(){
-  document.getElementById('user-profile').style.display='block';
-  displayUserData();
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      document.getElementById('user-profile').style.display='block';
+      displayUserData();
+    } else {
+      systemMessage.innerText='❌ You must login to view this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
 }
 
 function closeProfile(){
@@ -209,7 +218,16 @@ function closeProfile(){
 }
 
 function openSaved(){
-  document.getElementById('saved-posts').style.display='block';
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      document.getElementById('saved-posts').style.display='block';
+    } else {
+      systemMessage.innerText='❌ You must login to view this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
 }
 
 function closeSaved(){
@@ -217,7 +235,16 @@ function closeSaved(){
 }
 
 function openFavourite(){
-  document.getElementById('favourite-games').style.display='block';
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      document.getElementById('favourite-games').style.display='block';
+    } else {
+      systemMessage.innerText='❌ You must login to view this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
 }
 
 function closeFavourite(){
@@ -490,22 +517,71 @@ document.getElementById("tags").value=null;
 document.getElementById("media").value=''; 
 }
 
-async function displayUserData(){
+async function displayUserData() {
   try {
+    // Effettua la richiesta per ottenere i dati dell'utente
     const response = await fetch('http://localhost:8000/M00980001/user');
     const data = await response.json();
+
+    // Mostra i dati dell'utente nel DOM
     document.getElementById('profile-username').innerText = data.username;
     document.getElementById('user-following').innerText = data.following.length;
     document.getElementById('user-followers').innerText = data.followers.length;
 
+    // Mostra la nuova immagine di profilo se esiste, altrimenti usa una di default
+    const profileImageElement = document.getElementById("profileImage");
+    profileImageElement.src = data.profileImg ? data.profileImg : './images/default-photo.jpg';
+
+    // Effettua la richiesta per ottenere i post dell'utente
     const postsResponse = await fetch('http://localhost:8000/M00980001/user/posts');
     const posts = await postsResponse.json();
 
+    // Carica i post dell'utente
     loadYourPosts(posts, data);
+
   } catch (error) {
     console.error('Error:', error);
   }
 }
+
+
+document.getElementById('change-profile-pic').addEventListener('change', function(event) {
+  const file = event.target.files[0]; 
+  if (file) {
+    const imgPreview = document.getElementById('profileImage'); 
+    imgPreview.src = URL.createObjectURL(file); 
+  }
+});
+
+document.getElementById('uploadButton').addEventListener('click', async function() {
+  const fileInput = document.getElementById('change-profile-pic');
+  const file = fileInput.files[0]; // Ottieni il file caricato
+  
+  if (file) {
+    // Crea un oggetto FormData e aggiungi il file
+    const formData = new FormData();
+    formData.append('media', file);
+
+    try {
+      // Esegui la richiesta POST al server
+      const response = await fetch('/M00980001/uploadProfilePicture', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        console.log('File uploaded successfully:', result);
+      } else {
+        console.error('File upload failed:', result.error);
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  } else {
+    console.error('No file selected');
+  }
+});
 
 async function loadYourPosts(posts, data) {
   const postsContainer = document.getElementById('posts-container');
@@ -556,8 +632,6 @@ async function loadYourPosts(posts, data) {
           <input type="text" placeholder="💬Leave a comment."><button>Post</button>
       </div>
     `;
-
-    // Aggiungi il post al contenitore dei post
     postsContainer.appendChild(postElement);
   });
 }
@@ -671,8 +745,6 @@ async function fetchPeople() {
     if(Object.keys(data).length === 0){
       const postsResponse = await fetch('http://localhost:8000/M00980001/latest');
       const posts = await postsResponse.json();
-      console.log(posts);
-      console.log("No user");
       loadLatestPosts(posts);
     } else {
       const postsResponse = await fetch('http://localhost:8000/M00980001/feed');
@@ -684,66 +756,72 @@ async function fetchPeople() {
   }
 }
 
-async function loadFeedPosts(posts,data){
+async function loadFeedPosts(posts, data) {
   const postsContainer = document.getElementById('feed-posts-container');
-  postsContainer.innerHTML = ''; 
-  let following = data.following; 
+  postsContainer.innerHTML = '';
+  let following = data.following;
 
   // Inverti l'array dei post per mostrarli dal più recente al più vecchio
   posts = posts.reverse();
-  console.log(posts);
 
-  posts.forEach(post => {
-    // Crea la struttura HTML del post
+  for (const post of posts) {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
     const isFollowing = following.includes(post.owner);
 
-    // Costruisci l'HTML per il post
-    postElement.innerHTML = `
-      <div class="post-head">
-          <img src="${data.profileImg || './images/default-photo.jpg'}" class="profile-img">
-          <p>${data.username} <span class="post-date">on ${post.date}</span></p>
-          <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
-          ${isFollowing ? 'Following' : '+ Follow'}
-          </button>
-      </div>
-      <hr>
-      <div class="title-section">
-          <p class="post-title">${post.title}</p>
-      </div>
-      <hr>
-      <div class="post-content">
-          <p>${post.content || ''}</p>
-          ${post.media && post.media.length ? post.media.map(file => 
-            file.path.endsWith('.mp4') 
-              ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
-              : `<img src="${file.path}" alt="Post Image" class="post-image">`
-          ).join('') : ''}
-      </div>
-      <hr>
-      <div class="post-info">
-          <p>Level: ${post.level || 0}</p>
-          <p>Comments: ${post.comments ? post.comments.length : 0}</p>
-          <p>${post.time}</p>
-      </div>
-      <hr>
-      <div class="post-bottom">
-          <button>⬆️Level up</button>
-          <button>⬇️Level down</button>
-          <button>💬Comments</button>
-          <button>⚲Save</button>
-      </div>
-      <hr>
-      <div class="post-comment">
-          <input type="text" placeholder="💬Leave a comment."><button>Post</button>
-      </div>
-    `;
+    try {
+      const response = await fetch(`/M00980001/postOwner/${post.owner}`);
+      const profileData = await response.json();
 
-    // Aggiungi il post al contenitore dei post
-    postsContainer.appendChild(postElement);
-  });
+      postElement.innerHTML = `
+        <div class="post-head">
+            <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
+            <p>${profileData.username} <span class="post-date">on ${post.date}</span></p>
+            <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
+              ${isFollowing ? 'Following' : '+ Follow'}
+            </button>
+        </div>
+        <hr>
+        <div class="title-section">
+            <p class="post-title">${post.title}</p>
+        </div>
+        <hr>
+        <div class="post-content">
+            <p>${post.content || ''}</p>
+            ${post.media && post.media.length ? post.media.map(file => 
+              file.path.endsWith('.mp4') 
+                ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
+                : `<img src="${file.path}" alt="Post Image" class="post-image">`
+            ).join('') : ''}
+        </div>
+        <hr>
+        <div class="post-info">
+            <p>Level: ${post.level || 0}</p>
+            <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+            <p>${post.time}</p>
+        </div>
+        <hr>
+        <div class="post-bottom">
+            <button>⬆️Level up</button>
+            <button>⬇️Level down</button>
+            <button>💬Comments</button>
+            <button>⚲Save</button>
+        </div>
+        <hr>
+        <div class="post-comment">
+            <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+        </div>
+      `;
 
+      // Aggiungi il post al contenitore dei post
+      postsContainer.appendChild(postElement);
+
+    } catch (error) {
+      console.error('Error fetching profile image:', error);
+    }
+  }
+
+  // Aggiungi gestori eventi per i pulsanti follow/unfollow
   document.querySelectorAll('.follow-user').forEach(function(element) {
     element.addEventListener('click', async function(event) {
       event.preventDefault();
@@ -751,15 +829,16 @@ async function loadFeedPosts(posts,data){
       if (following.includes(targetId)) {
         this.classList.remove('following');
         this.innerText = '+ Follow';
-        unfollowUser(targetId);
+        unfollowUser(targetId); // Chiamata alla funzione per unfollow
       } else {
         this.classList.add('following');
         this.innerText = 'Unfollow';
-        followUser(targetId);
+        followUser(targetId); // Chiamata alla funzione per follow
       }
     });
   });
 }
+
 
 async function loadLatestPosts(posts) {
   const postsContainer = document.getElementById('feed-posts-container');
@@ -767,57 +846,61 @@ async function loadLatestPosts(posts) {
 
   // Inverti l'array dei post per mostrarli dal più recente al più vecchio
   posts = posts.reverse();
-  console.log(posts);
 
-  posts.forEach(post => {
-    // Crea la struttura HTML del post
+  for (const post of posts) {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
 
+    try {
+      const response = await fetch(`/M00980001/postOwner/${post.owner}`);
+      const profileData = await response.json();
+      console.log(profileData);
 
-    // Costruisci l'HTML per il post
-    postElement.innerHTML = `
-      <div class="post-head">
-          <img src="${'./images/default-photo.jpg'}" class="profile-img">
-          <p>${post.owner} <span class="post-date">on ${post.date}</span></p>
+      postElement.innerHTML = `
+        <div class="post-head">
+            <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
+            <p>${post.owner} <span class="post-date">on ${post.date}</span></p>
+            </button>
+        </div>
+        <hr>
+        <div class="title-section">
+            <p class="post-title">${post.title}</p>
+        </div>
+        <hr>
+        <div class="post-content">
+            <p>${post.content || ''}</p>
+            ${post.media && post.media.length ? post.media.map(file => 
+              file.path.endsWith('.mp4') 
+                ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
+                : `<img src="${file.path}" alt="Post Image" class="post-image">`
+            ).join('') : ''}
+        </div>
+        <hr>
+        <div class="post-info">
+            <p>Level: ${post.level || 0}</p>
+            <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+            <p>${post.time}</p>
+        </div>
+        <hr>
+        <div class="post-bottom">
+            <button>⬆️Level up</button>
+            <button>⬇️Level down</button>
+            <button>💬Comments</button>
+            <button>⚲Save</button>
+        </div>
+        <hr>
+        <div class="post-comment">
+            <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+        </div>
+      `;
 
-      </div>
-      <hr>
-      <div class="title-section">
-          <p class="post-title">${post.title}</p>
-      </div>
-      <hr>
-      <div class="post-content">
-          <p>${post.content || ''}</p>
-          ${post.media && post.media.length ? post.media.map(file => 
-            file.path.endsWith('.mp4') 
-              ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
-              : `<img src="${file.path}" alt="Post Image" class="post-image">`
-          ).join('') : ''}
-      </div>
-      <hr>
-      <div class="post-info">
-          <p>Level: ${post.level || 0}</p>
-          <p>Comments: ${post.comments ? post.comments.length : 0}</p>
-          <p>${post.time}</p>
-      </div>
-      <hr>
-      <div class="post-bottom">
-          <button>⬆️Level up</button>
-          <button>⬇️Level down</button>
-          <button>💬Comments</button>
-          <button>⚲Save</button>
-      </div>
-      <hr>
-      <div class="post-comment">
-          <input type="text" placeholder="💬Leave a comment."><button>Post</button>
-      </div>
-    `;
+      // Aggiungi il post al contenitore dei post
+      postsContainer.appendChild(postElement);
 
-    // Aggiungi il post al contenitore dei post
-    postsContainer.appendChild(postElement);
-  });
-
+    } catch (error) {
+      console.error('Error fetching profile image:', error);
+    }
+  }
 }
 
 

@@ -267,7 +267,6 @@ async function startServer() {
 
 
     app.get('/M00980001/latest', async (req, res) => {
-    
       try {
         const posts = await db.collection('Posts').find().toArray();
         console.log("Posts for feed:", posts);
@@ -277,10 +276,58 @@ async function startServer() {
         res.status(500).json({ error: 'Error fetching posts' });
       }
     });
+
+    app.get('/M00980001/postOwner/:id', async (req, res) => {
+      try {
+        const user = db.collection('Users').findOne({username: req.params.id});
+        console.log("Post owner:", user);
+        res.status(200).json(user);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        res.status(500).json({ error: 'Error fetching posts' });
+      }
+    });
+
+    app.post('/M00980001/uploadProfilePicture', async (req, res) => {
+      if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+      }
+    
+      // 'media' è il nome del campo file nel FormData
+      let uploadedFile = req.files.media;
+    
+      // Salva il file sul server
+      const uploadPath = __dirname + '/uploads/' + uploadedFile.name;
+    
+      // Usa il metodo mv per spostare il file nella directory desiderata
+      uploadedFile.mv(uploadPath, async function(err) {
+        if (err) {
+          return res.status(500).send(err);
+        }
+    
+        try {
+          // Aggiorna il percorso dell'immagine nel database per l'utente attualmente loggato
+          await db.collection('Users').updateOne(
+            { username: req.session.user.username }, // Trova l'utente con lo username corrente
+            { $set: { profileImg: '/uploads/' + uploadedFile.name } } // Imposta il nuovo percorso dell'immagine
+          );
+    
+          // Rispondi al client con un messaggio di successo e il percorso dell'immagine
+          res.json({ message: 'File uploaded successfully', path: '/uploads/' + uploadedFile.name });
+          
+        } catch (dbErr) {
+          console.error('Error updating profile image in the database:', dbErr);
+          res.status(500).json({ error: 'Failed to update profile image in the database.' });
+        }
+      });
+    });
+
     
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
     });
+
+    
   } catch (error) {
     console.error("Error upon starting the server:", error);
   }
