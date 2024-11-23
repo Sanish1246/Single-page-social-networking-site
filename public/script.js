@@ -58,9 +58,20 @@ document.querySelectorAll('.section-button').forEach(button => {
     });
 });
 
-function openNav() {
+async function openNav() {
     document.getElementById("side-menu").style.width = "250px";
     document.getElementById("menu-opener").style.opacity = "0";
+    try {
+      const response = await fetch(`http://localhost:8000/M00980001/user`);
+      const data = await response.json();
+      
+      const profileImageElement = document.getElementById("user-img");
+      profileImageElement.src = data.profileImg ? data.profileImg : './images/default-photo.jpg';
+
+    } catch(error){
+      console.log("Error: " + error)
+    }
+
   }
   
   function closeNav() {
@@ -68,7 +79,7 @@ function openNav() {
     document.getElementById("menu-opener").style.opacity = "1";
   }
 
-// Open the login popup and update the URL to "/login"
+
 function openLogin() {
     closePopup();
     if (loginLink.innerText=="Log out"){
@@ -76,21 +87,18 @@ function openLogin() {
     } else{
       document.getElementById('login-popup').style.display = 'block';
 
-      // Add "/login" to the URL without reloading the page
+      
       history.pushState(null, '', '/M00980001/login');
     };
 }
 
-// Open the register popup and update the URL to "/register"
 function openRegister() {
     closePopup();
     document.getElementById('register-popup').style.display = 'block';
 
-    // Add "/register" to the URL without reloading the page
     history.pushState(null, '', '/M00980001/register');
 }
 
-// Close both the login and register popups and restore the original URL
 function closePopup() {
     document.getElementById('login-popup').style.display = 'none';
     document.getElementById('register-popup').style.display = 'none';
@@ -103,7 +111,6 @@ function closePopup() {
 function openLogOut(){
   document.getElementById('logout-popup').style.display = 'block';
 
-  // Add "/logout" to the URL without reloading the page
   history.pushState(null, '', '/M00980001/logout');
 }
 
@@ -145,14 +152,12 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
-// Attaching the popup to the login and register links
 document.querySelectorAll('.login-link').forEach(function(element) {
     element.addEventListener('click', function(event) {
         event.preventDefault(); 
         openLogin();
     });
 });
-
 
 document.getElementById('profile-button').addEventListener('click', function(event){
   event.preventDefault();
@@ -186,7 +191,7 @@ document.getElementById('favourite-button').addEventListener('click', function(e
 });
 
 document.querySelector('.register-link').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent default link behavior
+    event.preventDefault(); 
     openRegister();
 });
 
@@ -519,24 +524,19 @@ document.getElementById("media").value='';
 
 async function displayUserData() {
   try {
-    // Effettua la richiesta per ottenere i dati dell'utente
     const response = await fetch('http://localhost:8000/M00980001/user');
     const data = await response.json();
 
-    // Mostra i dati dell'utente nel DOM
     document.getElementById('profile-username').innerText = data.username;
     document.getElementById('user-following').innerText = data.following.length;
     document.getElementById('user-followers').innerText = data.followers.length;
 
-    // Mostra la nuova immagine di profilo se esiste, altrimenti usa una di default
     const profileImageElement = document.getElementById("profileImage");
     profileImageElement.src = data.profileImg ? data.profileImg : './images/default-photo.jpg';
 
-    // Effettua la richiesta per ottenere i post dell'utente
     const postsResponse = await fetch('http://localhost:8000/M00980001/user/posts');
     const posts = await postsResponse.json();
 
-    // Carica i post dell'utente
     loadYourPosts(posts, data);
 
   } catch (error) {
@@ -555,15 +555,13 @@ document.getElementById('change-profile-pic').addEventListener('change', functio
 
 document.getElementById('uploadButton').addEventListener('click', async function() {
   const fileInput = document.getElementById('change-profile-pic');
-  const file = fileInput.files[0]; // Ottieni il file caricato
+  const file = fileInput.files[0]; 
   
   if (file) {
-    // Crea un oggetto FormData e aggiungi il file
     const formData = new FormData();
     formData.append('media', file);
 
     try {
-      // Esegui la richiesta POST al server
       const response = await fetch('/M00980001/uploadProfilePicture', {
         method: 'POST',
         body: formData
@@ -587,15 +585,12 @@ async function loadYourPosts(posts, data) {
   const postsContainer = document.getElementById('posts-container');
   postsContainer.innerHTML = ''; 
 
-  // Inverti l'array dei post per mostrarli dal più recente al più vecchio
   posts = posts.reverse();
 
   posts.forEach(post => {
-    // Crea la struttura HTML del post
     const postElement = document.createElement('div');
     postElement.classList.add('post');
 
-    // Costruisci l'HTML per il post
     postElement.innerHTML = `
       <div class="post-head">
           <img src="${data.profileImg || './images/default-photo.jpg'}" class="profile-img">
@@ -648,7 +643,6 @@ async function fetchPeople() {
 
     peopleContainer.innerHTML = '';
 
-    // Crea e aggiungi l'elemento h1 prima di mostrare gli utenti
     const header = document.createElement('h1');
     header.textContent = 'People';
     peopleContainer.appendChild(header);
@@ -761,7 +755,6 @@ async function loadFeedPosts(posts, data) {
   postsContainer.innerHTML = '';
   let following = data.following;
 
-  // Inverti l'array dei post per mostrarli dal più recente al più vecchio
   posts = posts.reverse();
 
   for (const post of posts) {
@@ -813,7 +806,6 @@ async function loadFeedPosts(posts, data) {
         </div>
       `;
 
-      // Aggiungi il post al contenitore dei post
       postsContainer.appendChild(postElement);
 
     } catch (error) {
@@ -821,7 +813,6 @@ async function loadFeedPosts(posts, data) {
     }
   }
 
-  // Aggiungi gestori eventi per i pulsanti follow/unfollow
   document.querySelectorAll('.follow-user').forEach(function(element) {
     element.addEventListener('click', async function(event) {
       event.preventDefault();
@@ -829,11 +820,11 @@ async function loadFeedPosts(posts, data) {
       if (following.includes(targetId)) {
         this.classList.remove('following');
         this.innerText = '+ Follow';
-        unfollowUser(targetId); // Chiamata alla funzione per unfollow
+        unfollowUser(targetId); 
       } else {
         this.classList.add('following');
         this.innerText = 'Unfollow';
-        followUser(targetId); // Chiamata alla funzione per follow
+        followUser(targetId); 
       }
     });
   });
@@ -844,7 +835,6 @@ async function loadLatestPosts(posts) {
   const postsContainer = document.getElementById('feed-posts-container');
   postsContainer.innerHTML = ''; 
 
-  // Inverti l'array dei post per mostrarli dal più recente al più vecchio
   posts = posts.reverse();
 
   for (const post of posts) {
@@ -854,7 +844,6 @@ async function loadLatestPosts(posts) {
     try {
       const response = await fetch(`/M00980001/postOwner/${post.owner}`);
       const profileData = await response.json();
-      console.log(profileData);
 
       postElement.innerHTML = `
         <div class="post-head">
@@ -894,7 +883,6 @@ async function loadLatestPosts(posts) {
         </div>
       `;
 
-      // Aggiungi il post al contenitore dei post
       postsContainer.appendChild(postElement);
 
     } catch (error) {

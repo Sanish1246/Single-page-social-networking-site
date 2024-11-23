@@ -134,27 +134,24 @@ async function startServer() {
         let mediaFiles = req.files ? req.files.media : null;
     
         const uploadDir = path.join(__dirname, 'uploads');
-    
-        // Verifica se la cartella di destinazione esiste, altrimenti la crea
+
         if (!fs.existsSync(uploadDir)) {
           fs.mkdirSync(uploadDir);
         }
     
-        // Se vengono caricati file, salvali sul server
         const savedFiles = [];
         if (mediaFiles) {
           const fileArray = Array.isArray(mediaFiles) ? mediaFiles : [mediaFiles];
           for (const file of fileArray) {
-            const filePath = path.join('/uploads', file.name);  // Percorso relativo da servire al client
-            await file.mv(path.join(uploadDir, file.name));  // Salva il file nel server
+            const filePath = path.join('/uploads', file.name);  
+            await file.mv(path.join(uploadDir, file.name)); 
             savedFiles.push({
               name: file.name,
-              path: filePath  // Salva il percorso relativo nel DB
+              path: filePath  
             });
           }
         }
     
-        // Crea un nuovo oggetto post (incluso solo se i file sono presenti)
         const newPost = {
           owner,
           title,
@@ -163,13 +160,11 @@ async function startServer() {
           level: parseInt(level),
           date,
           time,
-          media: savedFiles.length ? savedFiles : undefined  // Salva solo se ci sono file
+          media: savedFiles.length ? savedFiles : undefined  
         };
     
-        // Inserisci il post nella collezione di MongoDB
         await db.collection('Posts').insertOne(newPost);
     
-        // Risposta di successo
         res.json({ message: '✅ Post uploaded successfully!' });
     
       } catch (error) {
@@ -279,8 +274,7 @@ async function startServer() {
 
     app.get('/M00980001/postOwner/:id', async (req, res) => {
       try {
-        const user = db.collection('Users').findOne({username: req.params.id});
-        console.log("Post owner:", user);
+        const user = await db.collection('Users').findOne({username: req.params.id});
         res.status(200).json(user);
       } catch (err) {
         console.error('Error fetching posts:', err);
@@ -292,27 +286,22 @@ async function startServer() {
       if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
       }
-    
-      // 'media' è il nome del campo file nel FormData
+
       let uploadedFile = req.files.media;
     
-      // Salva il file sul server
       const uploadPath = __dirname + '/uploads/' + uploadedFile.name;
     
-      // Usa il metodo mv per spostare il file nella directory desiderata
       uploadedFile.mv(uploadPath, async function(err) {
         if (err) {
           return res.status(500).send(err);
         }
     
         try {
-          // Aggiorna il percorso dell'immagine nel database per l'utente attualmente loggato
           await db.collection('Users').updateOne(
-            { username: req.session.user.username }, // Trova l'utente con lo username corrente
-            { $set: { profileImg: '/uploads/' + uploadedFile.name } } // Imposta il nuovo percorso dell'immagine
+            { username: req.session.user.username },
+            { $set: { profileImg: '/uploads/' + uploadedFile.name } }
           );
     
-          // Rispondi al client con un messaggio di successo e il percorso dell'immagine
           res.json({ message: 'File uploaded successfully', path: '/uploads/' + uploadedFile.name });
           
         } catch (dbErr) {
