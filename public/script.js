@@ -6,6 +6,7 @@ const currentUser=document.getElementById('currentUser');
 
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
+  displayFeedPosts();
 };
 
 async function checkCurrentUser() {
@@ -250,6 +251,7 @@ function openFollowing(){
 function openFeed(){
     closeSection();
     document.getElementById('feed-posts').style.display = 'block';
+    displayFeedPosts();
     history.pushState(null, '', '/M00980001');
 }
 
@@ -495,7 +497,6 @@ async function displayUserData(){
     document.getElementById('profile-username').innerText = data.username;
     document.getElementById('user-following').innerText = data.following.length;
     document.getElementById('user-followers').innerText = data.followers.length;
-    console.log(data.profileImg);
 
     const postsResponse = await fetch('http://localhost:8000/M00980001/user/posts');
     const posts = await postsResponse.json();
@@ -570,7 +571,6 @@ async function fetchPeople() {
     const res = await fetch('http://localhost:8000/M00980001/user');
     const data = await res.json();
     let following = data.following; 
-    console.log(following);
 
     peopleContainer.innerHTML = '';
 
@@ -662,5 +662,162 @@ async function fetchPeople() {
       closePopup();
     });
   }
+
+  async function displayFeedPosts(){
+    try {
+    const response = await fetch('http://localhost:8000/M00980001/user');
+    const data = await response.json();
+
+    if(Object.keys(data).length === 0){
+      const postsResponse = await fetch('http://localhost:8000/M00980001/latest');
+      const posts = await postsResponse.json();
+      console.log(posts);
+      console.log("No user");
+      loadLatestPosts(posts);
+    } else {
+      const postsResponse = await fetch('http://localhost:8000/M00980001/feed');
+      const posts = await postsResponse.json();
+      loadFeedPosts(posts, data);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+async function loadFeedPosts(posts,data){
+  const postsContainer = document.getElementById('feed-posts-container');
+  postsContainer.innerHTML = ''; 
+  let following = data.following; 
+
+  // Inverti l'array dei post per mostrarli dal più recente al più vecchio
+  posts = posts.reverse();
+  console.log(posts);
+
+  posts.forEach(post => {
+    // Crea la struttura HTML del post
+    const postElement = document.createElement('div');
+    postElement.classList.add('post');
+    const isFollowing = following.includes(post.owner);
+
+    // Costruisci l'HTML per il post
+    postElement.innerHTML = `
+      <div class="post-head">
+          <img src="${data.profileImg || './images/default-photo.jpg'}" class="profile-img">
+          <p>${data.username} <span class="post-date">on ${post.date}</span></p>
+          <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
+          ${isFollowing ? 'Following' : '+ Follow'}
+          </button>
+      </div>
+      <hr>
+      <div class="title-section">
+          <p class="post-title">${post.title}</p>
+      </div>
+      <hr>
+      <div class="post-content">
+          <p>${post.content || ''}</p>
+          ${post.media && post.media.length ? post.media.map(file => 
+            file.path.endsWith('.mp4') 
+              ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
+              : `<img src="${file.path}" alt="Post Image" class="post-image">`
+          ).join('') : ''}
+      </div>
+      <hr>
+      <div class="post-info">
+          <p>Level: ${post.level || 0}</p>
+          <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+          <p>${post.time}</p>
+      </div>
+      <hr>
+      <div class="post-bottom">
+          <button>⬆️Level up</button>
+          <button>⬇️Level down</button>
+          <button>💬Comments</button>
+          <button>⚲Save</button>
+      </div>
+      <hr>
+      <div class="post-comment">
+          <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+      </div>
+    `;
+
+    // Aggiungi il post al contenitore dei post
+    postsContainer.appendChild(postElement);
+  });
+
+  document.querySelectorAll('.follow-user').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      if (following.includes(targetId)) {
+        this.classList.remove('following');
+        this.innerText = '+ Follow';
+        unfollowUser(targetId);
+      } else {
+        this.classList.add('following');
+        this.innerText = 'Unfollow';
+        followUser(targetId);
+      }
+    });
+  });
+}
+
+async function loadLatestPosts(posts) {
+  const postsContainer = document.getElementById('feed-posts-container');
+  postsContainer.innerHTML = ''; 
+
+  // Inverti l'array dei post per mostrarli dal più recente al più vecchio
+  posts = posts.reverse();
+  console.log(posts);
+
+  posts.forEach(post => {
+    // Crea la struttura HTML del post
+    const postElement = document.createElement('div');
+    postElement.classList.add('post');
+
+
+    // Costruisci l'HTML per il post
+    postElement.innerHTML = `
+      <div class="post-head">
+          <img src="${'./images/default-photo.jpg'}" class="profile-img">
+          <p>${post.owner} <span class="post-date">on ${post.date}</span></p>
+
+      </div>
+      <hr>
+      <div class="title-section">
+          <p class="post-title">${post.title}</p>
+      </div>
+      <hr>
+      <div class="post-content">
+          <p>${post.content || ''}</p>
+          ${post.media && post.media.length ? post.media.map(file => 
+            file.path.endsWith('.mp4') 
+              ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
+              : `<img src="${file.path}" alt="Post Image" class="post-image">`
+          ).join('') : ''}
+      </div>
+      <hr>
+      <div class="post-info">
+          <p>Level: ${post.level || 0}</p>
+          <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+          <p>${post.time}</p>
+      </div>
+      <hr>
+      <div class="post-bottom">
+          <button>⬆️Level up</button>
+          <button>⬇️Level down</button>
+          <button>💬Comments</button>
+          <button>⚲Save</button>
+      </div>
+      <hr>
+      <div class="post-comment">
+          <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+      </div>
+    `;
+
+    // Aggiungi il post al contenitore dei post
+    postsContainer.appendChild(postElement);
+  });
+
+}
 
 

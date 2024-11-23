@@ -40,7 +40,7 @@ app.get('/M00980001/user', (req, res) => {
       profileImg: req.session.user.profileImg
     });
   } else {
-    res.status(401).json({ error: "No user logged in" });
+    res.status(200).json({});
   }
 });
 
@@ -249,6 +249,32 @@ async function startServer() {
       } catch (err) {
         console.error('Error updating follow data:', err);
         res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
+
+    app.get('/M00980001/feed', async (req, res) => {
+      const currentUser=req.session.user.username;
+    
+      try {
+        const posts = await db.collection('Posts').find({ owner: { $ne: currentUser } }).toArray();
+        console.log("Posts for feed:", currentUser);
+        res.status(200).json(posts);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        res.status(500).json({ error: 'Error fetching posts' });
+      }
+    });
+
+
+    app.get('/M00980001/latest', async (req, res) => {
+    
+      try {
+        const posts = await db.collection('Posts').find().toArray();
+        console.log("Posts for feed:", posts);
+        res.status(200).json(posts);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        res.status(500).json({ error: 'Error fetching posts' });
       }
     });
     
