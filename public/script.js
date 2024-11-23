@@ -561,11 +561,16 @@ async function loadYourPosts(posts, data) {
   });
 }
 
-async function fetchPeople(){
-  try{
+async function fetchPeople() {
+  try {
     const response = await fetch('http://localhost:8000/M00980001/people');
     const people = await response.json();
-    const peopleContainer=document.getElementById('people-container');
+    const peopleContainer = document.getElementById('people-container');
+
+    const res = await fetch('http://localhost:8000/M00980001/user');
+    const data = await res.json();
+    let following = data.following; 
+    console.log(following);
 
     peopleContainer.innerHTML = '';
 
@@ -575,32 +580,42 @@ async function fetchPeople(){
     peopleContainer.appendChild(header);
 
     people.forEach(person => {
-      // Crea la struttura HTML del post
       const peopleElement = document.createElement('div');
       peopleElement.classList.add('person');
-  
-      // Costruisci l'HTML per il post
+      const isFollowing = following.includes(person.username);
+
       peopleElement.innerHTML = `
             <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
             <p>${person.username}</p>               
-            <button class="follow-user" id=${person.username}>+ Follow</button>
+            <button class="follow-user ${isFollowing ? 'following' : ''}" id=${person.username}>
+            ${isFollowing ? 'Following' : '+ Follow'}
+            </button>
       `;
 
-      // Aggiungi il post al contenitore dei post
       peopleContainer.appendChild(peopleElement);
     });
 
     document.querySelectorAll('.follow-user').forEach(function(element) {
-      element.addEventListener('click', function(event) {
-          event.preventDefault(); 
-          followUser(this.id);
+      element.addEventListener('click', async function(event) {
+        event.preventDefault();
+        const targetId = this.id;
+
+        if (following.includes(targetId)) {
+          this.classList.remove('following');
+          this.innerText = '+ Follow';
+          unfollowUser(targetId);
+        } else {
+          this.classList.add('following');
+          this.innerText = 'Following';
+          followUser(targetId);
+        }
       });
     });
     
   } catch (error) {
-      console.error('Error:', error);
-    }
+    console.error('Error:', error);
   }
+}
 
   async function followUser(id){
       fetch(`http://localhost:8000/M00980001/follow/${id}`, {
@@ -623,6 +638,29 @@ async function fetchPeople(){
         console.log(error);
         closePopup();
       });
+  }
+
+  async function unfollowUser(id){
+    fetch(`http://localhost:8000/M00980001/unfollow/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(message => {
+      systemMessage.innerText=message.message;
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    })
+    .catch(error => {
+      systemMessage.innerText='❌ Error: ' + error;
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      console.log(error);
+      closePopup();
+    });
   }
 
 

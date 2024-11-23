@@ -205,8 +205,7 @@ async function startServer() {
 
     app.post('/M00980001/follow/:id', async (req, res) => {
       const currentUser = req.session.user.username;
-      const targetId = req.params.id;
-    
+      const targetId = req.params.id;    
       try {
         
         await db.collection('Users').updateOne(
@@ -218,8 +217,35 @@ async function startServer() {
           { username: targetId },
           { $push: { followers: currentUser } }
         );
+
+        req.session.user.following.push(targetId);
     
         res.status(200).json({ message: 'Follow action successful' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
+
+    app.delete('/M00980001/unfollow/:id', async (req, res) => {
+      const currentUser = req.session.user.username;
+      const targetId = req.params.id;
+    
+      try {
+        
+        await db.collection('Users').updateOne(
+          { username: currentUser },
+          { $pull: { following: targetId } }
+        );
+    
+        await db.collection('Users').updateOne(
+          { username: targetId },
+          { $pull: { followers: currentUser } }
+        );
+
+        req.session.user.following = req.session.user.following.filter(user => user !== targetId);
+    
+        res.status(200).json({ message: 'Unfollow action successful' });
       } catch (err) {
         console.error('Error updating follow data:', err);
         res.status(500).json({ error: 'Error processing follow action' });
