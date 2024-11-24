@@ -107,7 +107,8 @@ async function startServer() {
             password: result.password,
             followers: result.followers || [], 
             following: result.following || [], 
-            profileImg: result.profileImg || '/images/default-photo.jpg'
+            profileImg: result.profileImg || '/images/default-photo.jpg',
+            savedPosts: result.savedPosts || []
           };
           res.status(200).json({
             message: "User logged in! " + result.username,
@@ -297,6 +298,8 @@ async function startServer() {
       let uploadedFile = req.files.media;
     
       const uploadPath = __dirname + '/uploads/' + uploadedFile.name;
+
+      req.session.user.profileImg=uploadPath;
     
       uploadedFile.mv(uploadPath, async function(err) {
         if (err) {
@@ -428,7 +431,7 @@ async function startServer() {
       }
     });
 
-    app.post('/M00980001/save/:id', async (req, res) => {
+    app.delete('/M00980001/removeSaved/:id', async (req, res) => {
       const currentUser = req.session.user.username;
       const targetId = new ObjectId(req.params.id);    
       try {
@@ -446,6 +449,27 @@ async function startServer() {
       }
     });
 
+    app.get('/M00980001/savedPosts', async (req, res) => {
+      try {
+        // Trova l'utente corrente per accedere al suo array savedPosts
+        const user = await db.collection('Users').findOne({ username: currentUser });
+    
+        if (!user || !user.savedPosts || user.savedPosts.length === 0) {
+          return res.status(200).json([]); // Se non ci sono post salvati, ritorna un array vuoto
+        }
+    
+        // Trova i post il cui _id è nell'array savedPosts dell'utente
+        const posts = await db.collection('Posts').find({
+          _id: { $in: user.savedPosts }
+        }).toArray(); // Converti il risultato in un array
+    
+        console.log("Saved posts for user:", currentUser);
+        res.status(200).json(posts);
+      } catch (err) {
+        console.error('Error fetching saved posts:', err);
+        res.status(500).json({ error: 'Error fetching saved posts' });
+      }
+    });
 
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
