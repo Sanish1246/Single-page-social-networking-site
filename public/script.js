@@ -466,8 +466,6 @@ function publishPost(event) {
   const newContent = document.getElementById("upload-content").value;
   const newTags = document.getElementById("tags").value;
   const mediaFiles = document.getElementById("media").files; 
-  const likedBy=[];
-  const dislikedBy=[];
 
  
   const now = new Date();
@@ -490,8 +488,6 @@ function publishPost(event) {
   formData.append('content', newContent);
   formData.append('tags', newTags);
   formData.append('level',0);
-  formData.append('likedBy',likedBy);
-  formData.append('dislikedBy',dislikedBy);
   formData.append('date', formattedDate); 
   formData.append('time', formattedTime);
 
@@ -765,8 +761,8 @@ async function loadFeedPosts(posts, data) {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
     const isFollowing = following.includes(post.owner);
-    const isLiked=post.includes(data.username);
-    const isDisliked=post.includes(data.username);
+    const isLiked = post.likedBy.includes(data.username); 
+    const isDisliked = post.dislikedBy.includes(data.username); 
     console.log(post._id);
 
     try {
@@ -798,7 +794,7 @@ async function loadFeedPosts(posts, data) {
         </div>
         <hr>
         <div class="post-info">
-            <p>Level: ${post.level || 0} id="level-count"</p>
+            <p id="level-count">Level: ${post.level || 0}</p>
             <p>Comments: ${post.comments ? post.comments.length : 0}</p>
             <p>${post.time}</p>
         </div>
@@ -842,17 +838,43 @@ async function loadFeedPosts(posts, data) {
     element.addEventListener('click', async function(event) {
       event.preventDefault();
       const targetId = this.id;
+      const levelCountElement = this.closest('.post').querySelector("#level-count");
+      let currentLevel = parseInt(levelCountElement.innerText.replace('Level: ', '')) || 0;
+
       if (this.classList.contains("active")) {
         this.classList.remove('active');
-        document.getElementById("level-count").value++;
-        this.innerText = '+ Follow';
-        likePost(targetId); 
+        currentLevel--;
+        //removeLike(targetId); 
       } else {
         this.classList.add('active');
-        document.getElementById("level-count").value--;
-        removeLike(targetId); 
+        currentLevel++;
+        likePost(targetId); 
       }
     });
+  });
+}
+
+async function likePost(id){
+  console.log('Post ID:', id);
+  fetch(`http://localhost:8000/M00980001/like/${id}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(message => {
+    systemMessage.innerText=message.message;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+  })
+  .catch(error => {
+    systemMessage.innerText='❌ Error: ' + error;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    console.log(error);
+    closePopup();
   });
 }
 

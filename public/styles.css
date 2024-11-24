@@ -273,7 +273,7 @@ body{
     height:1.75rem;
 }
 
-.post-bottom button .active{
+.post-bottom .level-up.active{
     background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
 }
 

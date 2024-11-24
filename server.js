@@ -5,6 +5,7 @@ import { connectToDb } from './db.js';
 import session from 'express-session';
 import fileUpload from 'express-fileupload';
 import fs from 'fs';
+import { ObjectId } from 'mongodb';
 
 const app = express();
 const hostname = 'localhost';
@@ -128,7 +129,10 @@ async function startServer() {
 
     app.post('/M00980001/publish', async (req, res) => {
       try {
-        const { owner, title, content, tags, date, time, level, likedBy, dislikedBy } = req.body;
+        const { owner, title, content, tags, date, time, level,} = req.body;
+
+        const likedBy=[];
+        const dislikedBy=[];
     
         // Controlla se ci sono file caricati
         let mediaFiles = req.files ? req.files.media : null;
@@ -313,7 +317,24 @@ async function startServer() {
       });
     });
 
-    
+    app.post('/M00980001/like/:id', async (req, res) => {
+      const currentUser = req.session.user.username;
+      const targetId = new ObjectId(req.params.id);    
+      try {
+        
+        await db.collection('Posts').updateOne(
+          { _id: targetId },
+          { $addToSet: { likedBy: currentUser } }
+        );
+
+        console.log('Post liked successfully');
+        res.status(200).json({ message: 'Post liked' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
+
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
     });
