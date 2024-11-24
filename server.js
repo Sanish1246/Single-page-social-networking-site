@@ -327,7 +327,35 @@ async function startServer() {
           { $addToSet: { likedBy: currentUser } }
         );
 
+        await db.collection('Posts').updateOne(
+          { _id: targetId },
+          { $inc: { level:1} }
+        );
+
         console.log('Post liked successfully');
+        res.status(200).json({ message: 'Post liked' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
+
+    app.delete('/M00980001/removeLike/:id', async (req, res) => {
+      const currentUser = req.session.user.username;
+      const targetId = new ObjectId(req.params.id);    
+      try {
+        
+        await db.collection('Posts').updateOne(
+          { _id: targetId },
+          { $pull: { likedBy: currentUser } }
+        );
+
+        await db.collection('Posts').updateOne(
+          { _id: targetId },
+          { $inc: { level:-1} }
+        );
+
+        console.log('Like removed successfully');
         res.status(200).json({ message: 'Post liked' });
       } catch (err) {
         console.error('Error updating follow data:', err);

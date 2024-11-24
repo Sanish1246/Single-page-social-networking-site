@@ -763,13 +763,11 @@ async function loadFeedPosts(posts, data) {
     const isFollowing = following.includes(post.owner);
     const isLiked = post.likedBy.includes(data.username); 
     const isDisliked = post.dislikedBy.includes(data.username); 
-    console.log(post._id);
+    console.log(post.level);
 
     try {
       const response = await fetch(`/M00980001/postOwner/${post.owner}`);
       const profileData = await response.json();
-
-
 
       postElement.innerHTML = `
         <div class="post-head">
@@ -794,7 +792,7 @@ async function loadFeedPosts(posts, data) {
         </div>
         <hr>
         <div class="post-info">
-            <p id="level-count">Level: ${post.level || 0}</p>
+            <p>Level: <span id="level-count">${post.level || 0}</span></p>
             <p>Comments: ${post.comments ? post.comments.length : 0}</p>
             <p>${post.time}</p>
         </div>
@@ -839,25 +837,54 @@ async function loadFeedPosts(posts, data) {
       event.preventDefault();
       const targetId = this.id;
       const levelCountElement = this.closest('.post').querySelector("#level-count");
-      let currentLevel = parseInt(levelCountElement.innerText.replace('Level: ', '')) || 0;
-
+      
+      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+  
       if (this.classList.contains("active")) {
         this.classList.remove('active');
-        currentLevel--;
-        //removeLike(targetId); 
+        currentLevel--;  
+        removeLike(targetId);  
       } else {
         this.classList.add('active');
-        currentLevel++;
-        likePost(targetId); 
+        currentLevel++;  
+        likePost(targetId);  
       }
+
+      levelCountElement.innerText = currentLevel;
     });
   });
+  
+  
 }
 
 async function likePost(id){
   console.log('Post ID:', id);
   fetch(`http://localhost:8000/M00980001/like/${id}`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(message => {
+    systemMessage.innerText=message.message;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+  })
+  .catch(error => {
+    systemMessage.innerText='❌ Error: ' + error;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    console.log(error);
+    closePopup();
+  });
+}
+
+async function removeLike(id){
+  console.log('Post ID:', id);
+  fetch(`http://localhost:8000/M00980001/removeLike/${id}`, {
+    method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     }
