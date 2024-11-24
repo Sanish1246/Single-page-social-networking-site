@@ -6,6 +6,7 @@ const currentUser=document.getElementById('currentUser');
 
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
+  document.getElementById("feed-button").classList.add('active');
   displayFeedPosts();
 };
 
@@ -172,6 +173,7 @@ document.getElementById('home-button').addEventListener('click', function(event)
   closeProfile();
   closeSaved();
   openSections();
+  document.getElementById("feed-button").classList.add('active');
 });
 
 document.getElementById('saved-button').addEventListener('click', function(event){
@@ -372,6 +374,8 @@ function registerUser(event){
               systemMessage.innerText='✅ Account created successfully';
               systemMessage.style.opacity='1';
               setTimeout(closeMessage,2000);
+              document.getElementById("feed-button").classList.add('active');
+              displayFeedPosts();
               checkCurrentUser().then(isUserLoggedIn => {
                 if (isUserLoggedIn) {
                   loginLink.innerText = "Log out";
@@ -431,6 +435,8 @@ function loginUser(event){
           systemMessage.innerText='✅ User logged in successfully';
           systemMessage.style.opacity='1';
           setTimeout(closeMessage,2000);
+          document.getElementById("feed-button").classList.add('active');
+          displayFeedPosts();
           checkCurrentUser().then(isUserLoggedIn => {
             if (isUserLoggedIn) {
               loginLink.innerText = "Log out";
@@ -590,6 +596,8 @@ async function loadYourPosts(posts, data) {
   posts.forEach(post => {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
+    const isLiked = post.likedBy.includes(data.username); 
+    const isDisliked = post.dislikedBy.includes(data.username); 
 
     postElement.innerHTML = `
       <div class="post-head">
@@ -611,23 +619,83 @@ async function loadYourPosts(posts, data) {
       </div>
       <hr>
       <div class="post-info">
-          <p>Level: ${post.level || 0}</p>
+          <p>Level: <span id="level-count">${post.level || 0}</span></p>
           <p>Comments: ${post.comments ? post.comments.length : 0}</p>
           <p>${post.time}</p>
       </div>
       <hr>
-      <div class="post-bottom">
-          <button class="level-up">⬆️Level up</button>
-          <button class="level-down">⬇️Level down</button>
-          <button>💬Comments</button>
-          <button>⚲Save</button>
-      </div>
+        <div class="post-bottom">
+            <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
+            <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
+            <button>💬Comments</button>
+            <button class="save-post" id=${post._id}>⚲Save</button>
+        </div>
       <hr>
       <div class="post-comment">
           <input type="text" placeholder="💬Leave a comment."><button>Post</button>
       </div>
     `;
     postsContainer.appendChild(postElement);
+  });
+
+  document.querySelectorAll('.level-up').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      const levelCountElement = this.closest('.post').querySelector("#level-count");
+      
+      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        currentLevel--;  
+        removeLike(targetId);  
+      } else {
+        this.classList.add('active');
+        currentLevel++;  
+        likePost(targetId);  
+      }
+
+      levelCountElement.innerText = currentLevel;
+    });
+  });
+  
+  document.querySelectorAll('.level-down').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      const levelCountElement = this.closest('.post').querySelector("#level-count");
+      
+      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        currentLevel++;  
+        removeDislike(targetId);  
+      } else {
+        this.classList.add('active');
+        currentLevel--;  
+        dislikePost(targetId);  
+      }
+
+      levelCountElement.innerText = currentLevel;
+    });
+  });
+
+  document.querySelectorAll('.save-post').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');  
+        removeSavedPost(targetId);  
+      } else {
+        this.classList.add('active');
+        savePost(targetId);  
+      }
+
+    });
   });
 }
 
@@ -763,7 +831,6 @@ async function loadFeedPosts(posts, data) {
     const isFollowing = following.includes(post.owner);
     const isLiked = post.likedBy.includes(data.username); 
     const isDisliked = post.dislikedBy.includes(data.username); 
-    console.log(post.level);
 
     try {
       const response = await fetch(`/M00980001/postOwner/${post.owner}`);
@@ -774,7 +841,7 @@ async function loadFeedPosts(posts, data) {
             <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
             <p>${profileData.username} <span class="post-date">on ${post.date}</span></p>
             <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
-              ${isFollowing ? 'Following' : '+ Follow'}
+              ${isFollowing ? 'Unfollow' : '+ Follow'}
             </button>
         </div>
         <hr>
@@ -854,7 +921,43 @@ async function loadFeedPosts(posts, data) {
     });
   });
   
+  document.querySelectorAll('.level-down').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      const levelCountElement = this.closest('.post').querySelector("#level-count");
+      
+      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
   
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        currentLevel++;  
+        removeDislike(targetId);  
+      } else {
+        this.classList.add('active');
+        currentLevel--;  
+        dislikePost(targetId);  
+      }
+
+      levelCountElement.innerText = currentLevel;
+    });
+  });
+
+  document.querySelectorAll('.save-post').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');  
+        removeSavedPost(targetId);  
+      } else {
+        this.classList.add('active');
+        savePost(targetId);  
+      }
+
+    });
+  });
 }
 
 async function likePost(id){
@@ -885,6 +988,75 @@ async function removeLike(id){
   console.log('Post ID:', id);
   fetch(`http://localhost:8000/M00980001/removeLike/${id}`, {
     method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(message => {
+    systemMessage.innerText=message.message;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+  })
+  .catch(error => {
+    systemMessage.innerText='❌ Error: ' + error;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    console.log(error);
+    closePopup();
+  });
+}
+
+async function dislikePost(id){
+  fetch(`http://localhost:8000/M00980001/dislike/${id}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(message => {
+    systemMessage.innerText=message.message;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+  })
+  .catch(error => {
+    systemMessage.innerText='❌ Error: ' + error;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    console.log(error);
+    closePopup();
+  });
+}
+
+async function removeDislike(id){
+  fetch(`http://localhost:8000/M00980001/removeDislike/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(message => {
+    systemMessage.innerText=message.message;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+  })
+  .catch(error => {
+    systemMessage.innerText='❌ Error: ' + error;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    console.log(error);
+    closePopup();
+  });
+}
+
+async function savePost(id){
+  fetch(`http://localhost:8000/M00980001/save/${id}`, {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     }

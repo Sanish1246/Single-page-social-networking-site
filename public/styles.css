@@ -277,6 +277,10 @@ body{
     background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
 }
 
+.post-bottom .level-down.active{
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
+}
+
 .post-bottom button:hover{
     cursor:pointer;
     background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.7), hsl(0, 96%, 60%, 0.7));
@@ -369,6 +373,11 @@ body{
 
 /* Stile per il bottone "Following" con il gradiente */
 .person .following {
+    background: linear-gradient(90deg, hsla(270, 100%, 50%, 0.7), hsl(0, 96%, 60%, 0.7));
+    color: white;
+}
+
+.post .following {
     background: linear-gradient(90deg, hsla(270, 100%, 50%, 0.7), hsl(0, 96%, 60%, 0.7));
     color: white;
 }

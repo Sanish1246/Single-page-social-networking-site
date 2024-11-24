@@ -66,6 +66,7 @@ async function startServer() {
 
         user.followers = [];
         user.following = [];
+        user.savedPosts=[];
         user.profileImg='/images/default-photo.jpg'
     
         const result = await db.collection('Users').insertOne(user);
@@ -129,7 +130,7 @@ async function startServer() {
 
     app.post('/M00980001/publish', async (req, res) => {
       try {
-        const { owner, title, content, tags, date, time, level,} = req.body;
+        const { owner, title, content, tags, date, time, level} = req.body;
 
         const likedBy=[];
         const dislikedBy=[];
@@ -356,12 +357,95 @@ async function startServer() {
         );
 
         console.log('Like removed successfully');
-        res.status(200).json({ message: 'Post liked' });
+        res.status(200).json({ message: 'Like removed successfully' });
       } catch (err) {
         console.error('Error updating follow data:', err);
         res.status(500).json({ error: 'Error processing follow action' });
       }
     });
+
+    app.post('/M00980001/dislike/:id', async (req, res) => {
+      const currentUser = req.session.user.username;
+      const targetId = new ObjectId(req.params.id);    
+      try {
+        
+        await db.collection('Posts').updateOne(
+          { _id: targetId },
+          { $addToSet: { dislikedBy: currentUser } }
+        );
+
+        await db.collection('Posts').updateOne(
+          { _id: targetId },
+          { $inc: { level:-1} }
+        );
+
+        console.log('Post Disliked successfully');
+        res.status(200).json({ message: 'Post disliked' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
+
+    app.delete('/M00980001/removeDislike/:id', async (req, res) => {
+      const currentUser = req.session.user.username;
+      const targetId = new ObjectId(req.params.id);    
+      try {
+        
+        await db.collection('Posts').updateOne(
+          { _id: targetId },
+          { $pull: { dislikedBy: currentUser } }
+        );
+
+        await db.collection('Posts').updateOne(
+          { _id: targetId },
+          { $inc: { level:1} }
+        );
+
+        console.log('Dislike removed successfully');
+        res.status(200).json({ message: 'Dislike removed' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
+
+    app.post('/M00980001/save/:id', async (req, res) => {
+      const currentUser = req.session.user.username;
+      const targetId = new ObjectId(req.params.id);    
+      try {
+        
+        await db.collection('Users').updateOne(
+          { username: currentUser},
+          { $push: { savedPosts: targetId } }
+        );
+
+        console.log('Post saved successfully');
+        res.status(200).json({ message: 'Post saved' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
+
+    app.post('/M00980001/save/:id', async (req, res) => {
+      const currentUser = req.session.user.username;
+      const targetId = new ObjectId(req.params.id);    
+      try {
+        
+        await db.collection('Users').updateOne(
+          { username: currentUser },
+          { $pull: { savedPosts: targetId } }
+        );
+
+        console.log('Post unsaved successfully');
+        res.status(200).json({ message: 'Post unsaved' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
+
 
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
