@@ -466,6 +466,8 @@ function publishPost(event) {
   const newContent = document.getElementById("upload-content").value;
   const newTags = document.getElementById("tags").value;
   const mediaFiles = document.getElementById("media").files; 
+  const likedBy=[];
+  const dislikedBy=[];
 
  
   const now = new Date();
@@ -488,6 +490,8 @@ function publishPost(event) {
   formData.append('content', newContent);
   formData.append('tags', newTags);
   formData.append('level',0);
+  formData.append('likedBy',likedBy);
+  formData.append('dislikedBy',dislikedBy);
   formData.append('date', formattedDate); 
   formData.append('time', formattedTime);
 
@@ -617,8 +621,8 @@ async function loadYourPosts(posts, data) {
       </div>
       <hr>
       <div class="post-bottom">
-          <button>⬆️Level up</button>
-          <button>⬇️Level down</button>
+          <button class="level-up">⬆️Level up</button>
+          <button class="level-down">⬇️Level down</button>
           <button>💬Comments</button>
           <button>⚲Save</button>
       </div>
@@ -761,10 +765,15 @@ async function loadFeedPosts(posts, data) {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
     const isFollowing = following.includes(post.owner);
+    const isLiked=post.includes(data.username);
+    const isDisliked=post.includes(data.username);
+    console.log(post._id);
 
     try {
       const response = await fetch(`/M00980001/postOwner/${post.owner}`);
       const profileData = await response.json();
+
+
 
       postElement.innerHTML = `
         <div class="post-head">
@@ -789,16 +798,16 @@ async function loadFeedPosts(posts, data) {
         </div>
         <hr>
         <div class="post-info">
-            <p>Level: ${post.level || 0}</p>
+            <p>Level: ${post.level || 0} id="level-count"</p>
             <p>Comments: ${post.comments ? post.comments.length : 0}</p>
             <p>${post.time}</p>
         </div>
         <hr>
         <div class="post-bottom">
-            <button>⬆️Level up</button>
-            <button>⬇️Level down</button>
+            <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
+            <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
             <button>💬Comments</button>
-            <button>⚲Save</button>
+            <button class="save-post" id=${post._id}>⚲Save</button>
         </div>
         <hr>
         <div class="post-comment">
@@ -825,6 +834,23 @@ async function loadFeedPosts(posts, data) {
         this.classList.add('following');
         this.innerText = 'Unfollow';
         followUser(targetId); 
+      }
+    });
+  });
+
+  document.querySelectorAll('.level-up').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        document.getElementById("level-count").value++;
+        this.innerText = '+ Follow';
+        likePost(targetId); 
+      } else {
+        this.classList.add('active');
+        document.getElementById("level-count").value--;
+        removeLike(targetId); 
       }
     });
   });

@@ -128,7 +128,7 @@ async function startServer() {
 
     app.post('/M00980001/publish', async (req, res) => {
       try {
-        const { owner, title, content, tags, date, time, level } = req.body;
+        const { owner, title, content, tags, date, time, level, likedBy, dislikedBy } = req.body;
     
         // Controlla se ci sono file caricati
         let mediaFiles = req.files ? req.files.media : null;
@@ -158,6 +158,8 @@ async function startServer() {
           content,
           tags,
           level: parseInt(level),
+          likedBy,
+          dislikedBy,
           date,
           time,
           media: savedFiles.length ? savedFiles : undefined  
