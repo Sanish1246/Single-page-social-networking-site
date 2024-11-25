@@ -99,11 +99,19 @@ function openRegister() {
     history.pushState(null, '', '/M00980001/register');
 }
 
+function openComments(){
+  closePopup();
+  document.getElementById('comments-popup').style.display = 'block';
+
+  history.pushState(null, '', '/M00980001/comments');
+}
+
 function closePopup() {
     document.getElementById('login-popup').style.display = 'none';
     document.getElementById('register-popup').style.display = 'none';
     document.getElementById('logout-popup').style.display = 'none';
     document.getElementById('upload-popup').style.display = 'none';
+    document.getElementById('comments-popup').style.display = 'none';
 
     history.replaceState(null, '', '/M00980001');
 }
@@ -874,7 +882,7 @@ async function loadFeedPosts(posts, data) {
         <div class="post-bottom">
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
-            <button>💬Comments</button>
+            <button class="view=comments">💬Comments</button>
             <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
         </div>
         <hr>
@@ -963,6 +971,13 @@ async function loadFeedPosts(posts, data) {
         savePost(targetId);  
       }
 
+    });
+  });
+
+  document.querySelectorAll('.view-comments').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      document.getElementById("comments-popup").style.display="block";
     });
   });
 }
@@ -1291,7 +1306,7 @@ async function loadLatestPosts() {
         <div class="post-bottom">
             <button>⬆️Level up</button>
             <button>⬇️Level down</button>
-            <button>💬Comments</button>
+            <button class="view-comments">💬Comments</button>
             <button>⚲Save</button>
         </div>
         <hr>
@@ -1306,6 +1321,13 @@ async function loadLatestPosts() {
       console.error('Error fetching profile image:', error);
     }
   }
+
+  document.querySelectorAll('.view-comments').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      openComments();
+    });
+  });
 }
 
 async function displayFollowingPosts(){
@@ -1363,7 +1385,7 @@ async function displayFollowingPosts(){
         <div class="post-bottom">
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
-            <button>💬Comments</button>
+            <button class="view-comments">💬Comments</button>
             <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
         </div>
         <hr>
@@ -1379,79 +1401,10 @@ async function displayFollowingPosts(){
     }
   }
 
-  document.querySelectorAll('.follow-user').forEach(function(element) {
-    element.addEventListener('click', async function(event) {
+  document.querySelectorAll('.view-comments').forEach(function(element) {
+    element.addEventListener('click', function(event) {
       event.preventDefault();
-      const targetId = this.id;
-      if (following.includes(targetId)) {
-        this.classList.remove('following');
-        this.innerText = '+ Follow';
-        unfollowUser(targetId); 
-      } else {
-        this.classList.add('following');
-        this.innerText = 'Unfollow';
-        followUser(targetId); 
-      }
-    });
-  });
-
-  document.querySelectorAll('.level-up').forEach(function(element) {
-    element.addEventListener('click', async function(event) {
-      event.preventDefault();
-      const targetId = this.id;
-      const levelCountElement = this.closest('.post').querySelector("#level-count");
-      
-      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
-  
-      if (this.classList.contains("active")) {
-        this.classList.remove('active');
-        currentLevel--;  
-        removeLike(targetId);  
-      } else {
-        this.classList.add('active');
-        currentLevel++;  
-        likePost(targetId);  
-      }
-
-      levelCountElement.innerText = currentLevel;
-    });
-  });
-  
-  document.querySelectorAll('.level-down').forEach(function(element) {
-    element.addEventListener('click', async function(event) {
-      event.preventDefault();
-      const targetId = this.id;
-      const levelCountElement = this.closest('.post').querySelector("#level-count");
-      
-      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
-  
-      if (this.classList.contains("active")) {
-        this.classList.remove('active');
-        currentLevel++;  
-        removeDislike(targetId);  
-      } else {
-        this.classList.add('active');
-        currentLevel--;  
-        dislikePost(targetId);  
-      }
-
-      levelCountElement.innerText = currentLevel;
-    });
-  });
-
-  document.querySelectorAll('.save-post').forEach(function(element) {
-    element.addEventListener('click', async function(event) {
-      event.preventDefault();
-      const targetId = this.id;
-  
-      if (this.classList.contains("active")) {
-        this.classList.remove('active');  
-        removeSavedPost(targetId);  
-      } else {
-        this.classList.add('active');
-        savePost(targetId);  
-      }
-
+      openComments();
     });
   });
 }
