@@ -38,7 +38,8 @@ app.get('/M00980001/user', (req, res) => {
       password: req.session.user.password, 
       followers: req.session.user.followers,
       following: req.session.user.following,
-      profileImg: req.session.user.profileImg
+      profileImg: req.session.user.profileImg,
+      savedPosts: req.session.user.savedPosts
     });
   } else {
     res.status(200).json({});
@@ -450,18 +451,18 @@ async function startServer() {
     });
 
     app.get('/M00980001/savedPosts', async (req, res) => {
+      const currentUser = req.session.user.username;
       try {
-        // Trova l'utente corrente per accedere al suo array savedPosts
+        
         const user = await db.collection('Users').findOne({ username: currentUser });
     
         if (!user || !user.savedPosts || user.savedPosts.length === 0) {
           return res.status(200).json([]); // Se non ci sono post salvati, ritorna un array vuoto
         }
     
-        // Trova i post il cui _id è nell'array savedPosts dell'utente
         const posts = await db.collection('Posts').find({
           _id: { $in: user.savedPosts }
-        }).toArray(); // Converti il risultato in un array
+        }).toArray(); 
     
         console.log("Saved posts for user:", currentUser);
         res.status(200).json(posts);

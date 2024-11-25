@@ -597,6 +597,7 @@ async function loadYourPosts(posts, data) {
     postElement.classList.add('post');
     const isLiked = post.likedBy.includes(data.username); 
     const isDisliked = post.dislikedBy.includes(data.username); 
+    const isSaved = data.savedPosts.includes(post._id);
 
     postElement.innerHTML = `
       <div class="post-head">
@@ -627,7 +628,7 @@ async function loadYourPosts(posts, data) {
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
             <button>💬Comments</button>
-            <button class="save-post" id=${post._id}>⚲Save</button>
+            <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
         </div>
       <hr>
       <div class="post-comment">
@@ -830,6 +831,7 @@ async function loadFeedPosts(posts, data) {
     const isFollowing = following.includes(post.owner);
     const isLiked = post.likedBy.includes(data.username); 
     const isDisliked = post.dislikedBy.includes(data.username); 
+    const isSaved = data.savedPosts.includes(post._id);
 
     try {
       const response = await fetch(`/M00980001/postOwner/${post.owner}`);
@@ -867,7 +869,7 @@ async function loadFeedPosts(posts, data) {
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
             <button>💬Comments</button>
-            <button class="save-post" id=${post._id}>⚲Save</button>
+            <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
         </div>
         <hr>
         <div class="post-comment">
@@ -1100,18 +1102,14 @@ async function removeSavedPost(id){
 }
 
 async function fetchSavedPosts(){
-  try {
-    const response = await fetch('http://localhost:8000/M00980001/user');
-    const data = await response.json();
-  } catch (error){
-    console.log("Error: " + error);
-  }
+  const response = await fetch('http://localhost:8000/M00980001/user');
+  const data = await response.json();
 
+  const postsResponse = await fetch('http://localhost:8000/M00980001/savedPosts');
+  const posts = await postsResponse.json();
   const postsContainer = document.getElementById('saved-container');
   postsContainer.innerHTML = '';
   let following = data.following;
-
-  posts = posts.reverse();
 
   for (const post of posts) {
     const postElement = document.createElement('div');
@@ -1119,6 +1117,7 @@ async function fetchSavedPosts(){
     const isFollowing = following.includes(post.owner);
     const isLiked = post.likedBy.includes(data.username); 
     const isDisliked = post.dislikedBy.includes(data.username); 
+    const isSaved = data.savedPosts.includes(post._id);
 
     try {
       const response = await fetch(`/M00980001/postOwner/${post.owner}`);
@@ -1156,7 +1155,7 @@ async function fetchSavedPosts(){
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
             <button>💬Comments</button>
-            <button class="save-post" id=${post._id}>⚲Save</button>
+            <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
         </div>
         <hr>
         <div class="post-comment">
@@ -1249,9 +1248,9 @@ async function fetchSavedPosts(){
 }
 
 
-async function loadLatestPosts(posts) {
-  const postsResponse = await fetch('http://localhost:8000/M00980001/savedPosts');
-  const posts = await postsResponse.json();
+async function loadLatestPosts() {
+  const postsResponse = await fetch('http://localhost:8000/M00980001/latest');
+  let posts = await postsResponse.json();
   const postsContainer = document.getElementById('feed-posts-container');
   postsContainer.innerHTML = ''; 
 
