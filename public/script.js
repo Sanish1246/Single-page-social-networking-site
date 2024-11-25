@@ -272,6 +272,7 @@ function openFollowing(){
       if (isUserLoggedIn) {
         document.getElementById('following-posts').style.display = 'block';
         history.pushState(null, '', '/M00980001/following');
+        displayFollowingPosts();
       } else {
         systemMessage.innerText='❌ You must login to view this';
         systemMessage.style.opacity='1';
@@ -574,15 +575,22 @@ document.getElementById('uploadButton').addEventListener('click', async function
 
       const result = await response.json();
       if (response.ok) {
-        console.log('File uploaded successfully:', result);
+        systemMessage.innerText='✅ Picture updated successfully';
+        systemMessage.style.opacity='1';
+        setTimeout(closeMessage,2000);
+        displayUserData();
       } else {
-        console.error('File upload failed:', result.error);
+        systemMessage.innerText='❌ Error: ' + error;
+        systemMessage.style.opacity='1';
+        setTimeout(closeMessage,2000);
       }
     } catch (error) {
       console.error('Error uploading file:', error);
     }
   } else {
-    console.error('No file selected');
+    systemMessage.innerText='❌ No file uploaded';
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
   }
 });
 
@@ -771,7 +779,6 @@ async function fetchPeople() {
         systemMessage.innerText='❌ Error: ' + error;
         systemMessage.style.opacity='1';
         setTimeout(closeMessage,2000);
-        console.log(error);
         closePopup();
       });
   }
@@ -794,7 +801,6 @@ async function fetchPeople() {
       systemMessage.innerText='❌ Error: ' + error;
       systemMessage.style.opacity='1';
       setTimeout(closeMessage,2000);
-      console.log(error);
       closePopup();
     });
   }
@@ -962,7 +968,6 @@ async function loadFeedPosts(posts, data) {
 }
 
 async function likePost(id){
-  console.log('Post ID:', id);
   fetch(`http://localhost:8000/M00980001/like/${id}`, {
     method: 'POST',
     headers: {
@@ -980,13 +985,11 @@ async function likePost(id){
     systemMessage.innerText='❌ Error: ' + error;
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
-    console.log(error);
     closePopup();
   });
 }
 
 async function removeLike(id){
-  console.log('Post ID:', id);
   fetch(`http://localhost:8000/M00980001/removeLike/${id}`, {
     method: 'DELETE',
     headers: {
@@ -1004,7 +1007,6 @@ async function removeLike(id){
     systemMessage.innerText='❌ Error: ' + error;
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
-    console.log(error);
     closePopup();
   });
 }
@@ -1027,7 +1029,6 @@ async function dislikePost(id){
     systemMessage.innerText='❌ Error: ' + error;
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
-    console.log(error);
     closePopup();
   });
 }
@@ -1050,7 +1051,6 @@ async function removeDislike(id){
     systemMessage.innerText='❌ Error: ' + error;
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
-    console.log(error);
     closePopup();
   });
 }
@@ -1073,7 +1073,6 @@ async function savePost(id){
     systemMessage.innerText='❌ Error: ' + error;
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
-    console.log(error);
     closePopup();
   });
 }
@@ -1096,7 +1095,6 @@ async function removeSavedPost(id){
     systemMessage.innerText='❌ Error: ' + error;
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
-    console.log(error);
     closePopup();
   });
 }
@@ -1308,6 +1306,154 @@ async function loadLatestPosts() {
       console.error('Error fetching profile image:', error);
     }
   }
+}
+
+async function displayFollowingPosts(){
+  const response = await fetch('http://localhost:8000/M00980001/user');
+  const data = await response.json();
+
+  const postsResponse = await fetch('http://localhost:8000/M00980001/following');
+  let posts = await postsResponse.json();
+  const postsContainer = document.getElementById('following-container');
+  postsContainer.innerHTML = '';
+  let following = data.following;
+
+  posts=posts.reverse();
+
+  for (const post of posts) {
+    const postElement = document.createElement('div');
+    postElement.classList.add('post');
+    const isFollowing = following.includes(post.owner);
+    const isLiked = post.likedBy.includes(data.username); 
+    const isDisliked = post.dislikedBy.includes(data.username); 
+    const isSaved = data.savedPosts.includes(post._id);
+
+    try {
+      const response = await fetch(`/M00980001/postOwner/${post.owner}`);
+      const profileData = await response.json();
+
+      postElement.innerHTML = `
+        <div class="post-head">
+            <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
+            <p>${profileData.username} <span class="post-date">on ${post.date}</span></p>
+            <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
+              ${isFollowing ? 'Unfollow' : '+ Follow'}
+            </button>
+        </div>
+        <hr>
+        <div class="title-section">
+            <p class="post-title">${post.title}</p>
+        </div>
+        <hr>
+        <div class="post-content">
+            <p>${post.content || ''}</p>
+            ${post.media && post.media.length ? post.media.map(file => 
+              file.path.endsWith('.mp4') 
+                ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
+                : `<img src="${file.path}" alt="Post Image" class="post-image">`
+            ).join('') : ''}
+        </div>
+        <hr>
+        <div class="post-info">
+            <p>Level: <span id="level-count">${post.level || 0}</span></p>
+            <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+            <p>${post.time}</p>
+        </div>
+        <hr>
+        <div class="post-bottom">
+            <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
+            <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
+            <button>💬Comments</button>
+            <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
+        </div>
+        <hr>
+        <div class="post-comment">
+            <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+        </div>
+      `;
+
+      postsContainer.appendChild(postElement);
+
+    } catch (error) {
+      console.error('Error fetching profile image:', error);
+    }
+  }
+
+  document.querySelectorAll('.follow-user').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      if (following.includes(targetId)) {
+        this.classList.remove('following');
+        this.innerText = '+ Follow';
+        unfollowUser(targetId); 
+      } else {
+        this.classList.add('following');
+        this.innerText = 'Unfollow';
+        followUser(targetId); 
+      }
+    });
+  });
+
+  document.querySelectorAll('.level-up').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      const levelCountElement = this.closest('.post').querySelector("#level-count");
+      
+      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        currentLevel--;  
+        removeLike(targetId);  
+      } else {
+        this.classList.add('active');
+        currentLevel++;  
+        likePost(targetId);  
+      }
+
+      levelCountElement.innerText = currentLevel;
+    });
+  });
+  
+  document.querySelectorAll('.level-down').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      const levelCountElement = this.closest('.post').querySelector("#level-count");
+      
+      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        currentLevel++;  
+        removeDislike(targetId);  
+      } else {
+        this.classList.add('active');
+        currentLevel--;  
+        dislikePost(targetId);  
+      }
+
+      levelCountElement.innerText = currentLevel;
+    });
+  });
+
+  document.querySelectorAll('.save-post').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');  
+        removeSavedPost(targetId);  
+      } else {
+        this.classList.add('active');
+        savePost(targetId);  
+      }
+
+    });
+  });
 }
 
 

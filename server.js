@@ -136,6 +136,7 @@ async function startServer() {
 
         const likedBy=[];
         const dislikedBy=[];
+        const comments=[];
     
         // Controlla se ci sono file caricati
         let mediaFiles = req.files ? req.files.media : null;
@@ -169,7 +170,8 @@ async function startServer() {
           dislikedBy,
           date,
           time,
-          media: savedFiles.length ? savedFiles : undefined  
+          media: savedFiles.length ? savedFiles : undefined,
+          comments:[]
         };
     
         await db.collection('Posts').insertOne(newPost);
@@ -187,7 +189,6 @@ async function startServer() {
     
       try {
         const posts = await db.collection('Posts').find({ owner: currentUser }).toArray();
-        console.log("Posts for user:", currentUser);
         res.status(200).json(posts);
       } catch (err) {
         console.error('Error fetching posts:', err);
@@ -261,7 +262,6 @@ async function startServer() {
     
       try {
         const posts = await db.collection('Posts').find({ owner: { $ne: currentUser } }).toArray();
-        console.log("Posts for feed:", currentUser);
         res.status(200).json(posts);
       } catch (err) {
         console.error('Error fetching posts:', err);
@@ -273,7 +273,6 @@ async function startServer() {
     app.get('/M00980001/latest', async (req, res) => {
       try {
         const posts = await db.collection('Posts').find().toArray();
-        console.log("Posts for feed:", posts);
         res.status(200).json(posts);
       } catch (err) {
         console.error('Error fetching posts:', err);
@@ -300,7 +299,7 @@ async function startServer() {
     
       const uploadPath = __dirname + '/uploads/' + uploadedFile.name;
 
-      req.session.user.profileImg=uploadPath;
+      req.session.user.profileImg= '/uploads/' + uploadedFile.name;
     
       uploadedFile.mv(uploadPath, async function(err) {
         if (err) {
@@ -337,7 +336,6 @@ async function startServer() {
           { $inc: { level:1} }
         );
 
-        console.log('Post liked successfully');
         res.status(200).json({ message: 'Post liked' });
       } catch (err) {
         console.error('Error updating follow data:', err);
@@ -360,7 +358,6 @@ async function startServer() {
           { $inc: { level:-1} }
         );
 
-        console.log('Like removed successfully');
         res.status(200).json({ message: 'Like removed successfully' });
       } catch (err) {
         console.error('Error updating follow data:', err);
@@ -383,7 +380,6 @@ async function startServer() {
           { $inc: { level:-1} }
         );
 
-        console.log('Post Disliked successfully');
         res.status(200).json({ message: 'Post disliked' });
       } catch (err) {
         console.error('Error updating follow data:', err);
@@ -406,7 +402,6 @@ async function startServer() {
           { $inc: { level:1} }
         );
 
-        console.log('Dislike removed successfully');
         res.status(200).json({ message: 'Dislike removed' });
       } catch (err) {
         console.error('Error updating follow data:', err);
@@ -424,7 +419,6 @@ async function startServer() {
           { $push: { savedPosts: targetId } }
         );
 
-        console.log('Post saved successfully');
         res.status(200).json({ message: 'Post saved' });
       } catch (err) {
         console.error('Error updating follow data:', err);
@@ -442,7 +436,6 @@ async function startServer() {
           { $pull: { savedPosts: targetId } }
         );
 
-        console.log('Post unsaved successfully');
         res.status(200).json({ message: 'Post unsaved' });
       } catch (err) {
         console.error('Error updating follow data:', err);
@@ -457,14 +450,34 @@ async function startServer() {
         const user = await db.collection('Users').findOne({ username: currentUser });
     
         if (!user || !user.savedPosts || user.savedPosts.length === 0) {
-          return res.status(200).json([]); // Se non ci sono post salvati, ritorna un array vuoto
+          return res.status(200).json([]); 
         }
     
         const posts = await db.collection('Posts').find({
           _id: { $in: user.savedPosts }
         }).toArray(); 
+
+        res.status(200).json(posts);
+      } catch (err) {
+        console.error('Error fetching saved posts:', err);
+        res.status(500).json({ error: 'Error fetching saved posts' });
+      }
+    });
+
+    app.get('/M00980001/following', async (req, res) => {
+      const currentUser = req.session.user.username;
+      try {
+        
+        const user = await db.collection('Users').findOne({ username: currentUser });
     
-        console.log("Saved posts for user:", currentUser);
+        if (!user || !user.savedPosts || user.savedPosts.length === 0) {
+          return res.status(200).json([]); 
+        }
+    
+        const posts = await db.collection('Posts').find({
+          owner: { $in: user.following }
+        }).toArray(); 
+
         res.status(200).json(posts);
       } catch (err) {
         console.error('Error fetching saved posts:', err);
