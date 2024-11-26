@@ -99,10 +99,10 @@ function openRegister() {
     history.pushState(null, '', '/M00980001/register');
 }
 
-function openComments(){
+function openComments(id){
   closePopup();
   document.getElementById('comments-popup').style.display = 'block';
-  loadComments();
+  loadComments(id);
 
   history.pushState(null, '', '/M00980001/comments');
 }
@@ -1418,6 +1418,30 @@ async function loadComments(id){
 
   comments=comments.reverse();
 
+  for (const comment of comments) {
+    const commentElement = document.createElement('div');
+    commentElement.classList.add('comment');
+
+    try {
+      const response = await fetch(`/M00980001/postOwner/${comment.username}`);
+      const profileData = await response.json();
+
+      console.log(profileData);
+
+      commentElement.innerHTML = `
+        <img src="${profileData.profileImg || './images/default-photo.jpg'}">
+        <div class="comment-content">
+          <p class="comment-details">${comment.username} on ${comment.date}</p>
+          <p>${comment.content}</p>
+        </div>
+      `;
+
+      commentsContainer.appendChild(commentElement);
+
+    } catch (error) {
+      console.error('Error fetching profile image:', error);
+    }
+  }
 
 
 }
