@@ -496,6 +496,23 @@ async function startServer() {
       }
     });
 
+    app.post('/M00980001/comment/:id', async (req, res) => {
+      const comment=req.body;
+      const targetId = new ObjectId(req.params.id);  
+      console.log("Trying to update")  
+      try {
+        
+        await db.collection('Posts').updateOne(
+          { _id: targetId },
+          { $push: { comments: comment } }
+        );
+
+        res.status(200).json({ message: 'Comment posted' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
 
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);

@@ -637,7 +637,7 @@ async function loadYourPosts(posts, data) {
       <hr>
       <div class="post-info">
           <p>Level: <span id="level-count">${post.level || 0}</span></p>
-          <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+          <p>Comments: <span id="comment-count">${post.comments ? post.comments.length : 0}</span></p>
           <p>${post.time}</p>
       </div>
       <hr>
@@ -649,7 +649,7 @@ async function loadYourPosts(posts, data) {
         </div>
       <hr>
       <div class="post-comment">
-          <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+          <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="publish-comment" id=${post._id}>Post</button>
       </div>
     `;
     postsContainer.appendChild(postElement);
@@ -876,19 +876,19 @@ async function loadFeedPosts(posts, data) {
         <hr>
         <div class="post-info">
             <p>Level: <span id="level-count">${post.level || 0}</span></p>
-            <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+            <p>Comments: <span id="comment-count">${post.comments ? post.comments.length : 0}</span></p>
             <p>${post.time}</p>
         </div>
         <hr>
         <div class="post-bottom">
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
-            <button class="view=comments">💬Comments</button>
+            <button class="view-comments" id=${post._id}>💬Comments</button>
             <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
         </div>
         <hr>
         <div class="post-comment">
-            <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+           <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="publish-comment" id=${post._id}>Post</button>
         </div>
       `;
 
@@ -978,7 +978,23 @@ async function loadFeedPosts(posts, data) {
   document.querySelectorAll('.view-comments').forEach(function(element) {
     element.addEventListener('click', function(event) {
       event.preventDefault();
-      document.getElementById("comments-popup").style.display="block";
+      openComments(this.id);
+    });
+  });
+
+  document.querySelectorAll('.publish-comment').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      const commentCountElement = this.closest('.post').querySelector("#comment-count");
+
+      let currentComments= parseInt(commentCountElement.innerText) || 0;
+      currentComments++;
+      commentCountElement.innerText = currentComments;
+      const commentInput = this.previousElementSibling;  
+      const newComment = commentInput.value;
+  
+      commentInput.value = '';
+      postComment(this.id,newComment);
     });
   });
 }
@@ -1161,7 +1177,7 @@ async function fetchSavedPosts(){
         <hr>
         <div class="post-info">
             <p>Level: <span id="level-count">${post.level || 0}</span></p>
-            <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+            <p>Comments: <span id="comment-count">${post.comments ? post.comments.length : 0}</span></p>
             <p>${post.time}</p>
         </div>
         <hr>
@@ -1173,7 +1189,7 @@ async function fetchSavedPosts(){
         </div>
         <hr>
         <div class="post-comment">
-            <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+            <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="post-comment" id=${post._id}>Post</button>
         </div>
       `;
 
@@ -1256,7 +1272,29 @@ async function fetchSavedPosts(){
         this.classList.add('active');
         savePost(targetId);  
       }
+    });
+  });
 
+  document.querySelectorAll('.view-comments').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      openComments(this.id);
+    });
+  });
+
+  document.querySelectorAll('.publish-comment').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      const commentCountElement = this.closest('.post').querySelector("#comment-count");
+
+      let currentComments= parseInt(commentCountElement.innerText) || 0;
+      currentComments++;
+      commentCountElement.innerText = currentComments;
+      const commentInput = this.previousElementSibling;  
+      const newComment = commentInput.value;
+  
+      commentInput.value = '';
+      postComment(this.id,newComment);
     });
   });
 }
@@ -1300,7 +1338,7 @@ async function loadLatestPosts() {
         <hr>
         <div class="post-info">
             <p>Level: ${post.level || 0}</p>
-            <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+            <p>Comments: <span id="comment-count">${post.comments ? post.comments.length : 0}</span></p>
             <p>${post.time}</p>
         </div>
         <hr>
@@ -1312,7 +1350,7 @@ async function loadLatestPosts() {
         </div>
         <hr>
         <div class="post-comment">
-            <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+            <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="post-comment" id=${post._id}>Post</button>
         </div>
       `;
 
@@ -1379,19 +1417,19 @@ async function displayFollowingPosts(){
         <hr>
         <div class="post-info">
             <p>Level: <span id="level-count">${post.level || 0}</span></p>
-            <p>Comments: ${post.comments ? post.comments.length : 0}</p>
+            <p>Comments: <span id="comment-count">${post.comments ? post.comments.length : 0}</span></p>
             <p>${post.time}</p>
         </div>
         <hr>
         <div class="post-bottom">
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
-            <button class="view-comments">💬Comments</button>
+            <button class="view-comments" id=${post._id}>💬Comments</button>
             <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
         </div>
         <hr>
         <div class="post-comment">
-            <input type="text" placeholder="💬Leave a comment."><button>Post</button>
+            <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="post-comment" id=${post._id}>Post</button>
         </div>
       `;
 
@@ -1405,7 +1443,20 @@ async function displayFollowingPosts(){
   document.querySelectorAll('.view-comments').forEach(function(element) {
     element.addEventListener('click', function(event) {
       event.preventDefault();
-      openComments();
+      openComments(this.id);
+    });
+  });
+
+  document.querySelectorAll('.publish-comment').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      const commentCountElement = this.closest('.post').querySelector("#comment-count");
+
+      let currentComments= parseInt(commentCountElement.innerText) || 0;
+      currentComments++;
+      commentCountElement.innerText = currentComments;
+      const newComment = this.previousElementSibling.value;
+      postComment(this.id,newComment);
     });
   });
 }
@@ -1442,6 +1493,45 @@ async function loadComments(id){
       console.error('Error fetching profile image:', error);
     }
   }
+}
+
+async function postComment(id,newComment){
+  const response = await fetch('http://localhost:8000/M00980001/user');
+  const data = await response.json();
+
+  const now = new Date();
+
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0'); 
+  const year = String(now.getFullYear());
+  const formattedDate = `${day}/${month}/${year}`;
+
+  comment = {
+    username:data.username,
+    date:formattedDate,
+    content: newComment
+  }
+
+  fetch(`http://localhost:8000/M00980001/comment/${id}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(comment)
+  })
+  .then(response => response.json())
+  .then(message => {
+    systemMessage.innerText=message.message;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+  })
+  .catch(error => {
+    systemMessage.innerText='❌ Error: ' + error;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+  });
 
 
 }
