@@ -102,6 +102,7 @@ function openRegister() {
 function openComments(){
   closePopup();
   document.getElementById('comments-popup').style.display = 'block';
+  loadComments();
 
   history.pushState(null, '', '/M00980001/comments');
 }
@@ -1306,7 +1307,7 @@ async function loadLatestPosts() {
         <div class="post-bottom">
             <button>⬆️Level up</button>
             <button>⬇️Level down</button>
-            <button class="view-comments">💬Comments</button>
+            <button class="view-comments" id=${post._id}>💬Comments</button>
             <button>⚲Save</button>
         </div>
         <hr>
@@ -1325,7 +1326,7 @@ async function loadLatestPosts() {
   document.querySelectorAll('.view-comments').forEach(function(element) {
     element.addEventListener('click', function(event) {
       event.preventDefault();
-      openComments();
+      openComments(this.id);
     });
   });
 }
@@ -1408,5 +1409,18 @@ async function displayFollowingPosts(){
     });
   });
 }
+
+async function loadComments(id){
+  const commentsResponse = await fetch(`http://localhost:8000/M00980001/comments/${id}`);
+  let comments = await commentsResponse.json();
+  const commentsContainer = document.getElementById('comments-container');
+  commentsContainer.innerHTML = '';
+
+  comments=comments.reverse();
+
+
+
+}
+
 
 

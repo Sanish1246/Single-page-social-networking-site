@@ -635,6 +635,8 @@ body{
     flex-direction: column;
     max-height: 90%;
     overflow-y: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .comment{
@@ -661,6 +663,12 @@ body{
     padding-left: 1rem;
     padding-right: 1rem;
     word-wrap: break-word;
+    font-size: 1rem;
+}
+
+.comment-details{
+    font-size: 1.1rem;
+    margin-bottom: 0;
 }
 
 #user-profile{

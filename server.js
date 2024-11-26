@@ -485,6 +485,18 @@ async function startServer() {
       }
     });
 
+    app.get('/M00980001/comments/:id', async (req, res) => {
+      const targetId = new ObjectId(req.params.id); 
+      try {
+        const post = await db.collection('Posts').findOne({_id: targetId});
+        res.status(200).json(post.comments);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        res.status(500).json({ error: 'Error fetching posts' });
+      }
+    });
+
+
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
     });
