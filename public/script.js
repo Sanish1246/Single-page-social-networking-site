@@ -926,7 +926,7 @@ async function loadFeedPosts(posts, data) {
       if (this.classList.contains("active")) {
         this.classList.remove('active');
         currentLevel--;  
-        removeLike(targetId);  
+        removeLike(targetId);
       } else {
         this.classList.add('active');
         currentLevel++;  
@@ -1185,7 +1185,7 @@ async function fetchSavedPosts(){
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
             <button>💬Comments</button>
-            <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
+            <button class="save-post ${'active'}" id=${post._id}>⚲Save</button>
         </div>
         <hr>
         <div class="post-comment">
@@ -1532,8 +1532,13 @@ async function postComment(id,newComment){
     setTimeout(closeMessage,2000);
     closePopup();
   });
+}
 
-
+function searchContent(){
+  const targetText=document.getElementById("search-text").value;
+  console.log("Text:" + document.getElementById("search-text").value )
+  console.log(targetText);
+  document.getElementById("search-text").value='';
 }
 
 

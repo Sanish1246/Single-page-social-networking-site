@@ -26,21 +26,43 @@ body{
     text-shadow: 0 0 10px black;
 }
 
+.top-bar .search-bar {
+    display: flex; /* Per allineare input e bottone correttamente */
+    align-items: center;
+    margin: 0 auto;
+    width: 100%; /* Fa sì che la barra di ricerca utilizzi lo spazio disponibile */
+    max-width: 30rem; /* Limita la dimensione massima della barra di ricerca */
+    position: relative; /* Per evitare sovrapposizioni */
+}
+
 .top-bar a {
     margin: 0 1rem;
     color:white;
     text-decoration: none;
 }
 
-
-.top-bar input{
-    width: 20rem;
+.top-bar input {
+    width: 75%; 
     height: 2.3rem;
     border: 3px solid black;
-    border-radius:10px;
+    border-radius: 10px;
     padding-left: 20px;
     font-size: 1rem;
     box-shadow: 0 0 10px black;
+    z-index: 1; 
+}
+
+.top-bar .search-bar button {
+    position: absolute;
+    right: 0; 
+    height: 2.3rem;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 1.5rem;
+    margin-left: 10px;
+    box-shadow: 0 0 10px black;
+    padding: 0 15px;
+    cursor: pointer;
 }
 
 .top-bar button{
@@ -52,10 +74,11 @@ body{
     box-shadow: 0 0 10px black;
 }
 
-.top-bar span button:hover{
+.top-bar .search-bar button:hover{
     background-color:lightblue;
     color:black;
     cursor: pointer;
+    border-color: white;
 }
 
 .top-bar button:hover{
@@ -319,6 +342,43 @@ body{
 #people-section{
     display:none;
 }
+
+.search-people{
+    margin-top: 10px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+}
+
+.search-people input{
+    width: 40%; 
+    height: 2rem;
+    border: 3px solid black;
+    border-radius: 10px;
+    padding-left: 20px;
+    font-size: 1rem;
+    box-shadow: 0 0 10px black;
+}
+
+.search-people button {
+    right: 0; 
+    height: 2.3rem;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 1.5rem;
+    margin-left: 10px;
+    box-shadow: 0 0 10px black;
+    padding: 0 15px;
+    cursor: pointer;
+}
+
+.search-people button:hover{
+    background-color:lightblue;
+    color:black;
+    cursor: pointer;
+    border-color: white;
+}
+
 
 #people-section h1{
     text-align:center;
