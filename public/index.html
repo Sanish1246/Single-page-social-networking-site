@@ -11,7 +11,11 @@
 <body>
     <nav class="top-bar" id="top-bar">
         <span><p>Save👾Point</p></span>
-        <span class="search-bar"><input type="text"  id="search-text" placeholder="🔍Search for a post by its content.."><button onclick="searchContent()">Search</button></span>
+        <span class="search-bar">
+            <input type="text"  id="search-text" placeholder="🔍Search for a post by its content..">
+            <button onclick="searchContent()">Search</button>
+            <button>Clear</button>
+        </span>
         <a href="#" class="login-link" id="login-link">Login</a>
         <button onclick="openUpload()">+ New Post</button>
         <button id="mode-button"onclick="switchMode()">🌙 Dark mode</button>
@@ -60,9 +64,12 @@
     <div class="main-section" id="people-section">
         <div class="search-people">
             <input type="text" id="search-person" placeholder="🔍Search for a person..">
-            <button onclick="searchPerson()">Search</button>
+            <button onclick="searchPeople()">Search</button>
+            <button onclick="clearPeopleResults()">Clear</button>
         </div>
         <div class="people-container" id="people-container">
+        </div>
+        <div class="people-container" id="searched-people-container">
         </div>
     </div>
 

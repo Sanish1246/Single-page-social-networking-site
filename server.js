@@ -514,6 +514,20 @@ async function startServer() {
       }
     });
 
+    app.get('/M00980001/searchPerson/:id', async (req, res) => {
+      const targetName=req.params.id;
+    
+      try {
+        const users = await db.collection('Users').find({
+          username: { $regex: targetName, $options: 'i' }
+        }).toArray();
+        res.status(200).json(users);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        res.status(500).json({ error: 'Error fetching users' });
+      }
+    });
+
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
     });

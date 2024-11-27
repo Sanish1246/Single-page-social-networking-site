@@ -303,7 +303,6 @@ function openPeople(){
     checkCurrentUser().then(isUserLoggedIn => {
       if (isUserLoggedIn) {
         document.getElementById('people-section').style.display = 'block';
-        history.pushState(null, '', '/M00980001/people');
         fetchPeople();
       } else {
         systemMessage.innerText='❌ You must login to view this';
@@ -1536,10 +1535,89 @@ async function postComment(id,newComment){
 
 function searchContent(){
   const targetText=document.getElementById("search-text").value;
-  console.log("Text:" + document.getElementById("search-text").value )
+  console.log("Text:" + document.getElementById("search-text").value);
   console.log(targetText);
   document.getElementById("search-text").value='';
 }
+
+async function searchPeople(){
+  const targetText=document.getElementById("search-person").value;
+
+  document.getElementById("people-container").style.display="none";
+
+  try {
+    const response = await fetch(`http://localhost:8000/M00980001/searchPerson/${targetText}`);
+    const people = await response.json();
+    const peopleContainer = document.getElementById('searched-people-container');
+
+    const res = await fetch('http://localhost:8000/M00980001/user');
+    const data = await res.json();
+    let following = data.following; 
+
+    peopleContainer.innerHTML = '';
+
+
+    const header = document.createElement('h1');
+    
+    if(people.length===0){
+      header.textContent = 'No results';
+      peopleContainer.appendChild(header);
+    } else {
+      header.textContent = 'Search results';
+      peopleContainer.appendChild(header);
+  
+      people.forEach(person => {
+        const peopleElement = document.createElement('div');
+        peopleElement.classList.add('person');
+        const isFollowing = following.includes(person.username);
+  
+        const isCurrentUser = person.username === data.username;
+
+        peopleElement.innerHTML = `
+          <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
+          <p>${person.username}</p>
+        `;
+        
+        if (!isCurrentUser) {
+          peopleElement.innerHTML += `
+            <button class="follow-user ${isFollowing ? 'following' : ''}" id=${person.username}>
+              ${isFollowing ? 'Following' : '+ Follow'}
+            </button>
+          `;
+        }
+
+        peopleContainer.appendChild(peopleElement);
+      });
+  
+      document.querySelectorAll('.follow-user').forEach(function(element) {
+        element.addEventListener('click', async function(event) {
+          event.preventDefault();
+          const targetId = this.id;
+  
+          if (following.includes(targetId)) {
+            this.classList.remove('following');
+            this.innerText = '+ Follow';
+            unfollowUser(targetId);
+          } else {
+            this.classList.add('following');
+            this.innerText = 'Following';
+            followUser(targetId);
+          }
+        });
+      });
+    } 
+    document.getElementById("searched-people-container").style.display="block"
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+function clearPeopleResults(){
+  document.getElementById("searched-people-container").style.display="none";
+  document.getElementById("search-person").value='';
+  document.getElementById("people-container").style.display="block";
+}
+
 
 
 
