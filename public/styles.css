@@ -186,7 +186,8 @@ body{
 
 .main-section .post,
 #user-profile .post,
-#saved-posts .post{
+#saved-posts .post,
+.post-search-container .post{
     border:2px solid black;
     border-radius:1rem;
     margin-top: 10px;
@@ -803,6 +804,16 @@ body{
 
 #favourite-games .game{
     width:60%;
+}
+
+.post-search-container{
+    height:100%;
+    width:80%;
+    margin:0 auto;
+}
+
+.post-search-container h1{
+    text-align: center;
 }
 
 

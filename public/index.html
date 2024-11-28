@@ -13,8 +13,8 @@
         <span><p>Save👾Point</p></span>
         <span class="search-bar">
             <input type="text"  id="search-text" placeholder="🔍Search for a post by its content..">
-            <button onclick="searchContent()">Search</button>
-            <button>Clear</button>
+            <button onclick="searchPosts()">Search</button>
+            <button onclick="clearPostsResults()">Clear</button>
         </span>
         <a href="#" class="login-link" id="login-link">Login</a>
         <button onclick="openUpload()">+ New Post</button>
@@ -250,6 +250,11 @@
             <div class="genres">
                 <p>Genres: <span id="genre-list">RPG, SRPG, Strategy</span></p>
             </div>
+        </div>
+    </div>
+
+    <div class="content" id="searched-posts">
+        <div class="post-search-container" id="post-search-container">
         </div>
     </div>
     

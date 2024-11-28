@@ -15,7 +15,7 @@ export async function connectToDb() {
       await client.connect();
       await client.db("admin").command({ ping: 1 });
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
-      return client; // Restituisce l'istanza del client per riutilizzarlo
+      return client; 
     } catch (error) {
       console.error("Errore di connessione a MongoDB:", error);
     }
