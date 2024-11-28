@@ -119,8 +119,6 @@ function closePopup() {
 
 function openLogOut(){
   document.getElementById('logout-popup').style.display = 'block';
-
-  history.pushState(null, '', '/M00980001/logout');
 }
 
 function logOutUser(){
@@ -138,7 +136,8 @@ function logOutUser(){
           systemMessage.style.opacity='1';
           setTimeout(closeMessage,2000);
           loginLink.innerText="Login";
-
+          document.getElementById("feed-button").classList.add('active');
+          displayFeedPosts();
         }
       })
       .catch(error => {
@@ -1319,7 +1318,7 @@ async function loadLatestPosts() {
         <div class="post-head">
             <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
             <p>${post.owner} <span class="post-date">on ${post.date}</span></p>
-            </button>
+            <button class="follow-user" onclick="openLogin()">+ Follow</button>
         </div>
         <hr>
         <div class="title-section">
@@ -1342,14 +1341,14 @@ async function loadLatestPosts() {
         </div>
         <hr>
         <div class="post-bottom">
-            <button>⬆️Level up</button>
-            <button>⬇️Level down</button>
+            <button onclick="openLogin()">⬆️Level up</button>
+            <button onclick="openLogin()">⬇️Level down</button>
             <button class="view-comments" id=${post._id}>💬Comments</button>
-            <button>⚲Save</button>
+            <button onclick="openLogin()">⚲Save</button>
         </div>
         <hr>
         <div class="post-comment">
-            <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="post-comment" id=${post._id}>Post</button>
+            <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="post-comment" id=${post._id} onclick="openLogin()">Post</button>
         </div>
       `;
 
@@ -1625,6 +1624,19 @@ async function searchPosts(){
     const data = await res.json();
     let following = data.following || []; 
 
+    let isFollowing;
+    let isLiked;
+    let isSaved;
+    let isDisliked;
+
+
+    if (!data.username){
+      isFollowing = false;
+      isLiked = false; 
+      isDisliked = false; 
+      isSaved = false;
+    }
+
     postsContainer.innerHTML = '';
 
     const header = document.createElement('h1');
@@ -1641,10 +1653,13 @@ async function searchPosts(){
   for (const post of posts) {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
-    const isFollowing = following.includes(post.owner)||false;
-    const isLiked = post.likedBy.includes(data.username); 
-    const isDisliked = post.dislikedBy.includes(data.username); 
-    const isSaved = data.savedPosts.includes(post._id)||false;
+
+    if (data.username){
+      isFollowing = following.includes(post.owner);
+      isLiked = post.likedBy.includes(data.username); 
+      isDisliked = post.dislikedBy.includes(data.username); 
+      isSaved = data.savedPosts.includes(post._id);
+    }
 
     try {
       const response = await fetch(`/M00980001/postOwner/${post.owner}`);
@@ -1701,14 +1716,18 @@ async function searchPosts(){
     element.addEventListener('click', async function(event) {
       event.preventDefault();
       const targetId = this.id;
-      if (following.includes(targetId)) {
-        this.classList.remove('following');
-        this.innerText = '+ Follow';
-        unfollowUser(targetId); 
+      if (data.username){
+        if (following.includes(targetId)) {
+          this.classList.remove('following');
+          this.innerText = '+ Follow';
+          unfollowUser(targetId); 
+        } else {
+          this.classList.add('following');
+          this.innerText = 'Unfollow';
+          followUser(targetId); 
+        }
       } else {
-        this.classList.add('following');
-        this.innerText = 'Unfollow';
-        followUser(targetId); 
+        openLogin();
       }
     });
   });
@@ -1720,15 +1739,19 @@ async function searchPosts(){
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
-  
-      if (this.classList.contains("active")) {
-        this.classList.remove('active');
-        currentLevel--;  
-        removeLike(targetId);
+
+      if (data.username){
+        if (this.classList.contains("active")) {
+          this.classList.remove('active');
+          currentLevel--;  
+          removeLike(targetId);
+        } else {
+          this.classList.add('active');
+          currentLevel++;  
+          likePost(targetId);  
+        }
       } else {
-        this.classList.add('active');
-        currentLevel++;  
-        likePost(targetId);  
+        openLogin();
       }
 
       levelCountElement.innerText = currentLevel;
@@ -1743,14 +1766,18 @@ async function searchPosts(){
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
   
-      if (this.classList.contains("active")) {
-        this.classList.remove('active');
-        currentLevel++;  
-        removeDislike(targetId);  
+      if (data.username){
+        if (this.classList.contains("active")) {
+          this.classList.remove('active');
+          currentLevel++;  
+          removeDislike(targetId);  
+        } else {
+          this.classList.add('active');
+          currentLevel--;  
+          dislikePost(targetId);  
+        }
       } else {
-        this.classList.add('active');
-        currentLevel--;  
-        dislikePost(targetId);  
+        openLogin();
       }
 
       levelCountElement.innerText = currentLevel;
@@ -1762,14 +1789,17 @@ async function searchPosts(){
       event.preventDefault();
       const targetId = this.id;
   
-      if (this.classList.contains("active")) {
-        this.classList.remove('active');  
-        removeSavedPost(targetId);  
+      if (data.username){
+        if (this.classList.contains("active")) {
+          this.classList.remove('active');  
+          removeSavedPost(targetId);  
+        } else {
+          this.classList.add('active');
+          savePost(targetId);  
+        }
       } else {
-        this.classList.add('active');
-        savePost(targetId);  
+        openLogin();
       }
-
     });
   });
 
@@ -1785,17 +1815,21 @@ async function searchPosts(){
       event.preventDefault();
       const commentCountElement = this.closest('.post').querySelector("#comment-count");
 
-      let currentComments= parseInt(commentCountElement.innerText) || 0;
-      currentComments++;
-      commentCountElement.innerText = currentComments;
-      const commentInput = this.previousElementSibling;  
-      const newComment = commentInput.value;
-  
-      commentInput.value = '';
-      postComment(this.id,newComment);
+      if (data.username) {
+        let currentComments= parseInt(commentCountElement.innerText) || 0;
+        currentComments++;
+        commentCountElement.innerText = currentComments;
+        const commentInput = this.previousElementSibling;  
+        const newComment = commentInput.value;
+    
+        commentInput.value = '';
+        postComment(this.id,newComment);
+      } else {
+        openLogin();
+      }
     });
   });
-    } 
+ } 
     document.getElementById("post-search-container").style.display="block";
   } catch (error) {
     console.error('Error:', error);
@@ -1806,6 +1840,7 @@ function clearPostsResults(){
   document.getElementById("post-search-container").style.display="none";
   openSections();
   document.getElementById("feed-button").classList.add('active');
+  document.getElementById("search-text").value='';
 }
 
 
