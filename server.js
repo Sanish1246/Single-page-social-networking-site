@@ -542,6 +542,30 @@ async function startServer() {
       }
     });
 
+    app.get('/M00980001/profile/:id', async (req, res) => {
+      const targetUser=req.params.id;
+
+      try {
+        const user = await db.collection('Users').findOne({ username: targetUser});
+        res.status(200).json(user);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        res.status(500).json({ error: 'Error fetching posts' });
+      }
+    });
+
+    app.get('/M00980001/posts/:id', async (req, res) => {
+      const user=req.params.id;
+    
+      try {
+        const posts = await db.collection('Posts').find({ owner: user}).toArray();
+        res.status(200).json(posts);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        res.status(500).json({ error: 'Error fetching posts' });
+      }
+    });
+
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);
     });

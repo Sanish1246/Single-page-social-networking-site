@@ -87,24 +87,18 @@ function openLogin() {
       openLogOut();
     } else{
       document.getElementById('login-popup').style.display = 'block';
-      
-      history.pushState(null, '', '/M00980001/login');
     };
 }
 
 function openRegister() {
     closePopup();
     document.getElementById('register-popup').style.display = 'block';
-
-    history.pushState(null, '', '/M00980001/register');
 }
 
 function openComments(id){
   closePopup();
   document.getElementById('comments-popup').style.display = 'block';
   loadComments(id);
-
-  history.pushState(null, '', '/M00980001/comments');
 }
 
 function closePopup() {
@@ -215,8 +209,8 @@ function closeSectionButton(){
 function openProfile(){
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
-      document.getElementById('user-profile').style.display='block';
-      displayUserData();
+      document.getElementById('your-profile').style.display='block';
+      displayYourData();
     } else {
       systemMessage.innerText='❌ You must login to view this';
       systemMessage.style.opacity='1';
@@ -227,7 +221,7 @@ function openProfile(){
 }
 
 function closeProfile(){
-  document.getElementById('user-profile').style.display='none';
+  document.getElementById('your-profile').style.display='none';
 }
 
 function openSaved(){
@@ -279,7 +273,6 @@ function openFollowing(){
     checkCurrentUser().then(isUserLoggedIn => {
       if (isUserLoggedIn) {
         document.getElementById('following-posts').style.display = 'block';
-        history.pushState(null, '', '/M00980001/following');
         displayFollowingPosts();
       } else {
         systemMessage.innerText='❌ You must login to view this';
@@ -294,7 +287,6 @@ function openFeed(){
     closeSection();
     document.getElementById('feed-posts').style.display = 'block';
     displayFeedPosts();
-    history.pushState(null, '', '/M00980001');
 }
 
 function openPeople(){
@@ -302,6 +294,7 @@ function openPeople(){
     checkCurrentUser().then(isUserLoggedIn => {
       if (isUserLoggedIn) {
         document.getElementById('people-section').style.display = 'block';
+        document.getElementById('user-profile').style.display='none';
         fetchPeople();
       } else {
         systemMessage.innerText='❌ You must login to view this';
@@ -317,7 +310,6 @@ function openRecommended(){
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
       document.getElementById('recommended-section').style.display = 'block';
-      history.pushState(null, '', '/M00980001/recommended');
     } else {
       systemMessage.innerText='❌ You must login to view this';
       systemMessage.style.opacity='1';
@@ -535,7 +527,7 @@ document.getElementById("tags").value=null;
 document.getElementById("media").value=''; 
 }
 
-async function displayUserData() {
+async function displayYourData() {
   try {
     const response = await fetch('http://localhost:8000/M00980001/user');
     const data = await response.json();
@@ -585,7 +577,7 @@ document.getElementById('uploadButton').addEventListener('click', async function
         systemMessage.innerText='✅ Picture updated successfully';
         systemMessage.style.opacity='1';
         setTimeout(closeMessage,2000);
-        displayUserData();
+        displayYourData();
       } else {
         systemMessage.innerText='❌ Error: ' + error;
         systemMessage.style.opacity='1';
@@ -737,7 +729,7 @@ async function fetchPeople() {
 
       peopleElement.innerHTML = `
             <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
-            <p>${person.username}</p>               
+            <a id=${person.username} class="visit-link">${person.username}</a>               
             <button class="follow-user ${isFollowing ? 'following' : ''}" id=${person.username}>
             ${isFollowing ? 'Following' : '+ Follow'}
             </button>
@@ -760,6 +752,13 @@ async function fetchPeople() {
           this.innerText = 'Following';
           followUser(targetId);
         }
+      });
+    });
+
+    document.querySelectorAll('.visit-link').forEach(function(element) {
+      element.addEventListener('click', async function() {
+        const targetUser = this.id;
+        displayUserProfile(targetUser);
       });
     });
     
@@ -1155,9 +1154,9 @@ async function fetchSavedPosts(){
         <div class="post-head">
             <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
             <p>${profileData.username} <span class="post-date">on ${post.date}</span></p>
-            <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
+            ${(data.username==post.owner) ? '' : `<button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
               ${isFollowing ? 'Unfollow' : '+ Follow'}
-            </button>
+            </button>`}
         </div>
         <hr>
         <div class="title-section">
@@ -1613,6 +1612,8 @@ function clearPeopleResults(){
 async function searchPosts(){
   closeSection();
   closeSectionButton();
+  closeProfile();
+  closeSaved();
   const targetText=document.getElementById("search-text").value;
 
   try {
@@ -1669,9 +1670,9 @@ async function searchPosts(){
         <div class="post-head">
             <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
             <p>${profileData.username} <span class="post-date">on ${post.date}</span></p>
-            <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
+            ${(data.username==post.owner) ? '' : `<button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
               ${isFollowing ? 'Unfollow' : '+ Follow'}
-            </button>
+            </button>`}
         </div>
         <hr>
         <div class="title-section">
@@ -1841,6 +1842,222 @@ function clearPostsResults(){
   openSections();
   document.getElementById("feed-button").classList.add('active');
   document.getElementById("search-text").value='';
+}
+
+async function displayUserProfile(targetUser) {
+  document.getElementById('people-section').style.display = 'none';
+  document.getElementById('user-profile').style.display = 'block';
+
+  try {
+    const response = await fetch(`http://localhost:8000/M00980001/profile/${targetUser}`);
+    const userData = await response.json();
+
+    document.getElementById('profile-username').innerText = userData.username;
+    document.getElementById('user-following').innerText = userData.following.length;
+    document.getElementById('user-followers').innerText = userData.followers.length;
+
+    const followersElement = document.getElementById('user-followers');
+    let followerCount = userData.followers.length;
+
+    const profileImageElement = document.getElementById("profileImage");
+    profileImageElement.src = userData.profileImg ? userData.profileImg : './images/default-photo.jpg';
+
+    const postsResponse = await fetch(`http://localhost:8000/M00980001/posts/${targetUser}`);
+    const posts = await postsResponse.json();
+
+    const res = await fetch('http://localhost:8000/M00980001/user');
+    const data = await res.json();
+    let following = data.following;
+
+    const followButton = document.getElementById('user-follow-button');
+    if (following.includes(targetUser)) {
+      followButton.classList.add('following');
+      followButton.innerText = 'Unfollow';
+    } else {
+      followButton.classList.remove('following');
+      followButton.innerText = '+ Follow';
+    }
+
+    followButton.addEventListener('click', async function () {
+      if (following.includes(targetUser)) {
+        followButton.classList.remove('following');
+        followButton.innerText = '+ Follow';
+        unfollowUser(targetUser); 
+        followerCount--;
+        followersElement.innerText = followerCount;
+        following = following.filter(user => user !== targetUser); 
+      } else {
+        followButton.classList.add('following');
+        followButton.innerText = 'Unfollow';
+        followUser(targetUser); 
+        followerCount++;
+        followersElement.innerText = followerCount;
+        following.push(targetUser); 
+      }
+    });
+
+    loadUserPosts(posts, userData, data);
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+
+async function loadUserPosts(posts,userData, data){
+  const postsContainer = document.getElementById('user-posts-container');
+  postsContainer.innerHTML = ''; 
+  let following=data.following;
+
+  posts = posts.reverse();
+
+  posts.forEach(post => {
+    const postElement = document.createElement('div');
+    postElement.classList.add('post');
+    const isFollowing = following.includes(post.owner);
+    const isLiked = post.likedBy.includes(data.username); 
+    const isDisliked = post.dislikedBy.includes(data.username); 
+    const isSaved = data.savedPosts.includes(post._id);
+
+    postElement.innerHTML = `
+      <div class="post-head">
+          <img src="${userData.profileImg || '/images/default-photo.jpg'}" class="profile-img">
+          <p>${userData.username} <span class="post-date">on ${post.date}</span></p>
+          <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
+             ${isFollowing ? 'Unfollow' : '+ Follow'}
+          </button>
+      </div>
+      <hr>
+      <div class="title-section">
+          <p class="post-title">${post.title}</p>
+      </div>
+      <hr>
+      <div class="post-content">
+          <p>${post.content || ''}</p>
+          ${post.media && post.media.length ? post.media.map(file => 
+            file.path.endsWith('.mp4') 
+              ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
+              : `<img src="${file.path}" alt="Post Image" class="post-image">`
+          ).join('') : ''}
+      </div>
+      <hr>
+      <div class="post-info">
+          <p>Level: <span id="level-count">${post.level || 0}</span></p>
+          <p>Comments: <span id="comment-count">${post.comments ? post.comments.length : 0}</span></p>
+          <p>${post.time}</p>
+      </div>
+      <hr>
+        <div class="post-bottom">
+            <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
+            <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
+            <button>💬Comments</button>
+            <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
+        </div>
+      <hr>
+      <div class="post-comment">
+          <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="publish-comment" id=${post._id}>Post</button>
+      </div>
+    `;
+    postsContainer.appendChild(postElement);
+  });
+
+  document.querySelectorAll('.follow-user').forEach(function(element) {
+    element.addEventListener('click', async function() {
+      const targetId = this.id;
+
+      if (following.includes(targetId)) {
+        this.classList.remove('following');
+        this.innerText = '+ Follow';
+        unfollowUser(targetId);
+      } else {
+        this.classList.add('following');
+        this.innerText = 'Following';
+        followUser(targetId);
+      }
+    });
+  });
+
+  document.querySelectorAll('.level-up').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      const levelCountElement = this.closest('.post').querySelector("#level-count");
+      
+      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        currentLevel--;  
+        removeLike(targetId);  
+      } else {
+        this.classList.add('active');
+        currentLevel++;  
+        likePost(targetId);  
+      }
+
+      levelCountElement.innerText = currentLevel;
+    });
+  });
+  
+  document.querySelectorAll('.level-down').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+      const levelCountElement = this.closest('.post').querySelector("#level-count");
+      
+      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        currentLevel++;  
+        removeDislike(targetId);  
+      } else {
+        this.classList.add('active');
+        currentLevel--;  
+        dislikePost(targetId);  
+      }
+
+      levelCountElement.innerText = currentLevel;
+    });
+  });
+
+  document.querySelectorAll('.save-post').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');  
+        removeSavedPost(targetId);  
+      } else {
+        this.classList.add('active');
+        savePost(targetId);  
+      }
+    });
+  });
+
+  document.querySelectorAll('.view-comments').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      openComments(this.id);
+    });
+  });
+
+  document.querySelectorAll('.publish-comment').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      const commentCountElement = this.closest('.post').querySelector("#comment-count");
+
+      let currentComments= parseInt(commentCountElement.innerText) || 0;
+      currentComments++;
+      commentCountElement.innerText = currentComments;
+      const commentInput = this.previousElementSibling;  
+      const newComment = commentInput.value;
+  
+      commentInput.value = '';
+      postComment(this.id,newComment);
+    });
+  });
 }
 
 

@@ -185,7 +185,7 @@ body{
 }
 
 .main-section .post,
-#user-profile .post,
+#your-profile .post,
 #saved-posts .post,
 .post-search-container .post{
     border:2px solid black;
@@ -408,10 +408,17 @@ body{
     margin-top:5px;
 }
 
-.friend p,
-.person p{
+.friend a,
+.person a{
     padding-left: 10px;
     font-size:1.5rem;
+    text-decoration:none;
+    color: black;
+}
+
+.person a:hover{
+    cursor:pointer;
+    text-decoration: underline;
 }
 
 .friend button,
@@ -734,7 +741,7 @@ body{
     margin-bottom: 0;
 }
 
-#user-profile{
+#your-profile{
     display: flex; 
     justify-content: center; 
     align-items: center; 
@@ -814,6 +821,30 @@ body{
 
 .post-search-container h1{
     text-align: center;
+}
+
+#user-profile{
+    display:none;
+}
+
+.follow-info button{
+    height:3rem;
+    width:20%;
+    align-self: center;
+    border-radius: 1rem;
+    color: white;
+    font-size:1rem;
+    border: 2px solid hsl(0, 96%, 54%);
+    background:none;
+}
+
+.follow-info button:hover{
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.8), hsl(0, 96%, 65%, 0.8));
+    cursor: pointer;
+}
+
+#user-follow-button.following{
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.8), hsl(0, 96%, 65%, 0.8));
 }
 
 
