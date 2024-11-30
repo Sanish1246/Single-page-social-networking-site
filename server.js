@@ -6,8 +6,12 @@ import session from 'express-session';
 import fileUpload from 'express-fileupload';
 import fs from 'fs';
 import { ObjectId } from 'mongodb';
+import axios from 'axios';
+import dotenv from 'dotenv';
 
 const app = express();
+dotenv.config();
+const apiKey= process.env.API_KEY;
 const hostname = 'localhost';
 const port = 8000;
 
@@ -26,7 +30,10 @@ app.use(session({
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/M00980001', (req, res) => {
+app.get('/M00980001', async (req, res) => {
+  const url=(`https://api.rawg.io/api/games?key=${apiKey}`)
+  const games=await axios.get(url);
+  console.log(games.data.results[0].name);
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

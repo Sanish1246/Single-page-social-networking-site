@@ -7,7 +7,7 @@ const currentUser=document.getElementById('currentUser');
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
   document.getElementById("feed-button").classList.add('active');
-  fetchGames();
+  //fetchGames();
   displayFeedPosts();
 };
 
@@ -2065,7 +2065,7 @@ async function loadUserPosts(posts,userData, data){
 async function fetchGames() {
   let gameArray = [];
   let page = 1;
-  let pageSize = 20; // Numero di giochi per pagina (default è 20)
+  let pageSize = 20; 
   let totalGamesFetched = 0;
   let totalGamesAvailable = 0;
 
@@ -2073,7 +2073,7 @@ async function fetchGames() {
     do {
       const response = await fetch(`https://api.rawg.io/api/games?key=9ad8e387abfe48d2bade8a2f4a28edf9&page=${page}&page_size=${pageSize}`);
       const data = await response.json();
-      
+
       data.results.forEach(game => {
         const newGenres = game.genres.map(genre => genre.name).join(', ');
 
