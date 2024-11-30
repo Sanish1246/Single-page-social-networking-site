@@ -7,6 +7,7 @@ const currentUser=document.getElementById('currentUser');
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
   document.getElementById("feed-button").classList.add('active');
+  fetchGames();
   displayFeedPosts();
 };
 
@@ -2060,5 +2061,47 @@ async function loadUserPosts(posts,userData, data){
   });
 }
 
+
+async function fetchGames() {
+  let gameArray = [];
+  let page = 1;
+  let pageSize = 20; // Numero di giochi per pagina (default è 20)
+  let totalGamesFetched = 0;
+  let totalGamesAvailable = 0;
+
+  try {
+    do {
+      const response = await fetch(`https://api.rawg.io/api/games?key=9ad8e387abfe48d2bade8a2f4a28edf9&page=${page}&page_size=${pageSize}`);
+      const data = await response.json();
+      
+      data.results.forEach(game => {
+        const newGenres = game.genres.map(genre => genre.name).join(', ');
+
+        const newGame = {
+          name: game.name,
+          background: game.background_image,
+          rating: game.rating,
+          released: game.released,
+          genres: newGenres
+        };
+
+        gameArray.push(newGame);
+        console.log(game.name); // Stampa il nome del gioco per tracciare il progresso
+      });
+
+      totalGamesFetched += data.results.length; // Incrementa il conteggio dei giochi presi
+      totalGamesAvailable = data.count; // Numero totale di giochi disponibili (fornito dall'API)
+
+      console.log(`Page: ${page}, Fetched: ${totalGamesFetched} of ${totalGamesAvailable}`);
+      
+      page++; 
+    } while (totalGamesFetched < totalGamesAvailable);
+
+    console.log(`Total games fetched: ${gameArray.length}`);
+    console.log(gameArray);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
 
 
