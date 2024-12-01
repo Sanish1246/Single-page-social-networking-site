@@ -582,13 +582,31 @@ async function startServer() {
         const allGames = games.data.results.map(game => ({
           name: game.name,
           genre: game.genres.map(genre => genre.name).join(', '), 
-          image: game.background_image
+          image: game.background_image,
+          rating: game.rating
         }));
     
         res.status(200).json(allGames); 
       } catch (err) {
         console.error('Error fetching games:', err);
         res.status(500).json({ error: 'Error fetching games' });
+      }
+    });
+
+    app.post('/M00980001/addFavourite', async (req, res) => {
+      const currentUser = req.session.user.username;
+      const newGame=req.body;  
+      try {
+        
+        await db.collection('Users').updateOne(
+          { username: currentUser},
+          { $push: { favGames: newGame} }
+        );
+
+        res.status(200).json({ message: 'Game saved' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
       }
     });
     

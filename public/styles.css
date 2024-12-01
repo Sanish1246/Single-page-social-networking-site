@@ -494,12 +494,27 @@ body{
     font-size: 1.2rem;
 }
 
-.game-title,
-.genres{
+.game-title{
     display: flex;
     align-items: center;
     max-height:2rem;
 }
+
+.genres {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    max-height:2rem;
+  }
+  
+  .left-section {
+    flex-grow: 1; 
+  }
+  
+  .right-section {
+    text-align: right; 
+    margin-right: 75px;
+  }
 
 .game-title button{
     margin-left:auto;
