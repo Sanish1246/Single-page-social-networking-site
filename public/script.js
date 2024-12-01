@@ -2107,7 +2107,6 @@ async function displayGames(pageNo) {
         <img id="game-img" src="${game.image || "./images/default-photo.jpg"}" alt="${game.name} image">
       `;
 
-      // Aggiungi il gioco al contenitore principale
       gameContainer.appendChild(gameElement);
     });
   } catch (error) {
@@ -2122,6 +2121,7 @@ async function displayGames(pageNo) {
       if (this.classList.contains("active")) {
         this.classList.remove('active'); 
         this.innerText = 'Add to Favourites'; 
+        removeFavourite(targetId);
       } else {
         this.classList.add('active');
         this.innerText = 'Remove';  
@@ -2130,7 +2130,7 @@ async function displayGames(pageNo) {
         const newImg = this.closest('.game').querySelector("#game-img").src;
 
         const newGame = {
-          name:this.id,
+          name: targetId,
           genre: newGenre,
           image: newImg,
           rating: newRating
@@ -2154,13 +2154,31 @@ async function addFavourite(newGame){
     systemMessage.innerText=message.message;
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
-    closePopup();
   })
   .catch(error => {
     systemMessage.innerText='❌ Error: ' + error;
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
-    closePopup();
+  });
+}
+
+async function removeFavourite(game){
+  fetch(`http://localhost:8000/M00980001/removeFavourite/${game}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(message => {
+    systemMessage.innerText=message.message;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+  })
+  .catch(error => {
+    systemMessage.innerText='❌ Error: ' + error;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
   });
 }
 
