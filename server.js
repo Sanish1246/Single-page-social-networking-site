@@ -43,7 +43,8 @@ app.get('/M00980001/user', (req, res) => {
       followers: req.session.user.followers,
       following: req.session.user.following,
       profileImg: req.session.user.profileImg,
-      savedPosts: req.session.user.savedPosts
+      savedPosts: req.session.user.savedPosts,
+      favGames:req.session.user.favGames
     });
   } else {
     res.status(200).json({});
@@ -72,7 +73,6 @@ async function startServer() {
         user.followers = [];
         user.following = [];
         user.savedPosts=[];
-        user.profileImg='/images/default-photo.jpg'
     
         const result = await db.collection('Users').insertOne(user);
         req.session.user = {
@@ -82,6 +82,8 @@ async function startServer() {
           followers:user.followers,
           following:user.following,
           profileImg:'/images/default-photo.jpg',
+          savedPosts:[],
+          favGames:[]
         };
         res.status(201).json({
           message: "User registered successfully",
@@ -113,7 +115,9 @@ async function startServer() {
             followers: result.followers || [], 
             following: result.following || [], 
             profileImg: result.profileImg || '/images/default-photo.jpg',
-            savedPosts: result.savedPosts || []
+            savedPosts: result.savedPosts || [],
+            favGames: result.favGames || []
+
           };
           res.status(200).json({
             message: "User logged in! " + result.username,
@@ -140,7 +144,6 @@ async function startServer() {
 
         const likedBy=[];
         const dislikedBy=[];
-        const comments=[];
     
         // Controlla se ci sono file caricati
         let mediaFiles = req.files ? req.files.media : null;

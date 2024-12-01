@@ -212,6 +212,7 @@ body{
     border-radius:50%;
     margin-left:5px;
     margin-top:5px;
+    object-fit: cover;
 }
 
 .post-head p{
@@ -385,7 +386,6 @@ body{
     text-align:center;
 }
 
-.friend, 
 .person{
     margin: 0 auto;
     display: flex;
@@ -397,8 +397,7 @@ body{
     margin-bottom:1.5rem;
     width:80%;
 }
-
-.friend .profile-img, 
+ 
 .person .profile-img{
     width:4rem;
     border:1px solid black;
@@ -406,9 +405,9 @@ body{
     border-radius:50%;
     margin-left:5px;
     margin-top:5px;
+    margin-bottom: 5px;
 }
 
-.friend a,
 .person a{
     padding-left: 10px;
     font-size:1.5rem;
@@ -421,7 +420,6 @@ body{
     text-decoration: underline;
 }
 
-.friend button,
 .person button {
     margin-left: auto;
     margin-right: 50px;
@@ -435,7 +433,6 @@ body{
     background: none;
 }
 
-.friend button:hover,
 .person button:hover {
     cursor: pointer;
     background: linear-gradient(90deg, hsla(270, 100%, 50%, 0.7), hsl(0, 96%, 60%, 0.7));
@@ -540,6 +537,11 @@ body{
 
 .navigation-arrows button:hover{
     cursor:pointer;
+    background: linear-gradient(90deg, hsla(270, 100%, 50%, 0.7), hsl(0, 96%, 60%, 0.7));
+    color:white;
+}
+
+.add-game.active{
     background: linear-gradient(90deg, hsla(270, 100%, 50%, 0.7), hsl(0, 96%, 60%, 0.7));
     color:white;
 }

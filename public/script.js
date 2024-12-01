@@ -56,6 +56,7 @@ document.querySelectorAll('.section-button').forEach(button => {
             openFollowing();
         } else {
           openRecommended();
+
         }
     });
 });
@@ -167,6 +168,7 @@ document.getElementById('profile-button').addEventListener('click', function(eve
   closeSectionButton();
   closeSaved();
   openProfile();
+  document.getElementById("post-search-container").style.display="none";
 });
 
 document.getElementById('home-button').addEventListener('click', function(event){
@@ -174,6 +176,7 @@ document.getElementById('home-button').addEventListener('click', function(event)
   closeProfile();
   closeSaved();
   openSections();
+  document.getElementById("post-search-container").style.display="none";
   document.getElementById("feed-button").classList.add('active');
 });
 
@@ -183,6 +186,7 @@ document.getElementById('saved-button').addEventListener('click', function(event
   closeSection();
   closeSectionButton();
   openSaved();
+  document.getElementById("post-search-container").style.display="none";
 });
 
 document.getElementById('favourite-button').addEventListener('click', function(event){
@@ -191,6 +195,7 @@ document.getElementById('favourite-button').addEventListener('click', function(e
   closeSection();
   closeSectionButton();
   openFavourite();
+  document.getElementById("post-search-container").style.display="none";
 });
 
 document.querySelector('.register-link').addEventListener('click', function(event) {
@@ -1568,7 +1573,7 @@ async function searchPeople(){
 
         peopleElement.innerHTML = `
           <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
-          <p>${person.username}</p>
+          <a id=${person.username} class="visit-link">${person.username}</a>
         `;
         
         if (!isCurrentUser) {
@@ -1598,6 +1603,14 @@ async function searchPeople(){
           }
         });
       });
+
+      document.querySelectorAll('.visit-link').forEach(function(element) {
+        element.addEventListener('click', async function() {
+          const targetUser = this.id;
+          displayUserProfile(targetUser);
+        });
+      });
+
     } 
     document.getElementById("searched-people-container").style.display="block"
   } catch (error) {
@@ -1872,30 +1885,25 @@ async function displayUserProfile(targetUser) {
     let following = data.following;
 
     const followButton = document.getElementById('user-follow-button');
-    if (following.includes(targetUser)) {
-      followButton.classList.add('following');
-      followButton.innerText = 'Unfollow';
-    } else {
-      followButton.classList.remove('following');
-      followButton.innerText = '+ Follow';
-    }
 
-    followButton.addEventListener('click', async function () {
+    followButton.replaceWith(followButton.cloneNode(true));
+    const newFollowButton = document.getElementById('user-follow-button');
+
+    updateFollowButton(following.includes(targetUser), newFollowButton);
+
+    newFollowButton.addEventListener('click', async function () {
       if (following.includes(targetUser)) {
-        followButton.classList.remove('following');
-        followButton.innerText = '+ Follow';
-        unfollowUser(targetUser); 
+        await unfollowUser(targetUser);
         followerCount--;
-        followersElement.innerText = followerCount;
-        following = following.filter(user => user !== targetUser); 
+        following = following.filter(user => user !== targetUser);  
       } else {
-        followButton.classList.add('following');
-        followButton.innerText = 'Unfollow';
-        followUser(targetUser); 
+        await followUser(targetUser);
         followerCount++;
-        followersElement.innerText = followerCount;
-        following.push(targetUser); 
+        following.push(targetUser);  
       }
+
+      updateFollowButton(following.includes(targetUser), newFollowButton);
+      followersElement.innerText = followerCount;
     });
 
     loadUserPosts(posts, userData, data);
@@ -1905,6 +1913,15 @@ async function displayUserProfile(targetUser) {
   }
 }
 
+function updateFollowButton(isFollowing, followButton) {
+  if (isFollowing) {
+    followButton.classList.add('following');
+    followButton.innerText = 'Unfollow';
+  } else {
+    followButton.classList.remove('following');
+    followButton.innerText = '+ Follow';
+  }
+}
 
 async function loadUserPosts(posts,userData, data){
   const postsContainer = document.getElementById('user-posts-container');
@@ -1925,9 +1942,6 @@ async function loadUserPosts(posts,userData, data){
       <div class="post-head">
           <img src="${userData.profileImg || '/images/default-photo.jpg'}" class="profile-img">
           <p>${userData.username} <span class="post-date">on ${post.date}</span></p>
-          <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
-             ${isFollowing ? 'Unfollow' : '+ Follow'}
-          </button>
       </div>
       <hr>
       <div class="title-section">
@@ -1963,21 +1977,6 @@ async function loadUserPosts(posts,userData, data){
     postsContainer.appendChild(postElement);
   });
 
-  document.querySelectorAll('.follow-user').forEach(function(element) {
-    element.addEventListener('click', async function() {
-      const targetId = this.id;
-
-      if (following.includes(targetId)) {
-        this.classList.remove('following');
-        this.innerText = '+ Follow';
-        unfollowUser(targetId);
-      } else {
-        this.classList.add('following');
-        this.innerText = 'Following';
-        followUser(targetId);
-      }
-    });
-  });
 
   document.querySelectorAll('.level-up').forEach(function(element) {
     element.addEventListener('click', async function(event) {
@@ -2074,26 +2073,31 @@ async function displayGames(pageNo) {
   gameContainer.innerHTML = ''; // Pulisce il contenitore prima di aggiungere nuovi giochi
 
   try {
+    const userResponse = await fetch(`http://localhost:8000/M00980001/user`);
+    const userData = await userResponse.json();
+
     const response = await fetch(`http://localhost:8000/M00980001/recommended/${pageNo}`);
     const data = await response.json();
 
-    // Itera su tutti i giochi nell'array restituito dall'API
+
     data.forEach(game => {
       const gameElement = document.createElement('div');
       gameElement.classList.add('game');
+
+      let isFav = userData.favGames.includes(game.name);
 
       gameElement.innerHTML = `
         <div class="game-details">
           <div class="game-title">
             <p>${game.name}</p>  
-            <button>+ Add to favourites</button>
+            <button class="add-game ${isFav ? "active" : ''}">+ Add to favourites</button>
           </div>  
           <hr>           
           <div class="genres">
             <p>Genres: <span id="genre-list">${game.genre}</span></p>
           </div>
         </div>
-        <img src="${game.image || "./images/default-photo.jpg"}" alt="${game.name} image">
+        <img id="game-img" src="${game.image || "./images/default-photo.jpg"}" alt="${game.name} image">
       `;
 
       // Aggiungi il gioco al contenitore principale
