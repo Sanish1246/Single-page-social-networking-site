@@ -3,11 +3,11 @@ const top_bar=document.getElementById("top-bar");
 const systemMessage=document.getElementById('system-message');
 const loginLink=document.getElementById('login-link');
 const currentUser=document.getElementById('currentUser');
+let pageNo=1;
 
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
   document.getElementById("feed-button").classList.add('active');
-  //fetchGames();
   displayFeedPosts();
 };
 
@@ -311,6 +311,7 @@ function openRecommended(){
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
       document.getElementById('recommended-section').style.display = 'block';
+      displayGames(1);
     } else {
       systemMessage.innerText='❌ You must login to view this';
       systemMessage.style.opacity='1';
@@ -2061,46 +2062,45 @@ async function loadUserPosts(posts,userData, data){
   });
 }
 
+document.querySelector('.next-button').addEventListener('click', function(event) {
+ pageNo++
+ displayGames(pageNo);
+ window.scrollTo(0, 0)
+});
 
-async function fetchGames() {
-  let gameArray = [];
-  let page = 1;
-  let pageSize = 20; 
-  let totalGamesFetched = 0;
-  let totalGamesAvailable = 0;
+
+async function displayGames(pageNo) {
+  const gameContainer = document.getElementById("game-container");
+  gameContainer.innerHTML = ''; // Pulisce il contenitore prima di aggiungere nuovi giochi
 
   try {
-    do {
-      const response = await fetch(`https://api.rawg.io/api/games?key=9ad8e387abfe48d2bade8a2f4a28edf9&page=${page}&page_size=${pageSize}`);
-      const data = await response.json();
+    const response = await fetch(`http://localhost:8000/M00980001/recommended/${pageNo}`);
+    const data = await response.json();
 
-      data.results.forEach(game => {
-        const newGenres = game.genres.map(genre => genre.name).join(', ');
+    // Itera su tutti i giochi nell'array restituito dall'API
+    data.forEach(game => {
+      const gameElement = document.createElement('div');
+      gameElement.classList.add('game');
 
-        const newGame = {
-          name: game.name,
-          background: game.background_image,
-          rating: game.rating,
-          released: game.released,
-          genres: newGenres
-        };
+      gameElement.innerHTML = `
+        <div class="game-details">
+          <div class="game-title">
+            <p>${game.name}</p>  
+            <button>+ Add to favourites</button>
+          </div>  
+          <hr>           
+          <div class="genres">
+            <p>Genres: <span id="genre-list">${game.genre}</span></p>
+          </div>
+        </div>
+        <img src="${game.image || "./images/default-photo.jpg"}" alt="${game.name} image">
+      `;
 
-        gameArray.push(newGame);
-        console.log(game.name); // Stampa il nome del gioco per tracciare il progresso
-      });
-
-      totalGamesFetched += data.results.length; // Incrementa il conteggio dei giochi presi
-      totalGamesAvailable = data.count; // Numero totale di giochi disponibili (fornito dall'API)
-
-      console.log(`Page: ${page}, Fetched: ${totalGamesFetched} of ${totalGamesAvailable}`);
-      
-      page++; 
-    } while (totalGamesFetched < totalGamesAvailable);
-
-    console.log(`Total games fetched: ${gameArray.length}`);
-    console.log(gameArray);
+      // Aggiungi il gioco al contenitore principale
+      gameContainer.appendChild(gameElement);
+    });
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.log(error);
   }
 }
 

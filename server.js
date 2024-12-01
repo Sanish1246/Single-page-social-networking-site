@@ -31,9 +31,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/M00980001', async (req, res) => {
-  const url=(`https://api.rawg.io/api/games?key=${apiKey}`)
-  const games=await axios.get(url);
-  console.log(games.data.results[0].name);
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
@@ -572,6 +569,26 @@ async function startServer() {
         res.status(500).json({ error: 'Error fetching posts' });
       }
     });
+
+    app.get('/M00980001/recommended/:id', async (req, res) => {
+      const pageNo=req.params.id;
+      try {
+        const url = `https://api.rawg.io/api/games?key=${apiKey}&page=${pageNo}`;
+        const games = await axios.get(url);
+    
+        const allGames = games.data.results.map(game => ({
+          name: game.name,
+          genre: game.genres.map(genre => genre.name).join(', '), 
+          image: game.background_image
+        }));
+    
+        res.status(200).json(allGames); 
+      } catch (err) {
+        console.error('Error fetching games:', err);
+        res.status(500).json({ error: 'Error fetching games' });
+      }
+    });
+    
 
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);

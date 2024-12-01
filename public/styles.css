@@ -475,6 +475,7 @@ body{
     width:10rem;
     border: 1px solid black;
     border-radius: 5px;
+    object-fit: cover;
 }
 
 .game-details{
@@ -521,6 +522,28 @@ body{
     background: linear-gradient(90deg, hsla(270, 100%, 50%, 0.7), hsl(0, 96%, 60%, 0.7));
     color:white;
 }
+
+.navigation-arrows {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; 
+}
+
+.navigation-arrows button {
+    padding: 10px 20px;
+    background: none;
+    border: 2px solid hsl(0, 96%, 54%);
+    color:hsl(0, 96%, 54%);
+    font-size: 16px;
+    border-radius:10px;
+}
+
+.navigation-arrows button:hover{
+    cursor:pointer;
+    background: linear-gradient(90deg, hsla(270, 100%, 50%, 0.7), hsl(0, 96%, 60%, 0.7));
+    color:white;
+}
+
 
 
 /* All popups are hidden by default */
