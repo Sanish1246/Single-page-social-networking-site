@@ -13,7 +13,7 @@
         <span><p>Save👾Point</p></span>
         <span class="search-bar">
             <input type="text"  id="search-text" placeholder="🔍Search for a post by its content..">
-            <button onclick="searchPosts()">Search</button>
+            <button onclick="searchPosts('')">Search</button>
             <button onclick="clearPostsResults()">Clear</button>
         </span>
         <a href="#" class="login-link" id="login-link">Login</a>
@@ -55,6 +55,8 @@
                 <p>Sort by</p>
                 <button id="feed-recent" class="sort-feed-button">Most recent</button>
                 <button id="feed-level" class="sort-feed-button">Highest level</button>
+                <button id="feed-old" class="sort-feed-button">Oldest</button>
+                <button id="feed-comments" class="sort-feed-button">Most discussed</button>
             </div>
             <div id="feed-posts-container">
             </div>
@@ -234,6 +236,13 @@
     </div>
 
     <div class="content" id="searched-posts">
+        <div class="sort-search" id="sort-search">
+            <p>Sort by</p>
+            <button id="search-recent" class="search-sort-button">Most recent</button>
+            <button id="search-level" class="search-sort-button">Highest level</button>
+            <button id="search-old" class="search-sort-button">Oldest</button>
+            <button id="search-comments" class="search-sort-button">Most discussed</button>
+        </div>
         <div class="post-search-container" id="post-search-container">
         </div>
     </div>

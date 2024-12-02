@@ -275,6 +275,9 @@ async function startServer() {
           posts=posts.reverse();
         } else if (sortBy === "level") {
           posts = posts.sort((a, b) => b.level - a.level);
+        } else if (sortBy === "comments") {
+          posts.forEach(post => console.log(post.title, post.comments.length));
+          posts = posts.sort((a, b) => b.comments.length - a.comments.length);
         }
         res.status(200).json(posts);
       } catch (err) {
@@ -284,9 +287,18 @@ async function startServer() {
     });
 
 
-    app.get('/M00980001/latest', async (req, res) => {
+    app.get('/M00980001/latest/:id', async (req, res) => {
+      const sortBy=req.params.id;
+
       try {
-        const posts = await db.collection('Posts').find().toArray();
+        let posts = await db.collection('Posts').find().toArray();
+        if (sortBy==="recent"){
+          posts=posts.reverse();
+        } else if (sortBy === "level") {
+          posts = posts.sort((a, b) => b.level - a.level);
+        } else if (sortBy === "comments") {
+          posts = posts.sort((a, b) => b.comments.length - a.comments.length);
+        }
         res.status(200).json(posts);
       } catch (err) {
         console.error('Error fetching posts:', err);
@@ -542,13 +554,23 @@ async function startServer() {
       }
     });
 
-    app.get('/M00980001/searchPost/:id', async (req, res) => {
+    app.get('/M00980001/searchPost/:id/:filter', async (req, res) => {
       const targetContent=req.params.id;
+      const filter=req.params.filter;
     
       try {
-        const posts = await db.collection('Posts').find({
+        let posts = await db.collection('Posts').find({
           content: { $regex: targetContent, $options: 'i' }
         }).toArray();
+
+        if (filter==="recent"){
+          posts=posts.reverse();
+        } else if (filter === "level") {
+          posts = posts.sort((a, b) => b.level - a.level);
+        } else if (filter === "comments") {
+          posts = posts.sort((a, b) => b.comments.length - a.comments.length);
+        }
+
         res.status(200).json(posts);
       } catch (err) {
         console.error('Error fetching users:', err);

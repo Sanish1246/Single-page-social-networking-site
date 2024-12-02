@@ -184,8 +184,9 @@ body{
     margin:0 auto;
 }
 
-.sort-feed{
-    width:50%;
+.sort-feed,
+.sort-search{
+    width:100%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -194,26 +195,30 @@ body{
     align-items: center;
 }
 
-.sort-feed p{
+.sort-feed p,
+.sort-search p{
     font-size: 1.5rem;
 }
 
-.sort-feed button{
+.sort-feed button,
+.sort-search button{
     border: 2px solid hsl(0, 96%, 54%);
     border-radius: 10px;
     background: none;
-    width:30%;
+    width:20%;
     height:50px;
     font-size: 1.4rem;
 }
 
-.sort-feed button:hover{
+.sort-feed button:hover,
+.sort-search button:hover{
     background: linear-gradient(90deg, hsl(268, 96%, 40%, 0.8), hsl(0, 96%, 60%, 0.8));
     cursor:pointer;
     color:white;
 }
 
-.sort-feed button.active{
+.sort-feed button.active,
+.sort-search button.active{
     background: linear-gradient(90deg, hsl(268, 96%, 40%, 0.8), hsl(0, 96%, 60%, 0.8));
     cursor:pointer;
     color:white;
@@ -886,6 +891,10 @@ body{
 
 #favourite-games .game{
     width:60%;
+}
+
+#searched-posts{
+    display:none;
 }
 
 .post-search-container{

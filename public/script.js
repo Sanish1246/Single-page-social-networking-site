@@ -5,11 +5,14 @@ const loginLink=document.getElementById('login-link');
 const currentUser=document.getElementById('currentUser');
 let pageNo=1;
 let sortBy="recent";
+let searchFilter="recent";
 
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
   document.getElementById("feed-button").classList.add('active');
   document.getElementById('feed-recent').classList.add('active');
+  document.getElementById('search-recent').classList.add('active');
+
   displayFeedPosts();
 };
 
@@ -75,6 +78,14 @@ document.querySelectorAll('.sort-feed-button').forEach(button => {
           sortBy="level";
           document.getElementById('feed-posts').style.display = 'block';
           displayFeedPosts()
+      } else if (this.id=='feed-comments'){
+         sortBy="comments";
+         document.getElementById('feed-comments').style.display = 'block';
+         displayFeedPosts()
+      } else {
+         sortBy="old";
+         document.getElementById('feed-old').style.display = 'block';
+         displayFeedPosts()
       }
   });
 });
@@ -186,7 +197,7 @@ document.getElementById('profile-button').addEventListener('click', function(eve
   closeSectionButton();
   closeSaved();
   openProfile();
-  document.getElementById("post-search-container").style.display="none";
+  document.getElementById("searched-posts").style.display="none";
 });
 
 document.getElementById('home-button').addEventListener('click', function(event){
@@ -194,7 +205,7 @@ document.getElementById('home-button').addEventListener('click', function(event)
   closeProfile();
   closeSaved();
   openSections();
-  document.getElementById("post-search-container").style.display="none";
+  document.getElementById("searched-posts").style.display="none";
   document.getElementById("feed-button").classList.add('active');
 });
 
@@ -204,7 +215,7 @@ document.getElementById('saved-button').addEventListener('click', function(event
   closeSection();
   closeSectionButton();
   openSaved();
-  document.getElementById("post-search-container").style.display="none";
+  document.getElementById("searched-posts").style.display="none";
 });
 
 document.getElementById('favourite-button').addEventListener('click', function(event){
@@ -213,7 +224,7 @@ document.getElementById('favourite-button').addEventListener('click', function(e
   closeSection();
   closeSectionButton();
   openFavourite();
-  document.getElementById("post-search-container").style.display="none";
+  document.getElementById("searched-posts").style.display="none";
 });
 
 document.querySelector('.register-link').addEventListener('click', function(event) {
@@ -844,7 +855,7 @@ async function fetchPeople() {
     const data = await response.json();
 
     if(Object.keys(data).length === 0){
-      const postsResponse = await fetch('http://localhost:8000/M00980001/latest');
+      const postsResponse = await fetch(`http://localhost:8000/M00980001/latest/${sortBy}`);
       const posts = await postsResponse.json();
       loadLatestPosts(posts);
     } else {
@@ -1321,13 +1332,9 @@ async function fetchSavedPosts(){
 }
 
 
-async function loadLatestPosts() {
-  const postsResponse = await fetch('http://localhost:8000/M00980001/latest');
-  let posts = await postsResponse.json();
+async function loadLatestPosts(posts) {
   const postsContainer = document.getElementById('feed-posts-container');
   postsContainer.innerHTML = ''; 
-
-  posts = posts.reverse();
 
   for (const post of posts) {
     const postElement = document.createElement('div');
@@ -1641,15 +1648,21 @@ function clearPeopleResults(){
   document.getElementById("people-container").style.display="block";
 }
 
-async function searchPosts(){
+async function searchPosts(searchTarget){
   closeSection();
   closeSectionButton();
   closeProfile();
   closeSaved();
-  const targetText=document.getElementById("search-text").value;
+  let targetText;
+
+  if (searchTarget=='') {
+    targetText=document.getElementById("search-text").value;
+  } else {
+    targetText=searchTarget;
+  }
 
   try {
-    const response = await fetch(`http://localhost:8000/M00980001/searchPost/${targetText}`);
+    const response = await fetch(`http://localhost:8000/M00980001/searchPost/${targetText}/${searchFilter}`);
     let posts = await response.json();
     const postsContainer = document.getElementById('post-search-container');
 
@@ -1680,8 +1693,6 @@ async function searchPosts(){
     } else {
       header.textContent = 'Search results';
       postsContainer.appendChild(header);
-  
-      posts = posts.reverse();
 
   for (const post of posts) {
     const postElement = document.createElement('div');
@@ -1744,6 +1755,34 @@ async function searchPosts(){
       console.error('Error fetching profile image:', error);
     }
   }
+
+  document.querySelectorAll('.search-sort-button').forEach(button => {
+    button.addEventListener('click', function() {
+        document.querySelectorAll('.search-sort-button').forEach(btn => btn.classList.remove('active'));
+        
+        this.classList.add('active');
+
+        postsContainer.innerHTML = '';
+  
+        if (this.id=='search-recent'){
+            searchFilter="recent";
+            document.getElementById('searched-posts').style.display = 'block';
+            searchPosts(targetText)
+        } else if (this.id=='search-level'){
+            searchFilter="level";
+            document.getElementById('searched-posts').style.display = 'block';
+            searchPosts(targetText)
+        } else if (this.id=='search-comments'){
+           searchFilter="comments";
+           document.getElementById('searched-posts').style.display = 'block';
+           searchPosts(targetText)
+        } else {
+           searchFilter="old";
+           document.getElementById('searched-posts').style.display = 'block';
+           searchPosts(targetText)
+        }
+    });
+  });
 
   document.querySelectorAll('.follow-user').forEach(function(element) {
     element.addEventListener('click', async function(event) {
@@ -1862,8 +1901,9 @@ async function searchPosts(){
       }
     });
   });
+
  } 
-    document.getElementById("post-search-container").style.display="block";
+    document.getElementById("searched-posts").style.display="block";
   } catch (error) {
     console.error('Error:', error);
   }
