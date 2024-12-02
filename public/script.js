@@ -251,6 +251,7 @@ function closeSaved(){
 function openFavourite(){
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
+      loadFavourites();
       document.getElementById('favourite-games').style.display='block';
     } else {
       systemMessage.innerText='❌ You must login to view this';
@@ -1151,7 +1152,6 @@ async function fetchSavedPosts(){
     const isFollowing = following.includes(post.owner);
     const isLiked = post.likedBy.includes(data.username); 
     const isDisliked = post.dislikedBy.includes(data.username); 
-    const isSaved = data.savedPosts.includes(post._id);
 
     try {
       const response = await fetch(`/M00980001/postOwner/${post.owner}`);
@@ -1933,7 +1933,6 @@ async function loadUserPosts(posts,userData, data){
   posts.forEach(post => {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
-    const isFollowing = following.includes(post.owner);
     const isLiked = post.likedBy.includes(data.username); 
     const isDisliked = post.dislikedBy.includes(data.username); 
     const isSaved = data.savedPosts.includes(post._id);
@@ -2070,7 +2069,7 @@ document.querySelector('.next-button').addEventListener('click', function(event)
 
 async function displayGames(pageNo) {
   const gameContainer = document.getElementById("game-container");
-  gameContainer.innerHTML = ''; // Pulisce il contenitore prima di aggiungere nuovi giochi
+  gameContainer.innerHTML = ''; 
 
   try {
     const userResponse = await fetch(`http://localhost:8000/M00980001/user`);
@@ -2078,9 +2077,6 @@ async function displayGames(pageNo) {
 
     const response = await fetch(`http://localhost:8000/M00980001/recommended/${pageNo}`);
     const data = await response.json();
-
-    console.log(userData.favGames)
-
 
     data.forEach(game => {
       const gameElement = document.createElement('div');
@@ -2179,6 +2175,72 @@ async function removeFavourite(game){
     systemMessage.innerText='❌ Error: ' + error;
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
+  });
+}
+
+async function loadFavourites(){
+  const gameContainer = document.getElementById("fav-game-container");
+  gameContainer.innerHTML = ''; 
+
+  try {
+    const response = await fetch(`http://localhost:8000/M00980001/showFavourite`);
+    const data = await response.json();
+    console.log(data);
+
+    data.forEach(game => {
+      const gameElement = document.createElement('div');
+      gameElement.classList.add('game');
+
+      gameElement.innerHTML = `
+        <div class="game-details">
+          <div class="game-title">
+            <p>${game.name}</p>  
+            <button class="add-game ${"active"}" id="${game.name}">Remove</button>
+          </div>  
+          <hr>           
+          <div class="genres">
+            <div class="left-section">
+               <p>Genres: <span id="genre-list">${game.genre}</span></p>
+            </div>
+            <div class="right-section">
+              <p>Rating: <span id="rating">${game.rating}</span>/5</p>
+            </div>
+          </div>
+        </div>
+        <img id="game-img" src="${game.image || "./images/default-photo.jpg"}" alt="${game.name} image">
+      `;
+
+      gameContainer.appendChild(gameElement);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  document.querySelectorAll('.add-game').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+
+      if (this.classList.contains("active")) {
+        this.classList.remove('active'); 
+        this.innerText = 'Add to Favourites'; 
+        removeFavourite(targetId);
+      } else {
+        this.classList.add('active');
+        this.innerText = 'Remove';  
+        const newGenre = this.closest('.game-details').querySelector("#genre-list").innerHTML
+        const newRating = this.closest('.game-details').querySelector("#rating").innerHTML;
+        const newImg = this.closest('.game').querySelector("#game-img").src;
+
+        const newGame = {
+          name: targetId,
+          genre: newGenre,
+          image: newImg,
+          rating: newRating
+        }
+        addFavourite(newGame)
+      }
+    });
   });
 }
 

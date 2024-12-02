@@ -613,14 +613,27 @@ async function startServer() {
     app.delete('/M00980001/removeFavourite/:id', async (req, res) => {
       const currentUser = req.session.user.username;
       const newGame=req.params.id;  
+
       try {
-        
         await db.collection('Users').updateOne(
           { username: currentUser },
           { $pull: { favGames: { name: newGame } } }
         );
-
         res.status(200).json({ message: 'Game removed from favourites' });
+      } catch (err) {
+        console.error('Error updating follow data:', err);
+        res.status(500).json({ error: 'Error processing follow action' });
+      }
+    });
+
+    app.get('/M00980001/showFavourite', async (req, res) => {
+      const currentUser = req.session.user.username;
+      try {
+    
+        const user = await db.collection('Users').findOne({ username: currentUser });
+        console.log(user.favGames);
+
+        res.status(200).json(user.favGames);
       } catch (err) {
         console.error('Error updating follow data:', err);
         res.status(500).json({ error: 'Error processing follow action' });

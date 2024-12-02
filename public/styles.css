@@ -505,16 +505,16 @@ body{
     justify-content: space-between; 
     align-items: center; 
     max-height:2rem;
-  }
+}
   
-  .left-section {
+.left-section {
     flex-grow: 1; 
-  }
+}
   
-  .right-section {
+.right-section {
     text-align: right; 
     margin-right: 75px;
-  }
+}
 
 .game-title button{
     margin-left:auto;
@@ -885,6 +885,20 @@ body{
 
 #user-follow-button.following{
     background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.8), hsl(0, 96%, 65%, 0.8));
+}
+
+#favourite-games{
+    width:100%;
+}
+
+#favourite-games h1{
+    text-align: center;
+}
+
+#fav-game-container .game{
+    margin: 0 auto;
+    width:80%;
+    margin-bottom:1rem;
 }
 
 
