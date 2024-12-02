@@ -264,11 +264,18 @@ async function startServer() {
       }
     });
 
-    app.get('/M00980001/feed', async (req, res) => {
+    app.get('/M00980001/feed/:id', async (req, res) => {
       const currentUser=req.session.user.username;
+      const sortBy=req.params.id;
+      console.log(sortBy);
     
       try {
-        const posts = await db.collection('Posts').find({ owner: { $ne: currentUser } }).toArray();
+        let posts = await db.collection('Posts').find({ owner: { $ne: currentUser } }).toArray();
+        if (sortBy==="recent"){
+          posts=posts.reverse();
+        } else if (sortBy === "level") {
+          posts = posts.sort((a, b) => b.level - a.level);
+        }
         res.status(200).json(posts);
       } catch (err) {
         console.error('Error fetching posts:', err);

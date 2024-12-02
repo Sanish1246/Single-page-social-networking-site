@@ -4,10 +4,12 @@ const systemMessage=document.getElementById('system-message');
 const loginLink=document.getElementById('login-link');
 const currentUser=document.getElementById('currentUser');
 let pageNo=1;
+let sortBy="recent";
 
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
   document.getElementById("feed-button").classList.add('active');
+  document.getElementById('feed-recent').classList.add('active');
   displayFeedPosts();
 };
 
@@ -42,10 +44,8 @@ function switchMode(){
 
 document.querySelectorAll('.section-button').forEach(button => {
     button.addEventListener('click', function() {
-        // Remove the active class from all buttons
         document.querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
         
-        // Add the active class to the clicked button
         this.classList.add('active');
 
         if (this.id=='feed-button'){
@@ -59,6 +59,24 @@ document.querySelectorAll('.section-button').forEach(button => {
 
         }
     });
+});
+
+document.querySelectorAll('.sort-feed-button').forEach(button => {
+  button.addEventListener('click', function() {
+      document.querySelectorAll('.sort-feed-button').forEach(btn => btn.classList.remove('active'));
+      
+      this.classList.add('active');
+
+      if (this.id=='feed-recent'){
+          sortBy="recent";
+          document.getElementById('feed-posts').style.display = 'block';
+          displayFeedPosts()
+      } else if (this.id=='feed-level'){
+          sortBy="level";
+          document.getElementById('feed-posts').style.display = 'block';
+          displayFeedPosts()
+      }
+  });
 });
 
 async function openNav() {
@@ -293,6 +311,7 @@ function openFollowing(){
 function openFeed(){
     closeSection();
     document.getElementById('feed-posts').style.display = 'block';
+    document.getElementById('feed-recent').classList.add('active');
     displayFeedPosts();
 }
 
@@ -829,7 +848,7 @@ async function fetchPeople() {
       const posts = await postsResponse.json();
       loadLatestPosts(posts);
     } else {
-      const postsResponse = await fetch('http://localhost:8000/M00980001/feed');
+      const postsResponse = await fetch(`http://localhost:8000/M00980001/feed/${sortBy}`);
       const posts = await postsResponse.json();
       loadFeedPosts(posts, data);
     }
@@ -842,8 +861,6 @@ async function loadFeedPosts(posts, data) {
   const postsContainer = document.getElementById('feed-posts-container');
   postsContainer.innerHTML = '';
   let following = data.following;
-
-  posts = posts.reverse();
 
   for (const post of posts) {
     const postElement = document.createElement('div');
@@ -2185,7 +2202,6 @@ async function loadFavourites(){
   try {
     const response = await fetch(`http://localhost:8000/M00980001/showFavourite`);
     const data = await response.json();
-    console.log(data);
 
     data.forEach(game => {
       const gameElement = document.createElement('div');

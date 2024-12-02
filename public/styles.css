@@ -184,6 +184,41 @@ body{
     margin:0 auto;
 }
 
+.sort-feed{
+    width:50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin: 0 auto;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.sort-feed p{
+    font-size: 1.5rem;
+}
+
+.sort-feed button{
+    border: 2px solid hsl(0, 96%, 54%);
+    border-radius: 10px;
+    background: none;
+    width:30%;
+    height:50px;
+    font-size: 1.4rem;
+}
+
+.sort-feed button:hover{
+    background: linear-gradient(90deg, hsl(268, 96%, 40%, 0.8), hsl(0, 96%, 60%, 0.8));
+    cursor:pointer;
+    color:white;
+}
+
+.sort-feed button.active{
+    background: linear-gradient(90deg, hsl(268, 96%, 40%, 0.8), hsl(0, 96%, 60%, 0.8));
+    cursor:pointer;
+    color:white;
+}
+
 .main-section .post,
 #your-profile .post,
 #saved-posts .post,
