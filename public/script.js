@@ -6,6 +6,7 @@ const currentUser=document.getElementById('currentUser');
 let pageNo=1;
 let sortBy="recent";
 let searchFilter="recent";
+let targetText='';
 
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
@@ -72,21 +73,16 @@ document.querySelectorAll('.sort-feed-button').forEach(button => {
 
       if (this.id=='feed-recent'){
           sortBy="recent";
-          document.getElementById('feed-posts').style.display = 'block';
-          displayFeedPosts()
       } else if (this.id=='feed-level'){
           sortBy="level";
-          document.getElementById('feed-posts').style.display = 'block';
-          displayFeedPosts()
       } else if (this.id=='feed-comments'){
          sortBy="comments";
-         document.getElementById('feed-comments').style.display = 'block';
-         displayFeedPosts()
       } else {
          sortBy="old";
-         document.getElementById('feed-old').style.display = 'block';
-         displayFeedPosts()
       }
+
+      document.getElementById('feed-old').style.display = 'block';
+      displayFeedPosts()
   });
 });
 
@@ -955,6 +951,7 @@ async function loadFeedPosts(posts, data) {
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelDownButton = this.closest('.post').querySelector(".level-down");
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
@@ -962,6 +959,11 @@ async function loadFeedPosts(posts, data) {
         removeLike(targetId);
       } else {
         this.classList.add('active');
+        if(levelDownButton.classList.contains("active")) {
+          levelDownButton.classList.remove("active"); 
+          currentLevel++;
+          removeDislike(targetId); 
+        }
         currentLevel++;  
         likePost(targetId);  
       }
@@ -977,6 +979,7 @@ async function loadFeedPosts(posts, data) {
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelUpButton = this.closest('.post').querySelector(".level-up");
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
@@ -984,6 +987,11 @@ async function loadFeedPosts(posts, data) {
         removeDislike(targetId);  
       } else {
         this.classList.add('active');
+        if(levelUpButton.classList.contains("active")) {
+          levelUpButton.classList.remove("active"); 
+          currentLevel--;
+          removeLike(targetId); 
+        } 
         currentLevel--;  
         dislikePost(targetId);  
       }
@@ -1648,18 +1656,42 @@ function clearPeopleResults(){
   document.getElementById("people-container").style.display="block";
 }
 
+document.querySelectorAll('.search-sort-button').forEach(button => {
+  button.addEventListener('click', function() {
+      document.querySelectorAll('.search-sort-button').forEach(btn => btn.classList.remove('active'));
+      
+      this.classList.add('active');
+
+      document.getElementById('post-search-container').innerHTML = '';
+
+      if (this.id == 'search-recent') {
+          searchFilter = "recent";
+      } else if (this.id == 'search-level') {
+          searchFilter = "level";
+      } else if (this.id == 'search-comments') {
+          searchFilter = "comments";
+      } else {
+          searchFilter = "old";
+      }
+      
+      document.getElementById('searched-posts').style.display = 'block';
+      searchPosts(targetText);
+  }); 
+});
+
 async function searchPosts(searchTarget){
   closeSection();
   closeSectionButton();
   closeProfile();
   closeSaved();
-  let targetText;
 
   if (searchTarget=='') {
     targetText=document.getElementById("search-text").value;
   } else {
     targetText=searchTarget;
   }
+
+  console.log(targetText);
 
   try {
     const response = await fetch(`http://localhost:8000/M00980001/searchPost/${targetText}/${searchFilter}`);
@@ -1756,33 +1788,6 @@ async function searchPosts(searchTarget){
     }
   }
 
-  document.querySelectorAll('.search-sort-button').forEach(button => {
-    button.addEventListener('click', function() {
-        document.querySelectorAll('.search-sort-button').forEach(btn => btn.classList.remove('active'));
-        
-        this.classList.add('active');
-
-        postsContainer.innerHTML = '';
-  
-        if (this.id=='search-recent'){
-            searchFilter="recent";
-            document.getElementById('searched-posts').style.display = 'block';
-            searchPosts(targetText)
-        } else if (this.id=='search-level'){
-            searchFilter="level";
-            document.getElementById('searched-posts').style.display = 'block';
-            searchPosts(targetText)
-        } else if (this.id=='search-comments'){
-           searchFilter="comments";
-           document.getElementById('searched-posts').style.display = 'block';
-           searchPosts(targetText)
-        } else {
-           searchFilter="old";
-           document.getElementById('searched-posts').style.display = 'block';
-           searchPosts(targetText)
-        }
-    });
-  });
 
   document.querySelectorAll('.follow-user').forEach(function(element) {
     element.addEventListener('click', async function(event) {
