@@ -267,7 +267,6 @@ async function startServer() {
     app.get('/M00980001/feed/:id', async (req, res) => {
       const currentUser=req.session.user.username;
       const sortBy=req.params.id;
-      console.log(sortBy);
     
       try {
         let posts = await db.collection('Posts').find({ owner: { $ne: currentUser } }).toArray();

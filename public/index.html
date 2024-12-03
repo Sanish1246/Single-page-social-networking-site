@@ -107,8 +107,13 @@
     </div>
 
     <div class="main-section" id="recommended-section">
+        <div class="search-games">
+            <input type="text" id="search-game" placeholder="🔍Search for a game..">
+            <button onclick="searchGame()">Search</button>
+            <button onclick="clearGameResults()">Clear</button>
+        </div>
         <div class="game-section">
-            <h1>Here are some games we recommend you, based on your recent activity</h1>
+            <h1>Games</h1>
             <div class="game-container" id="game-container">
             </div>
         </div>

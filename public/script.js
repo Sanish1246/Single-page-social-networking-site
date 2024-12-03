@@ -2128,6 +2128,14 @@ document.querySelector('.next-button').addEventListener('click', function(event)
  window.scrollTo(0, 0)
 });
 
+document.querySelector('.previous-button').addEventListener('click', function(event) {
+  if (pageNo!=1){
+    pageNo--
+    displayGames(pageNo);
+    window.scrollTo(0, 0)
+  }
+ });
+
 
 async function displayGames(pageNo) {
   const gameContainer = document.getElementById("game-container");
