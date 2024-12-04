@@ -112,14 +112,25 @@
             <button onclick="searchGame()">Search</button>
             <button onclick="clearGameResults()">Clear</button>
         </div>
-        <div class="game-section">
-            <h1>Games</h1>
-            <div class="game-container" id="game-container">
+        <div class="normal-game" id="normal-game">
+            <div class="game-section">
+                <h1>Games</h1>
+                <div class="game-container" id="game-container">
+                </div>
+            </div>
+            <div class="navigation-arrows" id="game-navigation">
+                <button id="previous-button" class="previous-button">Previous</button>
+                <button id="next-button" class="next-button">Next</button>
             </div>
         </div>
-        <div class="navigation-arrows">
-            <button id="previous-button" class="previous-button">Previous</button>
-            <button id="next-button" class="next-button">Next</button>
+
+        <div class="searched-games" id="searched-games">
+            <div class="game-container" id="searched-games-container">
+            </div>
+            <div class="navigation-arrows" id="game-search-navigation">
+                <button id="previous-search-button" class="previous-search-button">Previous</button>
+                <button id="next-search-button" class="next-search-button">Next</button>
+            </div>
         </div>
     </div>
 

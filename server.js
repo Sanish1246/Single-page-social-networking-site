@@ -667,6 +667,27 @@ async function startServer() {
         res.status(500).json({ error: 'Error processing follow action' });
       }
     });
+
+    app.get('/M00980001/searchGame/:game/:id', async (req, res) => {
+      const pageNo=req.params.id;
+      const targetGame=req.params.game;
+      try {
+        const url = `https://api.rawg.io/api/games?key=${apiKey}&search=${targetGame}&page=${pageNo}`;
+        const games = await axios.get(url);
+    
+        const allGames = games.data.results.map(game => ({
+          name: game.name,
+          genre: game.genres.map(genre => genre.name).join(', '), 
+          image: game.background_image,
+          rating: game.rating
+        }));
+    
+        res.status(200).json(allGames); 
+      } catch (err) {
+        console.error('Error fetching games:', err);
+        res.status(500).json({ error: 'Error fetching games' });
+      }
+    });
     
 
     app.listen(port, () => {

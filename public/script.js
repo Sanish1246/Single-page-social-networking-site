@@ -4,6 +4,7 @@ const systemMessage=document.getElementById('system-message');
 const loginLink=document.getElementById('login-link');
 const currentUser=document.getElementById('currentUser');
 let pageNo=1;
+let searchPageNo=1;
 let sortBy="recent";
 let searchFilter="recent";
 let targetText='';
@@ -302,6 +303,7 @@ function openSections(){
 
 function openFollowing(){
     closeSection();
+    document.getElementById('searched-posts').style.display = 'none';
     checkCurrentUser().then(isUserLoggedIn => {
       if (isUserLoggedIn) {
         document.getElementById('following-posts').style.display = 'block';
@@ -317,6 +319,7 @@ function openFollowing(){
 
 function openFeed(){
     closeSection();
+    document.getElementById('searched-posts').style.display = 'none';
     document.getElementById('feed-posts').style.display = 'block';
     document.getElementById('feed-recent').classList.add('active');
     displayFeedPosts();
@@ -324,6 +327,7 @@ function openFeed(){
 
 function openPeople(){
     closeSection();
+    document.getElementById('searched-posts').style.display = 'none';
     checkCurrentUser().then(isUserLoggedIn => {
       if (isUserLoggedIn) {
         document.getElementById('people-section').style.display = 'block';
@@ -340,6 +344,7 @@ function openPeople(){
 
 function openRecommended(){
   closeSection();
+  document.getElementById('searched-posts').style.display = 'none';
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
       document.getElementById('recommended-section').style.display = 'block';
@@ -2124,20 +2129,20 @@ async function loadUserPosts(posts,userData, data){
 
 document.querySelector('.next-button').addEventListener('click', function(event) {
  pageNo++
- displayGames(pageNo);
+ displayGames();
  window.scrollTo(0, 0)
 });
 
 document.querySelector('.previous-button').addEventListener('click', function(event) {
   if (pageNo!=1){
     pageNo--
-    displayGames(pageNo);
-    window.scrollTo(0, 0)
+    displayGames();
   }
+  window.scrollTo(0, 0)
  });
 
 
-async function displayGames(pageNo) {
+async function displayGames() {
   const gameContainer = document.getElementById("game-container");
   gameContainer.innerHTML = ''; 
 
@@ -2313,4 +2318,106 @@ async function loadFavourites(){
   });
 }
 
+async function searchGame() {
+  document.getElementById("normal-game").style.display = "none";
+  document.getElementById("searched-games").style.display = "block";
+  const targetGame = document.getElementById("search-game").value;
 
+  const gameContainer = document.getElementById("searched-games-container");
+  gameContainer.innerHTML = ''; 
+
+  try {
+    const userResponse = await fetch(`http://localhost:8000/M00980001/user`);
+    const userData = await userResponse.json();
+
+    const response = await fetch(`http://localhost:8000/M00980001/searchGame/${targetGame}/${searchPageNo}`);
+    const data = await response.json();
+
+    const header = document.createElement('h1');
+    
+    if (data.length === 0) {  
+      header.textContent = 'No results';
+      gameContainer.appendChild(header);
+    } else {
+      header.textContent = 'Search results';
+      gameContainer.appendChild(header);
+
+      data.forEach(game => {
+        const gameElement = document.createElement('div');
+        gameElement.classList.add('game');
+
+        let isFav = userData.favGames.some(favGame => favGame.name === game.name);
+
+        gameElement.innerHTML = `
+          <div class="game-details">
+            <div class="game-title">
+              <p>${game.name}</p>  
+              <button class="add-game ${isFav ? "active" : ''}" id="${game.name}">${isFav ? "Remove" : '+ Add to favourites'}</button>
+            </div>  
+            <hr>           
+            <div class="genres">
+              <div class="left-section">
+                <p>Genres: <span id="genre-list">${game.genre}</span></p>
+              </div>
+              <div class="right-section">
+                <p>Rating: <span id="rating">${game.rating}</span>/5</p>
+              </div>
+            </div>
+          </div>
+          <img id="game-img" src="${game.image || "./images/default-photo.jpg"}" alt="${game.name} image">
+        `;
+
+        gameContainer.appendChild(gameElement);
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  document.querySelectorAll('.add-game').forEach(function(element) {
+    element.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const targetId = this.id;
+
+      if (this.classList.contains("active")) {
+        this.classList.remove('active'); 
+        this.innerText = 'Add to Favourites'; 
+        removeFavourite(targetId);
+      } else {
+        this.classList.add('active');
+        this.innerText = 'Remove';  
+        const newGenre = this.closest('.game-details').querySelector("#genre-list").innerHTML;
+        const newRating = this.closest('.game-details').querySelector("#rating").innerHTML;
+        const newImg = this.closest('.game').querySelector("#game-img").src;
+
+        const newGame = {
+          name: targetId,
+          genre: newGenre,
+          image: newImg,
+          rating: newRating
+        };
+        addFavourite(newGame);
+      }
+    });
+  });
+}
+
+function clearGameResults(){
+  document.getElementById("searched-games").style.display="none";
+  document.getElementById("search-game").value='';
+  document.getElementById("normal-game").style.display="block";
+}
+
+document.querySelector('.next-search-button').addEventListener('click', function(event) {
+  searchPageNo++
+  searchGame();
+  window.scrollTo(0, 0)
+ });
+ 
+ document.querySelector('.previous-search-button').addEventListener('click', function(event) {
+   if (searchPageNo!=1){
+     searchPageNo--
+     searchGame();
+   }
+   window.scrollTo(0, 0)
+  });
