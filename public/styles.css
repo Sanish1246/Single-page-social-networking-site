@@ -954,6 +954,61 @@ body{
     margin-bottom:1rem;
 }
 
+#news{
+    display:none;
+}
+
+
+#news h1{
+    text-align:center;
+}
+
+.newsArticle{
+    display: flex;
+    flex-direction: row;
+    width:80%;
+    margin: 0 auto;
+    border:2px solid black;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.newsLeft{
+    padding-left:1px;
+    padding-top:1px;
+}
+
+
+.newsLeft img{
+    height:10rem;
+    width:10rem;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.newsRight{
+    margin-left:5px;
+}
+
+.newsTitle{
+    font-size: 1.5rem;
+    font-weight: bold;
+    min-width: 0;
+    color: black;
+}
+
+.newsTitle:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.newsRight hr{
+    flex-grow: 1;
+    width: 100%;
+}
+
+
+
 
 
 

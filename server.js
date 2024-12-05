@@ -696,7 +696,7 @@ async function startServer() {
         const page = await browser.newPage();
     
         await page.goto('https://www.ign.com/news');
-        await page.waitForSelector('.item-body'); // Aspetta che gli articoli siano visibili
+        await page.waitForSelector('.item-body'); 
     
         const news = await page.evaluate(() => {
           const newsElements = document.querySelectorAll('.item-body');
@@ -722,7 +722,6 @@ async function startServer() {
           return newsArray;
         });
     
-        console.log(news);
         await browser.close();
     
         res.status(200).json(news); 

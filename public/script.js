@@ -2424,19 +2424,34 @@ document.querySelector('.next-search-button').addEventListener('click', function
   });
 
   async function openNews(){
-    fetch('http://localhost:8000/M00980001/news', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data) {
-        console.log(data);
-      };
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+    document.getElementById('searched-posts').style.display = 'none';
+    closeSection();
+    document.getElementById('news').style.display = 'block';
+    try {
+      const response = await fetch('http://localhost:8000/M00980001/news');
+      const news = await response.json();
+      const newsContainer = document.getElementById('news-container');
+  
+      newsContainer.innerHTML = '';
+  
+      news.forEach(article => {
+        const newsElement = document.createElement('div');
+        newsElement.classList.add('newsArticle');
+  
+        newsElement.innerHTML = `
+                <div class="newsLeft">
+                    <img src="${article.img || './images/default-photo.jpg'}">
+                </div>
+                <div class="newsRight">
+                    <a class="newsTitle">${article.title}</a>
+                    <hr>
+                    <p class="newsContent">${article.content}</p>
+                </div>
+        `;
+  
+        newsContainer.appendChild(newsElement);
+      });
+    } catch(error){
+      console.log(error);
+    }
   }
