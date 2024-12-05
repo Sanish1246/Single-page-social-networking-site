@@ -59,9 +59,10 @@ document.querySelectorAll('.section-button').forEach(button => {
             openPeople();
         } else if(this.id=="following-button") {
             openFollowing();
-        } else {
+        } else if(this.id=="recommended-button") {
           openRecommended();
-
+        } else {
+          openNews()
         }
     });
 });
@@ -2421,3 +2422,21 @@ document.querySelector('.next-search-button').addEventListener('click', function
    }
    window.scrollTo(0, 0)
   });
+
+  async function openNews(){
+    fetch('http://localhost:8000/M00980001/news', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        console.log(data);
+      };
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }

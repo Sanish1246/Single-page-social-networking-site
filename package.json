@@ -6,7 +6,8 @@
     "express-fileupload": "^1.5.1",
     "express-session": "^1.18.1",
     "mongodb": "^6.10.0",
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "puppeteer": "^23.10.1"
   },
   "type": "module"
 }

@@ -8,6 +8,7 @@ import fs from 'fs';
 import { ObjectId } from 'mongodb';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import puppeteer from 'puppeteer'
 
 const app = express();
 dotenv.config();
@@ -688,6 +689,49 @@ async function startServer() {
         res.status(500).json({ error: 'Error fetching games' });
       }
     });
+
+    app.get('/M00980001/news', async (req, res) => {
+      try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+    
+        await page.goto('https://www.ign.com/news');
+        await page.waitForSelector('.item-body'); // Aspetta che gli articoli siano visibili
+    
+        const news = await page.evaluate(() => {
+          const newsElements = document.querySelectorAll('.item-body');
+          const newsArray = [];
+    
+          for (const newsElement of newsElements) {
+            const isGameNews = newsElement.querySelector('[data-cy="icon-game-object"]');
+            
+            if (isGameNews) {
+              const newsTitle = newsElement.querySelector('.item-title')?.innerText;
+              const newsImg = newsElement.querySelector('.item-thumbnail img')?.src;
+              const newsContent = newsElement.querySelector('.item-subtitle')?.innerText;
+    
+              if (newsTitle && newsImg) {
+                newsArray.push({
+                  title: newsTitle,
+                  img: newsImg,
+                  content: newsContent
+                });
+              }
+            }
+          }
+          return newsArray;
+        });
+    
+        console.log(news);
+        await browser.close();
+    
+        res.status(200).json(news); 
+      } catch (err) {
+        console.error('Error fetching news:', err);
+        res.status(500).json({ error: 'Error fetching news' });
+      }
+    });
+    
     
 
     app.listen(port, () => {

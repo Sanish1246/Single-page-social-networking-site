@@ -14,6 +14,7 @@ body{
     border-radius:1rem;
     padding: 0 1rem;
     box-shadow: 0 0 10px black;
+    margin-bottom: 1rem;
 }
 
 .top-bar span {
@@ -99,7 +100,7 @@ body{
 }
 
 .button-container button{
-    width:25%;
+    width:20%;
     font-family: "verdana", sans-serif;
     font-size: 1.3rem;
     height: 2.3rem;
@@ -186,7 +187,7 @@ body{
 
 .sort-feed,
 .sort-search{
-    width:100%;
+    width:80%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -206,8 +207,8 @@ body{
     border-radius: 10px;
     background: none;
     width:20%;
-    height:50px;
-    font-size: 1.4rem;
+    height:45px;
+    font-size: 1.2rem;
 }
 
 .sort-feed button:hover,
