@@ -692,46 +692,88 @@ async function startServer() {
 
     app.get('/M00980001/news', async (req, res) => {
       try {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-    
-        await page.goto('https://www.ign.com/news');
-        await page.waitForSelector('.item-body'); 
-    
-        const news = await page.evaluate(() => {
-          const newsElements = document.querySelectorAll('.item-body');
-          const newsArray = [];
-    
-          for (const newsElement of newsElements) {
-            const isGameNews = newsElement.querySelector('[data-cy="icon-game-object"]');
-            
-            if (isGameNews) {
-              const newsTitle = newsElement.querySelector('.item-title')?.innerText;
-              const newsImg = newsElement.querySelector('.item-thumbnail img')?.src;
-              const newsContent = newsElement.querySelector('.item-subtitle')?.innerText;
-    
-              if (newsTitle && newsImg) {
-                newsArray.push({
-                  title: newsTitle,
-                  img: newsImg,
-                  content: newsContent
-                });
+          const browser = await puppeteer.launch({ headless: true });
+          const page = await browser.newPage();
+  
+          // Blocca risorse non necessarie
+          await page.setRequestInterception(true);
+          page.on('request', (req) => {
+              if (['image', 'stylesheet', 'font'].includes(req.resourceType())) {
+                  req.abort(); 
+              } else {
+                  req.continue();
               }
-            }
+          });
+  
+          await page.goto('https://www.ign.com/news', { timeout: 60000, waitUntil: 'domcontentloaded' });
+          await page.waitForSelector('.item-body', { timeout: 60000 });
+  
+          let news = await page.evaluate(() => {
+              const newsElements = document.querySelectorAll('.item-body');
+              const newsArray = [];
+  
+              for (const newsElement of newsElements) {
+                  const isGameNews = newsElement.querySelector('[data-cy="icon-game-object"]');
+  
+                  if (isGameNews) {
+                      const newsTitle = newsElement.querySelector('.item-title')?.innerText;
+                      const newsImgElement = newsElement.querySelector('.item-thumbnail img');
+                      let newsImg = newsImgElement?.src;
+  
+                      if (newsImg.includes('dpr=')) {
+                          newsImg = newsImg.replace(/dpr=\d+/, 'dpr=2'); 
+                      }
+  
+                      const newsContent = newsElement.querySelector('.item-subtitle')?.innerText;
+  
+                      if (newsTitle && newsImg) {
+                          newsArray.push({
+                              title: newsTitle,
+                              img: newsImg,
+                              content: newsContent
+                          });
+                      }
+                  }
+              }
+              return newsArray;
+          });
+  
+          await browser.close();
+          
+          console.log(news.length);
+  
+          // Verifica se ci sono nuove notizie
+          const existingNewsCount = await db.collection('News').countDocuments();
+          
+          if (news.length > existingNewsCount) {
+              // Ci sono nuove notizie, salva nel database
+              for (const article of news) {
+                  await db.collection('News').updateOne(
+                      { title: article.title }, 
+                      { $set: article }, 
+                      { upsert: true } 
+                  );
+              }
           }
-          return newsArray;
-        });
-    
-        await browser.close();
-    
-        res.status(200).json(news); 
+          
+          // Carica le notizie dal database
+          let allNews = await db.collection('News').find().toArray();
+          
+          console.log(allNews) 
+  
+          // Aggiungi le nuove notizie (se presenti) in cima alla lista
+          if (news.length > existingNewsCount) {
+              allNews = [...news, ...allNews]; // Aggiungi le nuove notizie all'inizio
+          }
+  
+          res.status(200).json(allNews); 
+  
       } catch (err) {
-        console.error('Error fetching news:', err);
-        res.status(500).json({ error: 'Error fetching news' });
+          console.error('Error fetching news:', err);
+          res.status(500).json({ error: 'Error fetching news' });
       }
-    });
-    
-    
+  });
+  
 
     app.listen(port, () => {
       console.log(`Server listening on http://${hostname}:${port}`);

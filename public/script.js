@@ -8,6 +8,7 @@ let searchPageNo=1;
 let sortBy="recent";
 let searchFilter="recent";
 let targetText='';
+let newsPage='1';
 
 window.onload = () => {
   history.pushState(null, '', '/M00980001');
@@ -2423,22 +2424,29 @@ document.querySelector('.next-search-button').addEventListener('click', function
    window.scrollTo(0, 0)
   });
 
-  async function openNews(){
+  async function openNews() {
     document.getElementById('searched-posts').style.display = 'none';
     closeSection();
     document.getElementById('news').style.display = 'block';
+    const newsContainer = document.getElementById('news-container');
+    
+    const loadingSpinner = document.createElement('div');
+    loadingSpinner.classList.add('loading');
+    loadingSpinner.innerText = 'Loading...';
+    newsContainer.appendChild(loadingSpinner);
+  
     try {
-      const response = await fetch('http://localhost:8000/M00980001/news');
-      const news = await response.json();
-      const newsContainer = document.getElementById('news-container');
-  
-      newsContainer.innerHTML = '';
-  
-      news.forEach(article => {
-        const newsElement = document.createElement('div');
-        newsElement.classList.add('newsArticle');
-  
-        newsElement.innerHTML = `
+        const response = await fetch('http://localhost:8000/M00980001/news');
+        const news = await response.json();
+      
+        // Rimuovi lo spinner dopo aver caricato i dati
+        newsContainer.innerHTML = '';
+      
+        news.forEach(article => {
+            const newsElement = document.createElement('div');
+            newsElement.classList.add('newsArticle');
+
+            newsElement.innerHTML = ` 
                 <div class="newsLeft">
                     <img src="${article.img || './images/default-photo.jpg'}">
                 </div>
@@ -2447,11 +2455,14 @@ document.querySelector('.next-search-button').addEventListener('click', function
                     <hr>
                     <p class="newsContent">${article.content}</p>
                 </div>
-        `;
-  
-        newsContainer.appendChild(newsElement);
-      });
-    } catch(error){
-      console.log(error);
+            `;
+
+            newsContainer.appendChild(newsElement);
+        });
+
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        
+        newsContainer.innerHTML = '<p>Failed to load news. Please try again later.</p>';
     }
-  }
+}
