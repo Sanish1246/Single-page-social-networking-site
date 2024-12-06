@@ -605,8 +605,18 @@ async function startServer() {
 
     app.get('/M00980001/recommended/:id', async (req, res) => {
       const pageNo=req.params.id;
+      const favTags=req.session.user.favTags;
+      let url='';
+
       try {
-        const url = `https://api.rawg.io/api/games?key=${apiKey}&page=${pageNo}`;
+        if (favTags.length>0) {
+          url = `https://api.rawg.io/api/games?key=${apiKey}&genres=${favTags[0]}&page=${pageNo}`;
+          console.log(favTags.length);
+          console.log(favTags[0]);
+        } else {
+          url = `https://api.rawg.io/api/games?key=${apiKey}&page=${pageNo}`;
+          console.log("No favTags")
+        }
         const games = await axios.get(url);
     
         const allGames = games.data.results.map(game => ({
@@ -775,7 +785,7 @@ async function startServer() {
       if (newFavTags.length===30){
         newFavTags.shift();
       }
-      newFavTags.push(newTag);
+      newFavTags.push(newTag.toLowerCase());
     }
 
     console.log(newFavTags);
@@ -792,13 +802,10 @@ async function startServer() {
     }
   });
   
-  
+  app.listen(port, () => {
+    console.log(`Server listening on http://${hostname}:${port}`);
+  });
 
-    app.listen(port, () => {
-      console.log(`Server listening on http://${hostname}:${port}`);
-    });
-
-    
   } catch (error) {
     console.error("Error upon starting the server:", error);
   }
