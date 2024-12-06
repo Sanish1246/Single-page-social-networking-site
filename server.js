@@ -45,7 +45,8 @@ app.get('/M00980001/user', (req, res) => {
       following: req.session.user.following,
       profileImg: req.session.user.profileImg,
       savedPosts: req.session.user.savedPosts,
-      favGames:req.session.user.favGames
+      favGames:req.session.user.favGames,
+      favTags:req.session.user.favTags
     });
   } else {
     res.status(200).json({});
@@ -84,7 +85,8 @@ async function startServer() {
           following:user.following,
           profileImg:'/images/default-photo.jpg',
           savedPosts:[],
-          favGames:[]
+          favGames:[],
+          favTags:[]
         };
         res.status(201).json({
           message: "User registered successfully",
@@ -117,8 +119,8 @@ async function startServer() {
             following: result.following || [], 
             profileImg: result.profileImg || '/images/default-photo.jpg',
             savedPosts: result.savedPosts || [],
-            favGames: result.favGames || []
-
+            favGames: result.favGames || [],
+            favTags: result.favTags || []
           };
           res.status(200).json({
             message: "User logged in! " + result.username,
@@ -145,8 +147,7 @@ async function startServer() {
 
         const likedBy=[];
         const dislikedBy=[];
-    
-        // Controlla se ci sono file caricati
+
         let mediaFiles = req.files ? req.files.media : null;
     
         const uploadDir = path.join(__dirname, 'uploads');
@@ -695,7 +696,6 @@ async function startServer() {
           const browser = await puppeteer.launch({ headless: true });
           const page = await browser.newPage();
   
-          // Blocca risorse non necessarie
           await page.setRequestInterception(true);
           page.on('request', (req) => {
               if (['image', 'stylesheet', 'font'].includes(req.resourceType())) {
@@ -743,33 +743,18 @@ async function startServer() {
   
           await browser.close();
   
-          const existingNewsCount = await db.collection('News').countDocuments();
-  
           news = news.reverse();
   
-          if (news.length > existingNewsCount) {
               for (const article of news) {
                   await db.collection('News').updateOne(
-                      { title: article.title },
+                      { link: article.link },
                       { $set: article },
                       { upsert: true }
                   );
               }
-          }
-  
-          // Carica le notizie dal database
+
           let allNews = await db.collection('News').find().toArray();
-  
-          console.log(allNews);
-  
-          // Aggiungi le nuove notizie (se presenti) in cima alla lista senza duplicati
-          if (news.length > existingNewsCount) {
-              allNews = [
-                  ...news.filter(article => !allNews.some(existingArticle => existingArticle.title === article.title)),
-                  ...allNews
-              ];
-          }
-  
+
           allNews = allNews.reverse();
   
           res.status(200).json(allNews);
@@ -778,6 +763,33 @@ async function startServer() {
           console.error('Error fetching news:', err);
           res.status(500).json({ error: 'Error fetching news' });
       }
+  });
+
+  app.post('/M00980001/tags', async (req, res) => {
+    const currentUser=req.session.user.username;
+    const newFavTags=req.session.user.favTags;
+
+    const newTags=req.body;
+
+    for (const newTag of newTags) {
+      if (newFavTags.length===30){
+        newFavTags.shift();
+      }
+      newFavTags.push(newTag);
+    }
+
+    console.log(newFavTags);
+  
+    try {
+      await db.collection('Users').updateOne(
+        { username: currentUser},
+        {$set: {favTags: newFavTags}}
+      );
+      res.status(200).json({message: "Tags added"});
+    } catch (err) {
+      console.error('Error:', err);
+      res.status(500).json({ error: 'Error' });
+    }
   });
   
   

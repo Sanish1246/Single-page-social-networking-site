@@ -926,6 +926,7 @@ async function loadFeedPosts(posts, data) {
         <div class="post-comment">
            <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="publish-comment" id=${post._id}>Post</button>
         </div>
+        <div class="tags" id=${post.tags}><div>
       `;
 
       postsContainer.appendChild(postElement);
@@ -959,6 +960,8 @@ async function loadFeedPosts(posts, data) {
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
       const levelDownButton = this.closest('.post').querySelector(".level-down");
+      const tags = this.closest('.post').querySelector(".tags").id;
+      const tagsArray = tags.split(',').map(tag => tag.trim());
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
@@ -971,8 +974,8 @@ async function loadFeedPosts(posts, data) {
           currentLevel++;
           removeDislike(targetId); 
         }
-        currentLevel++;  
-        likePost(targetId);  
+        currentLevel++; 
+        likePost(targetId,tagsArray);  
       }
 
       levelCountElement.innerText = currentLevel;
@@ -1047,7 +1050,7 @@ async function loadFeedPosts(posts, data) {
   });
 }
 
-async function likePost(id){
+async function likePost(id,tags){
   fetch(`http://localhost:8000/M00980001/like/${id}`, {
     method: 'POST',
     headers: {
@@ -1060,6 +1063,7 @@ async function likePost(id){
     systemMessage.style.opacity='1';
     setTimeout(closeMessage,2000);
     closePopup();
+    addTags(tags);
   })
   .catch(error => {
     systemMessage.innerText='❌ Error: ' + error;
@@ -2464,4 +2468,18 @@ document.querySelector('.next-search-button').addEventListener('click', function
         
         newsContainer.innerHTML = '<p>Failed to load news. Please try again later.</p>';
     }
+}
+
+async function addTags(tags) {
+  try{
+    fetch(`http://localhost:8000/M00980001/tags`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(tags)
+    })
+  } catch (error) {
+    console.error(error);
+  }
 }

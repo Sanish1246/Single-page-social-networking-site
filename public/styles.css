@@ -1005,11 +1005,15 @@ body{
 
 .newsRight hr{
     flex-grow: 1;
-    width: 95%;
+    width: 99%;
 }
 
 .loading{
     text-align:center;
+}
+
+.tags{
+    display:none;
 }
 
 
