@@ -610,9 +610,21 @@ async function startServer() {
 
       try {
         if (favTags.length>0) {
-          url = `https://api.rawg.io/api/games?key=${apiKey}&genres=${favTags[0]}&page=${pageNo}`;
-          console.log(favTags.length);
-          console.log(favTags[0]);
+          let frequency = {};
+          let maxCount = 0;
+          let maxTag = null;
+        
+          for (let i = 0; i < favTags.length; i++) {
+            let item = favTags[i];
+            frequency[item] = (frequency[item] || 0) + 1;
+        
+            if (frequency[item] > maxCount) {
+              maxCount = frequency[item];
+              maxTag = item;
+            }
+          }
+
+          url = `https://api.rawg.io/api/games?key=${apiKey}&genres=${maxTag}&page=${pageNo}`;
         } else {
           url = `https://api.rawg.io/api/games?key=${apiKey}&page=${pageNo}`;
           console.log("No favTags")
