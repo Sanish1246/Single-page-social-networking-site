@@ -995,6 +995,7 @@ body{
     font-weight: bold;
     min-width: 0;
     color: black;
+    text-decoration: none;
 }
 
 .newsTitle:hover{
@@ -1004,7 +1005,11 @@ body{
 
 .newsRight hr{
     flex-grow: 1;
-    width: 100%;
+    width: 95%;
+}
+
+.loading{
+    text-align:center;
 }
 
 

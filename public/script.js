@@ -2438,8 +2438,7 @@ document.querySelector('.next-search-button').addEventListener('click', function
     try {
         const response = await fetch('http://localhost:8000/M00980001/news');
         const news = await response.json();
-      
-        // Rimuovi lo spinner dopo aver caricato i dati
+ 
         newsContainer.innerHTML = '';
       
         news.forEach(article => {
@@ -2451,7 +2450,7 @@ document.querySelector('.next-search-button').addEventListener('click', function
                     <img src="${article.img || './images/default-photo.jpg'}">
                 </div>
                 <div class="newsRight">
-                    <a class="newsTitle">${article.title}</a>
+                    <a href="${article.link}"class="newsTitle" target="_blank">${article.title}</a>
                     <hr>
                     <p class="newsContent">${article.content}</p>
                 </div>

@@ -699,7 +699,7 @@ async function startServer() {
           await page.setRequestInterception(true);
           page.on('request', (req) => {
               if (['image', 'stylesheet', 'font'].includes(req.resourceType())) {
-                  req.abort(); 
+                  req.abort();
               } else {
                   req.continue();
               }
@@ -718,19 +718,22 @@ async function startServer() {
                   if (isGameNews) {
                       const newsTitle = newsElement.querySelector('.item-title')?.innerText;
                       const newsImgElement = newsElement.querySelector('.item-thumbnail img');
+                      const newsLink = newsElement.getAttribute('href');
                       let newsImg = newsImgElement?.src;
   
                       if (newsImg.includes('dpr=')) {
-                          newsImg = newsImg.replace(/dpr=\d+/, 'dpr=2'); 
+                          newsImg = newsImg.replace(/dpr=\d+/, 'dpr=2');
                       }
   
                       const newsContent = newsElement.querySelector('.item-subtitle')?.innerText;
+                      let cleanNewsContent = newsContent ? newsContent.split(' - ').slice(1).join(' - ') : null;
   
                       if (newsTitle && newsImg) {
                           newsArray.push({
                               title: newsTitle,
                               img: newsImg,
-                              content: newsContent
+                              content: cleanNewsContent,
+                              link: `https://www.ign.com${newsLink}`
                           });
                       }
                   }
@@ -739,40 +742,44 @@ async function startServer() {
           });
   
           await browser.close();
-          
-          console.log(news.length);
   
-          // Verifica se ci sono nuove notizie
           const existingNewsCount = await db.collection('News').countDocuments();
-          
+  
+          news = news.reverse();
+  
           if (news.length > existingNewsCount) {
-              // Ci sono nuove notizie, salva nel database
               for (const article of news) {
                   await db.collection('News').updateOne(
-                      { title: article.title }, 
-                      { $set: article }, 
-                      { upsert: true } 
+                      { title: article.title },
+                      { $set: article },
+                      { upsert: true }
                   );
               }
           }
-          
+  
           // Carica le notizie dal database
           let allNews = await db.collection('News').find().toArray();
-          
-          console.log(allNews) 
   
-          // Aggiungi le nuove notizie (se presenti) in cima alla lista
+          console.log(allNews);
+  
+          // Aggiungi le nuove notizie (se presenti) in cima alla lista senza duplicati
           if (news.length > existingNewsCount) {
-              allNews = [...news, ...allNews]; // Aggiungi le nuove notizie all'inizio
+              allNews = [
+                  ...news.filter(article => !allNews.some(existingArticle => existingArticle.title === article.title)),
+                  ...allNews
+              ];
           }
   
-          res.status(200).json(allNews); 
+          allNews = allNews.reverse();
+  
+          res.status(200).json(allNews);
   
       } catch (err) {
           console.error('Error fetching news:', err);
           res.status(500).json({ error: 'Error fetching news' });
       }
   });
+  
   
 
     app.listen(port, () => {
