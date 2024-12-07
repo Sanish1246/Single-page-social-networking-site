@@ -623,7 +623,6 @@ async function startServer() {
               maxTag = item;
             }
           }
-
           url = `https://api.rawg.io/api/games?key=${apiKey}&genres=${maxTag}&page=${pageNo}`;
         } else {
           url = `https://api.rawg.io/api/games?key=${apiKey}&page=${pageNo}`;

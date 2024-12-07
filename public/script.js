@@ -770,7 +770,8 @@ async function fetchPeople() {
 
       peopleElement.innerHTML = `
             <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
-            <a id=${person.username} class="visit-link">${person.username}</a>               
+            <a id=${person.username} class="visit-link">${person.username}</a>         
+            <a id="chat-link" class="chat-link">💬</a>      
             <button class="follow-user ${isFollowing ? 'following' : ''}" id=${person.username}>
             ${isFollowing ? 'Following' : '+ Follow'}
             </button>
@@ -1617,6 +1618,7 @@ async function searchPeople(){
         peopleElement.innerHTML = `
           <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
           <a id=${person.username} class="visit-link">${person.username}</a>
+          <a id="chat-link" class="chat-link">💬</a>
         `;
         
         if (!isCurrentUser) {
