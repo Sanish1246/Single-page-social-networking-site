@@ -328,6 +328,7 @@ function openFeed(){
 }
 
 function openPeople(){
+    closeChat();
     closeSection();
     document.getElementById('searched-posts').style.display = 'none';
     checkCurrentUser().then(isUserLoggedIn => {
@@ -771,7 +772,7 @@ async function fetchPeople() {
       peopleElement.innerHTML = `
             <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
             <a id=${person.username} class="visit-link">${person.username}</a>         
-            <a id="chat-link" class="chat-link">💬</a>      
+            <a id=${person.username} class="chat-link">💬</a>      
             <button class="follow-user ${isFollowing ? 'following' : ''}" id=${person.username}>
             ${isFollowing ? 'Following' : '+ Follow'}
             </button>
@@ -801,6 +802,13 @@ async function fetchPeople() {
       element.addEventListener('click', async function() {
         const targetUser = this.id;
         displayUserProfile(targetUser);
+      });
+    });
+
+    document.querySelectorAll('.chat-link').forEach(function(element) {
+      element.addEventListener('click', async function() {
+        const targetUser = this.id;
+        openChat(targetUser);
       });
     });
     
@@ -2484,4 +2492,13 @@ async function addTags(tags) {
   } catch (error) {
     console.error(error);
   }
+}
+
+function openChat(){
+  document.getElementById('people-section').style.display="none";
+  document.getElementById('chat').style.display="block";
+}
+
+function closeChat(){
+  document.getElementById('chat').style.display="none";
 }
