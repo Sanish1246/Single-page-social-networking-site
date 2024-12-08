@@ -2494,11 +2494,120 @@ async function addTags(tags) {
   }
 }
 
-function openChat(){
+async function openChat(targetUser){
   document.getElementById('people-section').style.display="none";
+  document.getElementById("chat-username").innerHTML=targetUser;
+  try{
+    const response = await fetch(`http://localhost:8000/M00980001/user`);
+    const user = await response.json();
+
+    const chatContainer = document.getElementById("chat-container");
+    chatContainer.innerHTML = ''; 
+    let messageDate='';
+
+    const userElement = document.createElement('div');
+    userElement.classList.add('chat-user');
+
+    userElement.innerHTML = `
+      <img src="./images/default-photo.jpg">
+      <p id="chat-username">${targetUser}</p>
+    `;
+
+    chatContainer.appendChild(userElement);
+
+
+    const res = await fetch(`http://localhost:8000/M00980001/chat/${targetUser}`);
+    const messages = await res.json();
+
+    messages.forEach(message => {
+      if (message.date!=messageDate){
+        const chatDate = document.createElement('div');
+        chatDate.classList.add('chat-date');
+        chatDate.innerHTML=message.date;
+        messageDate=message.date;
+        chatContainer.appendChild(chatDate);
+
+      }
+      const messageElement = document.createElement('div');
+      if (message.owner===targetUser){
+        messageElement.classList.add('left-message');
+      } else {
+        messageElement.classList.add('right-message');
+      }
+
+      messageElement.innerHTML = `
+          <div class="message-body">${message.content}</div>
+          <div class="message-time">${message.time}</div>
+      `;
+
+      chatContainer.appendChild(messageElement);
+    });
+  } catch(error){
+    console.error(error);
+  }
   document.getElementById('chat').style.display="block";
 }
 
 function closeChat(){
   document.getElementById('chat').style.display="none";
+}
+
+async function sendMessage(){
+  const messageText=document.querySelector(".user-text").value;
+  let user='';
+  const otherUser=document.getElementById("chat-username").innerHTML;
+
+  try{
+    const response = await fetch(`http://localhost:8000/M00980001/user`);
+    user = await response.json();
+    console.log(user.username);
+  } catch(error){
+    console.error(error);
+  }
+
+  const now = new Date();
+  
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0'); 
+  const year = String(now.getFullYear());
+  const formattedDate = `${day}/${month}/${year}`;
+
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const formattedTime = `${hours}:${minutes}`;
+
+  const message={
+    date: formattedDate,
+    content: messageText,
+    time: formattedTime,
+    owner: user.username,
+  }
+
+  console.log(message);
+
+  fetch(`http://localhost:8000/M00980001/send/${otherUser}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(message)
+  })
+  .then(() => {
+    const chatContainer = document.getElementById("chat-container");
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('right-message');
+
+    messageElement.innerHTML = `
+    <div class="message-body">${message.content}</div>
+    <div class="message-time">${message.time}</div>
+    `;
+    chatContainer.appendChild(messageElement);
+  })
+  .catch(error => {
+    systemMessage.innerText='❌ Error: ' + error;
+    systemMessage.style.opacity='1';
+    setTimeout(closeMessage,2000);
+    closePopup();
+  });
+
 }

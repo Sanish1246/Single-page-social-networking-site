@@ -1030,6 +1030,7 @@ body{
     margin-bottom: 10px;
     display:flex;
     flex-direction: column;
+     background-color: hsl(0, 0%, 60%);
 }
 
 .chat-user {
@@ -1079,6 +1080,7 @@ body{
     align-self: flex-start;
     word-wrap: break-word;
     align-content:center;
+    background-color: white;
 }
 
 .message-body{

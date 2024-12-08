@@ -812,6 +812,51 @@ async function startServer() {
       res.status(500).json({ error: 'Error' });
     }
   });
+
+  app.get('/M00980001/chat/:id', async (req, res) => {
+    const otherUser=req.params.id;
+    const currentUser=req.session.user.username;
+  
+    try {
+      const chat = await db.collection('Chats').findOne(
+        {$or:[{$and:[{user1: otherUser},{user2:currentUser}]},
+        {$and:[{user2: otherUser},{user1:currentUser}]}]});
+
+        if (!chat) {
+          const newChat = {
+            user1: currentUser,
+            user2: otherUser,
+            messages: [] 
+          };
+    
+          const result = await db.collection('Chats').insertOne(newChat);
+          chat = result.ops[0]; 
+        }
+
+      res.status(200).json(chat.messages);
+    } catch (err) {
+      console.error('Error fetching chat:', err);
+      res.status(500).json({ error: 'Error fetching chat' });
+    }
+  });
+
+  app.post('/M00980001/send/:id', async (req, res) => {
+    const message=req.body;
+    const currentUser=req.session.user.username;
+    const otherUser=req.params.id;
+  
+    try {
+      const chat = await db.collection('Chats').updateOne(
+        {$or:[{$and:[{user1: otherUser},{user2:currentUser}]},
+        {$and:[{user2: otherUser},{user1:currentUser}]}]},
+        {$push: {messages : message}});
+
+      res.status(200).json({message: "message added!"});
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      res.status(500).json({ error: 'Error fetching posts' });
+    }
+  });
   
   app.listen(port, () => {
     console.log(`Server listening on http://${hostname}:${port}`);
