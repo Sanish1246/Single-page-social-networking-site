@@ -76,15 +76,17 @@
     </div>
 
     <div class="main-section" id="chat">
-        <div class="chat-container" id="chat-container">
-            <div class="chat-user">
-                <img src="./images/default-photo.jpg">
-                <p id="chat-username"></p>
+        <div class="chat-wrapper">
+            <div class="chat-container" id="chat-container">
+                <div class="chat-user">
+                    <img src="./images/default-photo.jpg">
+                    <p id="chat-username"></p>
+                </div>
             </div>
+            <div class="chat-textbar">
+                <input type="text" placeholder="💬Send a message." class="user-text"><button class="send-message" onclick="sendMessage()">Send</button>
+             </div>
         </div>
-        <div class="chat-textbar">
-            <input type="text" placeholder="💬Send a message." class="user-text"><button class="send-message" onclick="sendMessage()">Send</button>
-         </div>
     </div>
 
     <div class="main-section" id="people-section">
@@ -106,7 +108,7 @@
             </div>
             <h1 id="profile-username"></h1>
             <div class="follow-info">
-                <p>Follows: <span id="user-following">0</span></p>
+                <p>Following: <span id="user-following">0</span></p>
                 <button id="user-follow-button">+ Follow</button>
                 <p>Followers: <span id="user-followers">0</span></p>
             </div>
@@ -240,15 +242,15 @@
     <div class="content" id="your-profile">
         <div class="user-data">
             <div class="img-section">
-                <img src="./images/default-photo.jpg" id="profileImage">
+                <img src="./images/default-photo.jpg" id="yourImage">
                 <label for="media">Change picture</label>
                 <input type="file" id="change-profile-pic" name="media" accept="image/*">
-                <button id="uploadButton">Upload Picture</button>
+                <button class="upload-button" id="upload-button">Upload Picture</button>
             </div>
-            <h1 id="profile-username">Username</h1>
+            <h1 id="your-username"></h1>
             <div class="follow-info">
-                <p>Follows: <span id="user-following">0</span></p>
-                <p>Followers: <span id="user-followers">0</span></p>
+                <p>Follows: <span id="your-following">0</span></p>
+                <p>Followers: <span id="your-followers">0</span></p>
             </div>
         </div>
 

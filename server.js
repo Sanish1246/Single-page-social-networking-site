@@ -584,6 +584,7 @@ async function startServer() {
 
       try {
         const user = await db.collection('Users').findOne({ username: targetUser});
+        console.log(user.username);
         res.status(200).json(user);
       } catch (err) {
         console.error('Error fetching posts:', err);
@@ -818,7 +819,7 @@ async function startServer() {
     const currentUser=req.session.user.username;
   
     try {
-      const chat = await db.collection('Chats').findOne(
+      let chat = await db.collection('Chats').findOne(
         {$or:[{$and:[{user1: otherUser},{user2:currentUser}]},
         {$and:[{user2: otherUser},{user1:currentUser}]}]});
 
@@ -830,7 +831,7 @@ async function startServer() {
           };
     
           const result = await db.collection('Chats').insertOne(newChat);
-          chat = result.ops[0]; 
+          chat = newChat; 
         }
 
       res.status(200).json(chat.messages);

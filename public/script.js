@@ -574,11 +574,13 @@ async function displayYourData() {
     const response = await fetch('http://localhost:8000/M00980001/user');
     const data = await response.json();
 
-    document.getElementById('profile-username').innerText = data.username;
-    document.getElementById('user-following').innerText = data.following.length;
-    document.getElementById('user-followers').innerText = data.followers.length;
+    document.getElementById('your-username').innerText = data.username;
+    document.getElementById('your-following').innerText = data.following.length;
+    document.getElementById('your-followers').innerText = data.followers.length;
+    console.log(data.username);
+    console.log(data.profileImg);
 
-    const profileImageElement = document.getElementById("profileImage");
+    const profileImageElement = document.getElementById("yourImage");
     profileImageElement.src = data.profileImg ? data.profileImg : './images/default-photo.jpg';
 
     const postsResponse = await fetch('http://localhost:8000/M00980001/user/posts');
@@ -600,7 +602,7 @@ document.getElementById('change-profile-pic').addEventListener('change', functio
   }
 });
 
-document.getElementById('uploadButton').addEventListener('click', async function() {
+document.getElementById('upload-button').addEventListener('click', async function() {
   const fileInput = document.getElementById('change-profile-pic');
   const file = fileInput.files[0]; 
   
@@ -694,15 +696,29 @@ async function loadYourPosts(posts, data) {
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelDownButton = this.closest('.post').querySelector(".level-down");
+      const tagsElement = this.closest('.post').querySelector(".tags");
+      let tagsArray = [];
+
+      
+      if (tagsElement && tagsElement.id) {
+        const tags = tagsElement.id;
+        tagsArray = tags.split(',').map(tag => tag.trim());
+      }
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
         currentLevel--;  
-        removeLike(targetId);  
+        removeLike(targetId);
       } else {
         this.classList.add('active');
-        currentLevel++;  
-        likePost(targetId);  
+        if(levelDownButton.classList.contains("active")) {
+          levelDownButton.classList.remove("active"); 
+          currentLevel++;
+          removeDislike(targetId); 
+        }
+        currentLevel++; 
+        likePost(targetId,tagsArray);  
       }
 
       levelCountElement.innerText = currentLevel;
@@ -716,6 +732,7 @@ async function loadYourPosts(posts, data) {
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelUpButton = this.closest('.post').querySelector(".level-up");
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
@@ -723,6 +740,11 @@ async function loadYourPosts(posts, data) {
         removeDislike(targetId);  
       } else {
         this.classList.add('active');
+        if(levelUpButton.classList.contains("active")) {
+          levelUpButton.classList.remove("active"); 
+          currentLevel--;
+          removeLike(targetId); 
+        } 
         currentLevel--;  
         dislikePost(targetId);  
       }
@@ -969,8 +991,14 @@ async function loadFeedPosts(posts, data) {
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
       const levelDownButton = this.closest('.post').querySelector(".level-down");
-      const tags = this.closest('.post').querySelector(".tags").id;
-      const tagsArray = tags.split(',').map(tag => tag.trim());
+      const tagsElement = this.closest('.post').querySelector(".tags");
+      let tagsArray = [];
+
+      
+      if (tagsElement && tagsElement.id) {
+        const tags = tagsElement.id;
+        tagsArray = tags.split(',').map(tag => tag.trim());
+      }
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
@@ -1283,15 +1311,29 @@ async function fetchSavedPosts(){
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelDownButton = this.closest('.post').querySelector(".level-down");
+      const tagsElement = this.closest('.post').querySelector(".tags");
+      let tagsArray = [];
+
+      
+      if (tagsElement && tagsElement.id) {
+        const tags = tagsElement.id;
+        tagsArray = tags.split(',').map(tag => tag.trim());
+      }
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
         currentLevel--;  
-        removeLike(targetId);  
+        removeLike(targetId);
       } else {
         this.classList.add('active');
-        currentLevel++;  
-        likePost(targetId);  
+        if(levelDownButton.classList.contains("active")) {
+          levelDownButton.classList.remove("active"); 
+          currentLevel++;
+          removeDislike(targetId); 
+        }
+        currentLevel++; 
+        likePost(targetId,tagsArray);  
       }
 
       levelCountElement.innerText = currentLevel;
@@ -1305,6 +1347,7 @@ async function fetchSavedPosts(){
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelUpButton = this.closest('.post').querySelector(".level-up");
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
@@ -1312,6 +1355,11 @@ async function fetchSavedPosts(){
         removeDislike(targetId);  
       } else {
         this.classList.add('active');
+        if(levelUpButton.classList.contains("active")) {
+          levelUpButton.classList.remove("active"); 
+          currentLevel--;
+          removeLike(targetId); 
+        } 
         currentLevel--;  
         dislikePost(targetId);  
       }
@@ -1837,19 +1885,29 @@ async function searchPosts(searchTarget){
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelDownButton = this.closest('.post').querySelector(".level-down");
+      const tagsElement = this.closest('.post').querySelector(".tags");
+      let tagsArray = [];
 
-      if (data.username){
-        if (this.classList.contains("active")) {
-          this.classList.remove('active');
-          currentLevel--;  
-          removeLike(targetId);
-        } else {
-          this.classList.add('active');
-          currentLevel++;  
-          likePost(targetId);  
-        }
+      
+      if (tagsElement && tagsElement.id) {
+        const tags = tagsElement.id;
+        tagsArray = tags.split(',').map(tag => tag.trim());
+      }
+  
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        currentLevel--;  
+        removeLike(targetId);
       } else {
-        openLogin();
+        this.classList.add('active');
+        if(levelDownButton.classList.contains("active")) {
+          levelDownButton.classList.remove("active"); 
+          currentLevel++;
+          removeDislike(targetId); 
+        }
+        currentLevel++; 
+        likePost(targetId,tagsArray);  
       }
 
       levelCountElement.innerText = currentLevel;
@@ -1863,19 +1921,21 @@ async function searchPosts(searchTarget){
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelUpButton = this.closest('.post').querySelector(".level-up");
   
-      if (data.username){
-        if (this.classList.contains("active")) {
-          this.classList.remove('active');
-          currentLevel++;  
-          removeDislike(targetId);  
-        } else {
-          this.classList.add('active');
-          currentLevel--;  
-          dislikePost(targetId);  
-        }
+      if (this.classList.contains("active")) {
+        this.classList.remove('active');
+        currentLevel++;  
+        removeDislike(targetId);  
       } else {
-        openLogin();
+        this.classList.add('active');
+        if(levelUpButton.classList.contains("active")) {
+          levelUpButton.classList.remove("active"); 
+          currentLevel--;
+          removeLike(targetId); 
+        } 
+        currentLevel--;  
+        dislikePost(targetId);  
       }
 
       levelCountElement.innerText = currentLevel;
@@ -1953,6 +2013,8 @@ async function displayUserProfile(targetUser) {
     document.getElementById('profile-username').innerText = userData.username;
     document.getElementById('user-following').innerText = userData.following.length;
     document.getElementById('user-followers').innerText = userData.followers.length;
+
+    console.log(userData.userame);
 
     const followersElement = document.getElementById('user-followers');
     let followerCount = userData.followers.length;
@@ -2067,15 +2129,29 @@ async function loadUserPosts(posts,userData, data){
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelDownButton = this.closest('.post').querySelector(".level-down");
+      const tagsElement = this.closest('.post').querySelector(".tags");
+      let tagsArray = [];
+
+      
+      if (tagsElement && tagsElement.id) {
+        const tags = tagsElement.id;
+        tagsArray = tags.split(',').map(tag => tag.trim());
+      }
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
         currentLevel--;  
-        removeLike(targetId);  
+        removeLike(targetId);
       } else {
         this.classList.add('active');
-        currentLevel++;  
-        likePost(targetId);  
+        if(levelDownButton.classList.contains("active")) {
+          levelDownButton.classList.remove("active"); 
+          currentLevel++;
+          removeDislike(targetId); 
+        }
+        currentLevel++; 
+        likePost(targetId,tagsArray);  
       }
 
       levelCountElement.innerText = currentLevel;
@@ -2089,6 +2165,7 @@ async function loadUserPosts(posts,userData, data){
       const levelCountElement = this.closest('.post').querySelector("#level-count");
       
       let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+      const levelUpButton = this.closest('.post').querySelector(".level-up");
   
       if (this.classList.contains("active")) {
         this.classList.remove('active');
@@ -2096,6 +2173,11 @@ async function loadUserPosts(posts,userData, data){
         removeDislike(targetId);  
       } else {
         this.classList.add('active');
+        if(levelUpButton.classList.contains("active")) {
+          levelUpButton.classList.remove("active"); 
+          currentLevel--;
+          removeLike(targetId); 
+        } 
         currentLevel--;  
         dislikePost(targetId);  
       }
@@ -2498,7 +2580,7 @@ async function openChat(targetUser){
   document.getElementById('people-section').style.display="none";
   document.getElementById("chat-username").innerHTML=targetUser;
   try{
-    const response = await fetch(`http://localhost:8000/M00980001/user`);
+    const response = await fetch(`http://localhost:8000/M00980001/profile/${targetUser}`);
     const user = await response.json();
 
     const chatContainer = document.getElementById("chat-container");
@@ -2509,7 +2591,7 @@ async function openChat(targetUser){
     userElement.classList.add('chat-user');
 
     userElement.innerHTML = `
-      <img src="./images/default-photo.jpg">
+      <img src=${user.profileImg || "./images/default-photo.jpg"}>
       <p id="chat-username">${targetUser}</p>
     `;
 
@@ -2594,14 +2676,28 @@ async function sendMessage(){
   })
   .then(() => {
     const chatContainer = document.getElementById("chat-container");
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('right-message');
 
-    messageElement.innerHTML = `
-    <div class="message-body">${message.content}</div>
-    <div class="message-time">${message.time}</div>
-    `;
-    chatContainer.appendChild(messageElement);
+    const lastDateElement = chatContainer.querySelector(".chat-date:last-of-type");
+    let lastDate = lastDateElement ? lastDateElement.innerHTML : null;
+
+    if (!lastDate || lastDate !== message.date) {
+      const dateElement = document.createElement('div');
+      dateElement.classList.add('chat-date');
+      dateElement.innerHTML = message.date;
+      chatContainer.appendChild(dateElement); 
+    }
+
+    if (message.content && message.time) {
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('right-message');
+
+      messageElement.innerHTML = `
+        <div class="message-body">${message.content}</div>
+        <div class="message-time">${message.time}</div>
+      `;
+
+      chatContainer.appendChild(messageElement);
+    }
   })
   .catch(error => {
     systemMessage.innerText='❌ Error: ' + error;
@@ -2609,5 +2705,4 @@ async function sendMessage(){
     setTimeout(closeMessage,2000);
     closePopup();
   });
-
 }
