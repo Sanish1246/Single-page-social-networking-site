@@ -1056,6 +1056,16 @@ body{
     margin-left: 10px;
 }
 
+.chat-date{
+    margin: 0 auto;
+    margin-top: 5px;
+    border: 2px solid red;
+    border-radius: 10px;
+    background:linear-gradient(90deg, hsl(290, 96%, 40%, 1), hsl(0, 96%, 60%, 1));
+    padding: 5px 5px 5px 5px;
+    font-size: 1.1rem;
+}
+
 .left-message{
     margin-left:10px;
     margin-top: 5px;
@@ -1114,6 +1124,8 @@ body{
     padding-bottom:10px;
     margin:0 auto;
     width:90%;
+    position:sticky;
+    bottom:0;
 }
 
 .chat-textbar input{
