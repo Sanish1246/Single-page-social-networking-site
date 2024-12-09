@@ -10,8 +10,9 @@ let searchFilter="recent";
 let targetText='';
 let newsPage='1';
 
-window.onload = () => {
+window.onload = async() => {
   history.pushState(null, '', '/M00980001');
+  console.log(await checkCurrentUser());
   document.getElementById("feed-button").classList.add('active');
   document.getElementById('feed-recent').classList.add('active');
   document.getElementById('search-recent').classList.add('active');
@@ -24,9 +25,11 @@ async function checkCurrentUser() {
     const response = await fetch('http://localhost:8000/M00980001/user');
     const data = await response.json();
     if (data.username) {
+      document.getElementById("login-link").innerText="Log out";
       document.getElementById('currentUser').innerText = data.username;
       return true;
     } else {
+      document.getElementById("login-link").innerText="Login";
       document.getElementById('currentUser').innerText = "No user";
       return false;
     }
@@ -37,15 +40,13 @@ async function checkCurrentUser() {
 }
 
 function switchMode(){
-    if (document.body.style.backgroundColor=="whitesmoke"){
-        document.body.style.backgroundColor="black";
-        modeButton.innerHTML="☀️ Light mode"
-        top_bar.style.borderColor="white";
-    } else {
-        document.body.style.backgroundColor="whitesmoke";
-        modeButton.innerHTML="🌙 Dark mode";
-        top_bar.style.borderColor="black";
-    }
+  document.body.classList.toggle('dark-mode');
+
+  if (document.body.classList.contains('dark-mode')) {
+      modeButton.innerHTML = "☀️ Light mode";
+  } else {
+      modeButton.innerHTML = "🌙 Dark mode";
+  }
 }
 
 document.querySelectorAll('.section-button').forEach(button => {
@@ -60,8 +61,8 @@ document.querySelectorAll('.section-button').forEach(button => {
             openPeople();
         } else if(this.id=="following-button") {
             openFollowing();
-        } else if(this.id=="recommended-button") {
-          openRecommended();
+        } else if(this.id=="games-button") {
+          openGames();
         } else {
           openNews()
         }
@@ -160,8 +161,11 @@ function logOutUser(){
           systemMessage.style.opacity='1';
           setTimeout(closeMessage,2000);
           loginLink.innerText="Login";
+          document.querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
           document.getElementById("feed-button").classList.add('active');
-          displayFeedPosts();
+          document.getElementById("searched-posts").style.display="none";
+          openSections()
+          openFeed();
         }
       })
       .catch(error => {
@@ -256,11 +260,13 @@ function openProfile(){
 
 function closeProfile(){
   document.getElementById('your-profile').style.display='none';
+  closeNav();
 }
 
 function openSaved(){
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
+      closeNav();
       fetchSavedPosts();
       document.getElementById('saved-posts').style.display='block';
     } else {
@@ -274,12 +280,14 @@ function openSaved(){
 
 function closeSaved(){
   document.getElementById('saved-posts').style.display='none';
+  closeNav();
 }
 
 function openFavourite(){
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
       loadFavourites();
+      closeNav();
       document.getElementById('favourite-games').style.display='block';
     } else {
       systemMessage.innerText='❌ You must login to view this';
@@ -292,12 +300,14 @@ function openFavourite(){
 
 function closeFavourite(){
   document.getElementById('favourite-games').style.display='none';
+  closeNav();
 }
 
 function openSections(){
   closeFavourite();
   closeSaved();
   closeProfile();
+  closeNav();
   document.querySelectorAll('.section-button').forEach(btn => btn.style.display='block');
   document.getElementById("feed-posts").style.display="block";
   document.querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
@@ -345,13 +355,13 @@ function openPeople(){
     });
 }
 
-function openRecommended(){
+function openGames(){
   closeSection();
   document.getElementById('searched-posts').style.display = 'none';
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
-      document.getElementById('recommended-section').style.display = 'block';
-      displayGames(1);
+      document.getElementById('games-section').style.display = 'block';
+      displayGames();
     } else {
       systemMessage.innerText='❌ You must login to view this';
       systemMessage.style.opacity='1';
@@ -378,6 +388,7 @@ function closeMessage(){
 
 function registerUser(event){
     event.preventDefault();
+    closeNav();
     const newUsername= document.getElementById('newUsername').value;
     const newEmail=document.getElementById('newEmail').value;
     const newPassword=document.getElementById('newPassword').value;
@@ -448,6 +459,7 @@ function registerUser(event){
 }
 
 function loginUser(event){
+    closeNav();
     event.preventDefault();
     const newEmail=document.getElementById('email').value;
     const newPassword=document.getElementById('password').value;
@@ -577,8 +589,6 @@ async function displayYourData() {
     document.getElementById('your-username').innerText = data.username;
     document.getElementById('your-following').innerText = data.following.length;
     document.getElementById('your-followers').innerText = data.followers.length;
-    console.log(data.username);
-    console.log(data.profileImg);
 
     const profileImageElement = document.getElementById("yourImage");
     profileImageElement.src = data.profileImg ? data.profileImg : './images/default-photo.jpg';
@@ -678,7 +688,7 @@ async function loadYourPosts(posts, data) {
         <div class="post-bottom">
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
-            <button>💬Comments</button>
+            <button class="view-comments" id=${post._id}>💬Comments</button>
             <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
         </div>
       <hr>
@@ -765,7 +775,29 @@ async function loadYourPosts(posts, data) {
         this.classList.add('active');
         savePost(targetId);  
       }
+    });
+  });
 
+    document.querySelectorAll('.view-comments').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      openComments(this.id);
+    });
+  });
+
+  document.querySelectorAll('.publish-comment').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      event.preventDefault();
+      const commentCountElement = this.closest('.post').querySelector("#comment-count");
+
+      let currentComments= parseInt(commentCountElement.innerText) || 0;
+      currentComments++;
+      commentCountElement.innerText = currentComments;
+      const commentInput = this.previousElementSibling;  
+      const newComment = commentInput.value;
+  
+      commentInput.value = '';
+      postComment(this.id,newComment);
     });
   });
 }
@@ -1272,7 +1304,7 @@ async function fetchSavedPosts(){
         <div class="post-bottom">
             <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
             <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
-            <button>💬Comments</button>
+            <button class="view-comments" id=${post._id}>💬Comments</button>
             <button class="save-post ${'active'}" id=${post._id}>⚲Save</button>
         </div>
         <hr>
@@ -2243,12 +2275,13 @@ document.querySelector('.previous-button').addEventListener('click', function(ev
 async function displayGames() {
   const gameContainer = document.getElementById("game-container");
   gameContainer.innerHTML = ''; 
+  document.querySelector('game-page-no').innerText=pageNo;
 
   try {
     const userResponse = await fetch(`http://localhost:8000/M00980001/user`);
     const userData = await userResponse.json();
 
-    const response = await fetch(`http://localhost:8000/M00980001/recommended/${pageNo}`);
+    const response = await fetch(`http://localhost:8000/M00980001/games/${pageNo}`);
     const data = await response.json();
 
     data.forEach(game => {

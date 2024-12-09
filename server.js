@@ -277,7 +277,6 @@ async function startServer() {
         } else if (sortBy === "level") {
           posts = posts.sort((a, b) => b.level - a.level);
         } else if (sortBy === "comments") {
-          posts.forEach(post => console.log(post.title, post.comments.length));
           posts = posts.sort((a, b) => b.comments.length - a.comments.length);
         }
         res.status(200).json(posts);
@@ -526,7 +525,7 @@ async function startServer() {
     app.post('/M00980001/comment/:id', async (req, res) => {
       const comment=req.body;
       const targetId = new ObjectId(req.params.id);  
-      console.log("Trying to update")  
+      console.log("Trying to update");
       try {
         
         await db.collection('Posts').updateOne(
@@ -584,7 +583,6 @@ async function startServer() {
 
       try {
         const user = await db.collection('Users').findOne({ username: targetUser});
-        console.log(user.username);
         res.status(200).json(user);
       } catch (err) {
         console.error('Error fetching posts:', err);
@@ -604,7 +602,7 @@ async function startServer() {
       }
     });
 
-    app.get('/M00980001/recommended/:id', async (req, res) => {
+    app.get('/M00980001/games/:id', async (req, res) => {
       const pageNo=req.params.id;
       const favTags=req.session.user.favTags;
       let url='';
@@ -683,7 +681,6 @@ async function startServer() {
       try {
     
         const user = await db.collection('Users').findOne({ username: currentUser });
-        console.log(user.favGames);
 
         res.status(200).json(user.favGames);
       } catch (err) {
@@ -800,8 +797,6 @@ async function startServer() {
       newFavTags.push(newTag.toLowerCase());
     }
 
-    console.log(newFavTags);
-  
     try {
       await db.collection('Users').updateOne(
         { username: currentUser},

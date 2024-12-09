@@ -375,6 +375,8 @@ body{
 .chat-textbar button{
     margin-right:20px;
     border-radius:1rem;
+    display:flex;
+    align-items: center;
 }
 
 .post-comment button:hover,
@@ -500,11 +502,11 @@ body{
     display:none;
 }
 
-#recommended-section{
+#games-section{
     display:none;
 }
 
-#recommended-section h1{
+#games-section h1{
     text-align:center;
 }
 
@@ -647,6 +649,8 @@ body{
 
 #logout{
     height:20%;
+    margin:18% auto
+
 }
 
 .choice-buttons{
@@ -1158,6 +1162,80 @@ body{
     border-radius:10px;
     border: 2px solid black;
     padding-left: 10px;
+}
+
+
+.dark-mode {
+    background-color: black;
+    color: white;
+}
+
+.dark-mode p,
+.dark-mode a,
+.dark-mode .sort-feed-button,
+.dark-mode .search-sort-button{
+    color: white;
+}
+
+.dark-mode .top-bar {
+    border-color: white;
+}
+
+.dark-mode .section-button{
+    background-color: black;
+    color: white;
+}
+
+.dark-mode .post,
+.dark-mode .game,
+.dark-mode .person,
+.dark-mode .newsArticle,
+.dark-mode .chat-container {
+    background-color: hsl(0, 0%, 5%);
+    color: white;
+    border-color: white !important;
+}
+
+.dark-mode .post p,
+.dark-mode .game p,
+.dark-mode .person p,
+.dark-mode .newsArticle p,
+.dark-mode .post .post-title,
+.dark-mode .post .post-content {
+    color: white;
+}
+
+.dark-mode .post .post-head button,
+.dark-mode .person button,
+.dark-mode .game-title button,
+.dark-mode .newsTitle {
+    color: white;
+    border-color: white;
+}
+
+
+.dark-mode .post-comment button,
+.dark-mode .post-bottom button,
+.dark-mode .user-comment,
+.dark-mode .user-text,
+.dark-mode .send-message{
+    background-color: hsl(0, 0%, 10%);
+    color: white;
+}
+
+.dark-mode .left-message{
+    background-color: hsl(0, 0%, 10%);
+    color: white;
+    border-color:white;
+}
+
+.dark-mode .right-message{
+    border-color:white;
+}
+
+
+.dark-mode .game{
+    background: none;
 }
 
 
