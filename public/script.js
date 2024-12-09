@@ -22,7 +22,7 @@ window.onload = async() => {
 
 async function checkCurrentUser() {
   try {
-    const response = await fetch('http://localhost:8000/M00980001/user');
+    const response = await fetch('http://localhost:8000/M00980001/login');
     const data = await response.json();
     if (data.username) {
       document.getElementById("login-link").innerText="Log out";
@@ -94,7 +94,7 @@ async function openNav() {
     document.getElementById("side-menu").style.width = "250px";
     document.getElementById("menu-opener").style.opacity = "0";
     try {
-      const response = await fetch(`http://localhost:8000/M00980001/user`);
+      const response = await fetch(`http://localhost:8000/M00980001/login`);
       const data = await response.json();
       
       const profileImageElement = document.getElementById("user-img");
@@ -143,11 +143,12 @@ function closePopup() {
 }
 
 function openLogOut(){
+  closeNav();
   document.getElementById('logout-popup').style.display = 'block';
 }
 
 function logOutUser(){
-  fetch('http://localhost:8000/M00980001/logout', {
+  fetch('http://localhost:8000/M00980001/login', {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
@@ -228,6 +229,20 @@ document.getElementById('favourite-button').addEventListener('click', function(e
   closeSectionButton();
   openFavourite();
   document.getElementById("searched-posts").style.display="none";
+});
+
+document.getElementById('logout-button').addEventListener('click', function(event){
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      closeNav();
+      openLogOut();
+    } else {
+      systemMessage.innerText='❌ You must login to view this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
 });
 
 document.querySelector('.register-link').addEventListener('click', function(event) {
@@ -412,7 +427,7 @@ function registerUser(event){
           };
         
           // using Fetch to make the AJAX post request
-          fetch('http://localhost:8000/M00980001/register', {
+          fetch('http://localhost:8000/M00980001/users', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -556,7 +571,7 @@ function publishPost(event) {
   }
 
  
-  fetch('http://localhost:8000/M00980001/publish', {
+  fetch('http://localhost:8000/M00980001/contents', {
     method: 'POST',
     body: formData
   })
@@ -583,7 +598,7 @@ document.getElementById("media").value='';
 
 async function displayYourData() {
   try {
-    const response = await fetch('http://localhost:8000/M00980001/user');
+    const response = await fetch('http://localhost:8000/M00980001/login');
     const data = await response.json();
 
     document.getElementById('your-username').innerText = data.username;
@@ -808,7 +823,7 @@ async function fetchPeople() {
     const people = await response.json();
     const peopleContainer = document.getElementById('people-container');
 
-    const res = await fetch('http://localhost:8000/M00980001/user');
+    const res = await fetch('http://localhost:8000/M00980001/login');
     const data = await res.json();
     let following = data.following; 
 
@@ -880,10 +895,7 @@ async function fetchPeople() {
       })
       .then(response => response.json())
       .then(message => {
-        systemMessage.innerText=message.message;
-        systemMessage.style.opacity='1';
-        setTimeout(closeMessage,2000);
-        closePopup();
+        console.log(message.message)
       })
       .catch(error => {
         systemMessage.innerText='❌ Error: ' + error;
@@ -894,7 +906,7 @@ async function fetchPeople() {
   }
 
   async function unfollowUser(id){
-    fetch(`http://localhost:8000/M00980001/unfollow/${id}`, {
+    fetch(`http://localhost:8000/M00980001/follow/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -902,10 +914,7 @@ async function fetchPeople() {
     })
     .then(response => response.json())
     .then(message => {
-      systemMessage.innerText=message.message;
-      systemMessage.style.opacity='1';
-      setTimeout(closeMessage,2000);
-      closePopup();
+      console.log(message.message)
     })
     .catch(error => {
       systemMessage.innerText='❌ Error: ' + error;
@@ -917,7 +926,7 @@ async function fetchPeople() {
 
   async function displayFeedPosts(){
     try {
-    const response = await fetch('http://localhost:8000/M00980001/user');
+    const response = await fetch('http://localhost:8000/M00980001/login');
     const data = await response.json();
 
     if(Object.keys(data).length === 0){
@@ -925,7 +934,7 @@ async function fetchPeople() {
       const posts = await postsResponse.json();
       loadLatestPosts(posts);
     } else {
-      const postsResponse = await fetch(`http://localhost:8000/M00980001/feed/${sortBy}`);
+      const postsResponse = await fetch(`http://localhost:8000/M00980001/contents/${sortBy}`);
       const posts = await postsResponse.json();
       loadFeedPosts(posts, data);
     }
@@ -1128,10 +1137,7 @@ async function likePost(id,tags){
   })
   .then(response => response.json())
   .then(message => {
-    systemMessage.innerText=message.message;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
+    console.log(message.message)
     addTags(tags);
   })
   .catch(error => {
@@ -1173,10 +1179,7 @@ async function dislikePost(id){
   })
   .then(response => response.json())
   .then(message => {
-    systemMessage.innerText=message.message;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
+    console.log(message.message)
   })
   .catch(error => {
     systemMessage.innerText='❌ Error: ' + error;
@@ -1195,10 +1198,7 @@ async function removeDislike(id){
   })
   .then(response => response.json())
   .then(message => {
-    systemMessage.innerText=message.message;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
+    console.log(message.message)
   })
   .catch(error => {
     systemMessage.innerText='❌ Error: ' + error;
@@ -1253,7 +1253,7 @@ async function removeSavedPost(id){
 }
 
 async function fetchSavedPosts(){
-  const response = await fetch('http://localhost:8000/M00980001/user');
+  const response = await fetch('http://localhost:8000/M00980001/login');
   const data = await response.json();
 
   const postsResponse = await fetch('http://localhost:8000/M00980001/savedPosts');
@@ -1506,7 +1506,7 @@ async function loadLatestPosts(posts) {
 }
 
 async function displayFollowingPosts(){
-  const response = await fetch('http://localhost:8000/M00980001/user');
+  const response = await fetch('http://localhost:8000/M00980001/login');
   const data = await response.json();
 
   const postsResponse = await fetch('http://localhost:8000/M00980001/following');
@@ -1632,7 +1632,7 @@ async function loadComments(id){
 }
 
 async function postComment(id,newComment){
-  const response = await fetch('http://localhost:8000/M00980001/user');
+  const response = await fetch('http://localhost:8000/M00980001/login');
   const data = await response.json();
 
   const now = new Date();
@@ -1676,11 +1676,11 @@ async function searchPeople(){
   document.getElementById("people-container").style.display="none";
 
   try {
-    const response = await fetch(`http://localhost:8000/M00980001/searchPerson/${targetText}`);
+    const response = await fetch(`http://localhost:8000/M00980001/users/search/${targetText}`);
     const people = await response.json();
     const peopleContainer = document.getElementById('searched-people-container');
 
-    const res = await fetch('http://localhost:8000/M00980001/user');
+    const res = await fetch('http://localhost:8000/M00980001/login');
     const data = await res.json();
     let following = data.following; 
 
@@ -1795,11 +1795,11 @@ async function searchPosts(searchTarget){
   console.log(targetText);
 
   try {
-    const response = await fetch(`http://localhost:8000/M00980001/searchPost/${targetText}/${searchFilter}`);
+    const response = await fetch(`http://localhost:8000/M00980001/contents/search/${targetText}/${searchFilter}`);
     let posts = await response.json();
     const postsContainer = document.getElementById('post-search-container');
 
-    const res = await fetch('http://localhost:8000/M00980001/user');
+    const res = await fetch('http://localhost:8000/M00980001/login');
     const data = await res.json();
     let following = data.following || []; 
 
@@ -2057,7 +2057,7 @@ async function displayUserProfile(targetUser) {
     const postsResponse = await fetch(`http://localhost:8000/M00980001/posts/${targetUser}`);
     const posts = await postsResponse.json();
 
-    const res = await fetch('http://localhost:8000/M00980001/user');
+    const res = await fetch('http://localhost:8000/M00980001/login');
     const data = await res.json();
     let following = data.following;
 
@@ -2278,7 +2278,7 @@ async function displayGames() {
   document.querySelector('game-page-no').innerText=pageNo;
 
   try {
-    const userResponse = await fetch(`http://localhost:8000/M00980001/user`);
+    const userResponse = await fetch(`http://localhost:8000/M00980001/login`);
     const userData = await userResponse.json();
 
     const response = await fetch(`http://localhost:8000/M00980001/games/${pageNo}`);
@@ -2458,7 +2458,7 @@ async function searchGame() {
   gameContainer.innerHTML = ''; 
 
   try {
-    const userResponse = await fetch(`http://localhost:8000/M00980001/user`);
+    const userResponse = await fetch(`http://localhost:8000/M00980001/login`);
     const userData = await userResponse.json();
 
     const response = await fetch(`http://localhost:8000/M00980001/searchGame/${targetGame}/${searchPageNo}`);
@@ -2561,7 +2561,7 @@ document.querySelector('.next-search-button').addEventListener('click', function
     
     const loadingSpinner = document.createElement('div');
     loadingSpinner.classList.add('loading');
-    loadingSpinner.innerText = 'Loading...';
+    loadingSpinner.innerText = 'Loading the latest news...';
     newsContainer.appendChild(loadingSpinner);
   
     try {
@@ -2673,7 +2673,7 @@ async function sendMessage(){
   const otherUser=document.getElementById("chat-username").innerHTML;
 
   try{
-    const response = await fetch(`http://localhost:8000/M00980001/user`);
+    const response = await fetch(`http://localhost:8000/M00980001/login`);
     user = await response.json();
     console.log(user.username);
   } catch(error){

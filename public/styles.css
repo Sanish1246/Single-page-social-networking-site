@@ -739,6 +739,7 @@ body{
     position: absolute;
     margin:0 auto;
     background: linear-gradient(90deg, hsl(290, 96%, 40%, 1), hsl(0, 96%, 60%, 1));
+    padding: 20px 20px 20px 20xpx;
     top:0;
     opacity:0;
     border-radius: 2px;

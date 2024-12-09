@@ -35,7 +35,7 @@ app.get('/M00980001', async (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/M00980001/user', (req, res) => {
+app.get('/M00980001/login', (req, res) => {
   if (req.session.user) {
     res.status(200).json({
       username: req.session.user.username,
@@ -58,7 +58,7 @@ async function startServer() {
     const client = await connectToDb();
     const db = client.db("CurrentUser");
 
-    app.post('/M00980001/register', async (req, res) => {
+    app.post('/M00980001/users', async (req, res) => {
       const user = req.body;
     
       try {
@@ -132,7 +132,7 @@ async function startServer() {
         });
     });
 
-    app.delete('/M00980001/logout', (req, res) => {
+    app.delete('/M00980001/login', (req, res) => {
       req.session.destroy(err => {
         if (err) {
           return res.status(500).json({ error: "Logout failed" });
@@ -141,7 +141,7 @@ async function startServer() {
       });
     });
 
-    app.post('/M00980001/publish', async (req, res) => {
+    app.post('/M00980001/contents', async (req, res) => {
       try {
         const { owner, title, content, tags, date, time, level} = req.body;
 
@@ -213,7 +213,7 @@ async function startServer() {
         res.status(200).json(users);
       } catch (err) {
         console.error('Error fetching users:', err);
-        res.status(500).json({ error: 'Error fetching posts' });
+        res.status(500).json({ error: 'Error fetching users' });
       }
     });
 
@@ -241,7 +241,7 @@ async function startServer() {
       }
     });
 
-    app.delete('/M00980001/unfollow/:id', async (req, res) => {
+    app.delete('/M00980001/follow/:id', async (req, res) => {
       const currentUser = req.session.user.username;
       const targetId = req.params.id;
     
@@ -261,12 +261,12 @@ async function startServer() {
     
         res.status(200).json({ message: 'Unfollow action successful' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating unfollow data:', err);
+        res.status(500).json({ error: 'Error processing unfollow action' });
       }
     });
 
-    app.get('/M00980001/feed/:id', async (req, res) => {
+    app.get('/M00980001/contents/:id', async (req, res) => {
       const currentUser=req.session.user.username;
       const sortBy=req.params.id;
     
@@ -311,8 +311,8 @@ async function startServer() {
         const user = await db.collection('Users').findOne({username: req.params.id});
         res.status(200).json(user);
       } catch (err) {
-        console.error('Error fetching posts:', err);
-        res.status(500).json({ error: 'Error fetching posts' });
+        console.error('Error fetching user:', err);
+        res.status(500).json({ error: 'Error fetching user' });
       }
     });
 
@@ -364,8 +364,8 @@ async function startServer() {
 
         res.status(200).json({ message: 'Post liked' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error with liking post:', err);
+        res.status(500).json({ error: 'Error processing like action' });
       }
     });
 
@@ -386,8 +386,8 @@ async function startServer() {
 
         res.status(200).json({ message: 'Like removed successfully' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating like data:', err);
+        res.status(500).json({ error: 'Error processing removing like action' });
       }
     });
 
@@ -408,8 +408,8 @@ async function startServer() {
 
         res.status(200).json({ message: 'Post disliked' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating dislike data:', err);
+        res.status(500).json({ error: 'Error processing dislike action' });
       }
     });
 
@@ -430,8 +430,8 @@ async function startServer() {
 
         res.status(200).json({ message: 'Dislike removed' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating dislike data:', err);
+        res.status(500).json({ error: 'Error processing remove dislike action' });
       }
     });
 
@@ -445,10 +445,10 @@ async function startServer() {
           { $push: { savedPosts: targetId } }
         );
 
-        res.status(200).json({ message: 'Post saved' });
+        res.status(200).json({ message: '✅ Post saved' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating save data:', err);
+        res.status(500).json({ error: 'Error processing save action' });
       }
     });
 
@@ -462,10 +462,10 @@ async function startServer() {
           { $pull: { savedPosts: targetId } }
         );
 
-        res.status(200).json({ message: 'Post unsaved' });
+        res.status(200).json({ message: '✅Post unsaved' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating save data:', err);
+        res.status(500).json({ error: 'Error processing unsave action' });
       }
     });
 
@@ -506,8 +506,8 @@ async function startServer() {
 
         res.status(200).json(posts);
       } catch (err) {
-        console.error('Error fetching saved posts:', err);
-        res.status(500).json({ error: 'Error fetching saved posts' });
+        console.error('Error fetching following:', err);
+        res.status(500).json({ error: 'Error fetching following' });
       }
     });
 
@@ -517,8 +517,8 @@ async function startServer() {
         const post = await db.collection('Posts').findOne({_id: targetId});
         res.status(200).json(post.comments);
       } catch (err) {
-        console.error('Error fetching posts:', err);
-        res.status(500).json({ error: 'Error fetching posts' });
+        console.error('Error fetching comments:', err);
+        res.status(500).json({ error: 'Error fetching comments' });
       }
     });
 
@@ -533,14 +533,14 @@ async function startServer() {
           { $push: { comments: comment } }
         );
 
-        res.status(200).json({ message: 'Comment posted' });
+        res.status(200).json({ message: '✅ Comment posted' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating comment data:', err);
+        res.status(500).json({ error: 'Error processing comment action' });
       }
     });
 
-    app.get('/M00980001/searchPerson/:id', async (req, res) => {
+    app.get('/M00980001/users/search/:id', async (req, res) => {
       const targetName=req.params.id;
     
       try {
@@ -554,7 +554,7 @@ async function startServer() {
       }
     });
 
-    app.get('/M00980001/searchPost/:id/:filter', async (req, res) => {
+    app.get('/M00980001/contents/search/:id/:filter', async (req, res) => {
       const targetContent=req.params.id;
       const filter=req.params.filter;
     
@@ -573,8 +573,8 @@ async function startServer() {
 
         res.status(200).json(posts);
       } catch (err) {
-        console.error('Error fetching users:', err);
-        res.status(500).json({ error: 'Error fetching users' });
+        console.error('Error fetching posts:', err);
+        res.status(500).json({ error: 'Error fetching posts' });
       }
     });
 
@@ -585,8 +585,8 @@ async function startServer() {
         const user = await db.collection('Users').findOne({ username: targetUser});
         res.status(200).json(user);
       } catch (err) {
-        console.error('Error fetching posts:', err);
-        res.status(500).json({ error: 'Error fetching posts' });
+        console.error('Error fetching user:', err);
+        res.status(500).json({ error: 'Error fetching user' });
       }
     });
 
@@ -653,10 +653,10 @@ async function startServer() {
           { $push: { favGames: newGame} }
         );
 
-        res.status(200).json({ message: 'Game saved' });
+        res.status(200).json({ message: '✅ Game saved' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating favourite data:', err);
+        res.status(500).json({ error: 'Error processing favourite action' });
       }
     });
 
@@ -669,10 +669,10 @@ async function startServer() {
           { username: currentUser },
           { $pull: { favGames: { name: newGame } } }
         );
-        res.status(200).json({ message: 'Game removed from favourites' });
+        res.status(200).json({ message: '✅ Game removed from favourites' });
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating unfavourite data:', err);
+        res.status(500).json({ error: 'Error processing unfavourite action' });
       }
     });
 
@@ -684,8 +684,8 @@ async function startServer() {
 
         res.status(200).json(user.favGames);
       } catch (err) {
-        console.error('Error updating follow data:', err);
-        res.status(500).json({ error: 'Error processing follow action' });
+        console.error('Error updating user data:', err);
+        res.status(500).json({ error: 'Error processing user action' });
       }
     });
 
@@ -849,8 +849,8 @@ async function startServer() {
 
       res.status(200).json({message: "message added!"});
     } catch (err) {
-      console.error('Error fetching posts:', err);
-      res.status(500).json({ error: 'Error fetching posts' });
+      console.error('Error fetching message:', err);
+      res.status(500).json({ error: 'Error fetching message' });
     }
   });
   
