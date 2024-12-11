@@ -125,6 +125,13 @@ window.removeLike=removeLike;
   }
   window.removeDislike=removeDislike;
 
+export function openComments(id){
+  closePopup();
+  document.getElementById('comments-popup').style.display = 'block';
+  loadComments(id);
+}
+window.openComments=openComments;
+
   export async function loadComments(id){
     const commentsResponse = await fetch(`http://localhost:8000/M00980001/comments/${id}`);
     let comments = await commentsResponse.json();
@@ -245,3 +252,18 @@ window.savePost=savePost;
     });
   }
 window.removeSavedPost=removeSavedPost;
+
+export async function addTags(tags) {
+  try{
+    fetch(`http://localhost:8000/M00980001/tags`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(tags)
+    })
+  } catch (error) {
+    console.error(error);
+  }
+}
+window.addTags=addTags;
