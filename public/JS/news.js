@@ -5,6 +5,7 @@ export async function openNews() {
     closeSection();
     document.getElementById('news').style.display = 'block';
     const newsContainer = document.getElementById('news-container');
+    newsContainer.innerHTML = '';
     
     const loadingSpinner = document.createElement('div');
     loadingSpinner.classList.add('loading');

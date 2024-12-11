@@ -719,6 +719,7 @@ async function startServer() {
 
       let skip = (page - 1) * limit;
       try {
+         if (page==1){
           const browser = await puppeteer.launch({ headless: true });
           const page = await browser.newPage();
   
@@ -778,6 +779,8 @@ async function startServer() {
                       { upsert: true }
                   );
               }
+          console.log("Page 1")    
+         }
 
           let allNews = await db.collection('News')
           .find()
