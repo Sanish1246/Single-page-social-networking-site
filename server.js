@@ -807,6 +807,22 @@ async function startServer() {
       if (newFavTags.length===30){
         newFavTags.shift();
       }
+
+      if(newTag.toLowerCase().contains("rpg") ||newTag.toLowerCase().contains("role play") ) {
+        newTag="role-playing-games-rpg";
+      } else if (newTag.toLowerCase().contains("open world") || newTag.toLowerCase().contains("exploration")){
+        newTag="adventure";
+      } else if (newTag.toLowerCase().contains("tactic")){
+        newTag="strategy";
+      } else if (newTag.toLowerCase().contains("fps") || newTag.toLowerCase().contains("shoot")){
+        newTag="shooter";
+      } else if (newTag.toLowerCase().contains("mmo")){
+        newTag="massively-multiplayer";
+      } else if (newTag.toLowerCase().contains("board")){
+        newTag="board-games";
+      } else if (newTag.toLowerCase().contains("tcg")){
+        newTag="cards";
+      }
       newFavTags.push(newTag.toLowerCase());
     }
 
