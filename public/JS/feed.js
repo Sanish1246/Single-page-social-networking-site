@@ -296,4 +296,68 @@ window.loadLatestPosts=loadLatestPosts;
     });
   });
 
+  export function publishPost(event) {
+    event.preventDefault();
+    
+    const newOwner = document.getElementById('currentUser').innerText;
+    const newTitle = document.getElementById("upload-title").value;
+    const newContent = document.getElementById("upload-content").value;
+    const newTags = document.getElementById("tags").value;
+    const mediaFiles = document.getElementById("media").files; 
+  
+   
+    const now = new Date();
+    
+   
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0'); 
+    const year = String(now.getFullYear());
+    const formattedDate = `${day}/${month}/${year}`;
+  
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const formattedTime = `${hours}:${minutes}`;
+  
+    const formData = new FormData();
+    
+  
+    formData.append('owner', newOwner);
+    formData.append('title', newTitle);
+    formData.append('content', newContent);
+    formData.append('tags', newTags);
+    formData.append('level',0);
+    formData.append('date', formattedDate); 
+    formData.append('time', formattedTime);
+  
+  
+    for (let i = 0; i < mediaFiles.length; i++) {
+      formData.append('media', mediaFiles[i]); 
+    }
+  
+   
+    fetch('http://localhost:8000/M00980001/contents', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(message => {
+      systemMessage.innerText=message.message;
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    })
+    .catch(error => {
+      systemMessage.innerText='❌ Error: ' + error;
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    });
+  
+  
+   document.getElementById("upload-title").value=null;
+   document.getElementById("upload-content").value=null;
+   document.getElementById("tags").value=null;
+   document.getElementById("media").value=''; 
+  }
+  window.publishPost=publishPost;
 

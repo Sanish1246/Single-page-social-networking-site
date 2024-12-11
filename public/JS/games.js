@@ -1,4 +1,5 @@
 const systemMessage=document.getElementById('system-message');
+let pageNo=1;
 
 export async function displayGames() {
     const gameContainer = document.getElementById("game-container");

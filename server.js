@@ -7,7 +7,7 @@ import fileUpload from 'express-fileupload';
 import fs from 'fs';
 import { ObjectId } from 'mongodb';
 import axios from 'axios';
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'; 
 import puppeteer from 'puppeteer'
 import { error } from 'console';
 
@@ -713,7 +713,11 @@ async function startServer() {
       }
     });
 
-    app.get('/M00980001/news', async (req, res) => {
+    app.get('/M00980001/news/:page', async (req, res) => {
+      let page = req.params.page;
+      let limit = 10;
+
+      let skip = (page - 1) * limit;
       try {
           const browser = await puppeteer.launch({ headless: true });
           const page = await browser.newPage();
@@ -775,9 +779,12 @@ async function startServer() {
                   );
               }
 
-          let allNews = await db.collection('News').find().toArray();
-
-          allNews = allNews.reverse();
+          let allNews = await db.collection('News')
+          .find()
+          .sort({ _id: -1 }) 
+          .skip(skip) 
+          .limit(limit) 
+          .toArray();
   
           res.status(200).json(allNews);
   

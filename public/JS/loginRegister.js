@@ -1,6 +1,13 @@
 import {displayFeedPosts} from './feed.js';
 const loginLink = document.getElementById('login-link');
 
+document.querySelectorAll('.login-link').forEach(function(element) {
+  element.addEventListener('click', function(event) {
+      event.preventDefault(); 
+      openLogin();
+  });
+});
+
 export function openLogin() {
     closePopup();
     if (loginLink.innerText=="Log out"){
@@ -72,6 +79,11 @@ export function loginUser(event){
 }
 
 window.loginUser=loginUser;
+
+document.querySelector('.register-link').addEventListener('click', function(event) {
+  event.preventDefault(); 
+  openRegister();
+});
 
 export function registerUser(event){
     event.preventDefault();

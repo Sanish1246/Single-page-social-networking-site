@@ -73,6 +73,10 @@
         <h1>News</h1>
         <div class="news-container" id="news-container">
         </div>
+        <div class="navigation-arrows" id="game-navigation">
+            <button id="previous-news" class="previous-news">Previous</button>
+            <button id="next-news" class="next-news">Next</button>
+        </div>
     </div>
 
     <div class="main-section" id="chat">
@@ -192,7 +196,7 @@
                 <input type="password" placeholder="Enter Password" name="psw" id="newPassword" required>
             
                 <p>Always remember to keep your credentials secure.</p>
-                <button type="submit" class="login" onclick="registerUser(event)">Register</button>
+                <button type="button" class="login" onclick="registerUser(event)">Register</button>
 
                 <p>Existing user? <a href='#' class="login-link">Login</a></p>
             </form>
@@ -234,7 +238,7 @@
                 <input type="file" id="media" name="media" accept="image/*, video/*">
                 <br>
               
-                <button type="submit" class="publish-button" onclick="publishPost(event)">Publish</button>
+                <button type="button" class="publish-button" onclick="publishPost(event)">Publish</button>
               </form>
         </div>
     </div>

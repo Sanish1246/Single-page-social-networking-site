@@ -1,3 +1,5 @@
+let newsPage=1;
+
 export async function openNews() {
     document.getElementById('searched-posts').style.display = 'none';
     closeSection();
@@ -10,9 +12,8 @@ export async function openNews() {
     newsContainer.appendChild(loadingSpinner);
   
     try {
-        const response = await fetch('http://localhost:8000/M00980001/news');
+        const response = await fetch(`http://localhost:8000/M00980001/news/${newsPage}`);
         const news = await response.json();
- 
         newsContainer.innerHTML = '';
       
         news.forEach(article => {
@@ -41,3 +42,17 @@ export async function openNews() {
 }
 
 window.openNews=openNews;
+
+document.querySelector('.next-news').addEventListener('click', function() {
+    newsPage++
+    openNews();
+    window.scrollTo(0, 0)
+   });
+   
+  document.querySelector('.previous-news').addEventListener('click', function() {
+     if (newsPage!=1){
+       newsPage--
+       openNews();
+     }
+     window.scrollTo(0, 0)
+  });

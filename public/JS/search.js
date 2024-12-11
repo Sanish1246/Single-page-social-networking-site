@@ -1,4 +1,3 @@
-let pageNo=1;
 let searchPageNo=1;
 let searchFilter="recent";
 let targetText='';

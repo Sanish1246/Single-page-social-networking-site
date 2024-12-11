@@ -1,12 +1,10 @@
-import {followUser, unfollowUser, likePost, removeLike, dislikePost, removeDislike, loadComments, postComment, savePost, removeSavedPost, openComments, addTags} from './reactions.js';
-import {openLogin, loginUser, registerUser, logOutUser} from './loginRegister.js';
+import {openLogin} from './loginRegister.js';
 import {displayFeedPosts} from './feed.js';
 import { displayFollowingPosts } from './following.js';
-import { fetchPeople, displayUserProfile, updateFollowButton, loadUserPosts, openChat, closeChat, sendMessage } from './people.js';
-import { displayGames, addFavourite, removeFavourite} from './games.js';
+import { fetchPeople, closeChat} from './people.js';
+import { displayGames} from './games.js';
 import { openNews } from './news.js';
-import { searchPosts, clearPostsResults, searchPeople, clearPeopleResults, searchGame, clearGameResults } from './search.js';
-import { displayYourData, loadYourPosts, fetchSavedPosts, loadFavourites } from './navSections.js';
+import { displayYourData, fetchSavedPosts, loadFavourites } from './navSections.js';
 import {closeNav} from './navBar.js';
 
 const modeButton=document.getElementById("mode-button");
@@ -51,6 +49,7 @@ function switchMode(){
       modeButton.innerHTML = "🌙 Dark mode";
   }
 }
+window.switchMode=switchMode;
 
 document.querySelectorAll('.section-button').forEach(button => {
     button.addEventListener('click', function() {
@@ -72,125 +71,6 @@ document.querySelectorAll('.section-button').forEach(button => {
     });
 });
 
-
-function openRegister() {
-    closePopup();
-    document.getElementById('register-popup').style.display = 'block';
-}
-
-
-function closePopup() {
-    document.getElementById('login-popup').style.display = 'none';
-    document.getElementById('register-popup').style.display = 'none';
-    document.getElementById('logout-popup').style.display = 'none';
-    document.getElementById('upload-popup').style.display = 'none';
-    document.getElementById('comments-popup').style.display = 'none';
-
-    history.replaceState(null, '', '/M00980001');
-}
-
-window.closePopup = closePopup;
-
-function openLogOut(){
-  closeNav();
-  document.getElementById('logout-popup').style.display = 'block';
-}
-
-window.addEventListener('popstate', function(event) {
-    if (document.getElementById('login-popup').style.display === 'block' || 
-        document.getElementById('register-popup').style.display === 'block'||
-        document.getElementById('logout-popup').style.display === 'block'||
-        document.getElementById('upload-popup').style.display === 'block') {
-        closePopup();
-    }
-});
-
-document.querySelectorAll('.login-link').forEach(function(element) {
-    element.addEventListener('click', function(event) {
-        event.preventDefault(); 
-        openLogin();
-    });
-});
-
-
-document.querySelector('.register-link').addEventListener('click', function(event) {
-    event.preventDefault(); 
-    openRegister();
-});
-
-
-function closeSection(){
-  document.querySelectorAll('.main-section').forEach(sct => sct.style.display='none');
-}
-window.closeSection=closeSection;
-
-function closeSectionButton(){
-  document.querySelectorAll('.section-button').forEach(btn => btn.style.display='none');
-}
-window.closeSectionButton=closeSectionButton;
-
-function openProfile(){
-  checkCurrentUser().then(isUserLoggedIn => {
-    if (isUserLoggedIn) {
-      document.getElementById('your-profile').style.display='block';
-      displayYourData();
-    } else {
-      systemMessage.innerText='❌ You must login to view this';
-      systemMessage.style.opacity='1';
-      setTimeout(closeMessage,2000);
-      closePopup();
-    }
-  });
-}
-
-function closeProfile(){
-  document.getElementById('your-profile').style.display='none';
-  closeNav();
-}
-window.closeProfile=closeProfile;
-
-function openSaved(){
-  checkCurrentUser().then(isUserLoggedIn => {
-    if (isUserLoggedIn) {
-      closeNav();
-      fetchSavedPosts();
-      document.getElementById('saved-posts').style.display='block';
-    } else {
-      systemMessage.innerText='❌ You must login to view this';
-      systemMessage.style.opacity='1';
-      setTimeout(closeMessage,2000);
-      closePopup();
-    }
-  });
-}
-
-function closeSaved(){
-  document.getElementById('saved-posts').style.display='none';
-  closeNav();
-}
-window.closeSaved=closeSaved;
-
-function openFavourite(){
-  checkCurrentUser().then(isUserLoggedIn => {
-    if (isUserLoggedIn) {
-      loadFavourites();
-      closeNav();
-      document.getElementById('favourite-games').style.display='block';
-    } else {
-      systemMessage.innerText='❌ You must login to view this';
-      systemMessage.style.opacity='1';
-      setTimeout(closeMessage,2000);
-      closePopup();
-    }
-  });
-}
-
-function closeFavourite(){
-  document.getElementById('favourite-games').style.display='none';
-  closeNav();
-}
-window.closeFavourite=closeFavourite;
-
 function openSections(){
   closeFavourite();
   closeSaved();
@@ -202,48 +82,46 @@ function openSections(){
 }
 window.openSections=openSections;
 
-function openFollowing(){
-    closeSection();
-    document.getElementById('searched-posts').style.display = 'none';
-    checkCurrentUser().then(isUserLoggedIn => {
-      if (isUserLoggedIn) {
-        document.getElementById('following-posts').style.display = 'block';
-        displayFollowingPosts();
-      } else {
-        systemMessage.innerText='❌ You must login to view this';
-        systemMessage.style.opacity='1';
-        setTimeout(closeMessage,2000);
-        closePopup();
-      }
-    });
-}
-
 function openFeed(){
-    closeSection();
-    document.getElementById('searched-posts').style.display = 'none';
-    document.getElementById('feed-posts').style.display = 'block';
-    document.getElementById('feed-recent').classList.add('active');
-    displayFeedPosts();
+  closeSection();
+  document.getElementById('searched-posts').style.display = 'none';
+  document.getElementById('feed-posts').style.display = 'block';
+  document.getElementById('feed-recent').classList.add('active');
+  displayFeedPosts();
 }
 
-
+function openFollowing(){
+  closeSection();
+  document.getElementById('searched-posts').style.display = 'none';
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      document.getElementById('following-posts').style.display = 'block';
+      displayFollowingPosts();
+    } else {
+      systemMessage.innerText='❌ You must login to view this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
+}
 
 function openPeople(){
-    closeChat();
-    closeSection();
-    document.getElementById('searched-posts').style.display = 'none';
-    checkCurrentUser().then(isUserLoggedIn => {
-      if (isUserLoggedIn) {
-        document.getElementById('people-section').style.display = 'block';
-        document.getElementById('user-profile').style.display='none';
-        fetchPeople();
-      } else {
-        systemMessage.innerText='❌ You must login to view this';
-        systemMessage.style.opacity='1';
-        setTimeout(closeMessage,2000);
-        closePopup();
-      }
-    });
+  closeChat();
+  closeSection();
+  document.getElementById('searched-posts').style.display = 'none';
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      document.getElementById('people-section').style.display = 'block';
+      document.getElementById('user-profile').style.display='none';
+      fetchPeople();
+    } else {
+      systemMessage.innerText='❌ You must login to view this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
 }
 
 function openGames(){
@@ -261,6 +139,20 @@ function openGames(){
     }
   });
 }
+window.openGames=openGames;
+
+
+function openRegister() {
+    closePopup();
+    document.getElementById('register-popup').style.display = 'block';
+}
+window.openRegister=openRegister;
+
+function openLogOut(){
+  closeNav();
+  document.getElementById('logout-popup').style.display = 'block';
+}
+window.openLogOut=openLogOut;
 
 function openUpload(){
   checkCurrentUser().then(isUserLoggedIn => {
@@ -271,7 +163,103 @@ function openUpload(){
     }
   });
 }
+window.openUpload=openUpload;
 
+function openProfile(){
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      document.getElementById('your-profile').style.display='block';
+      displayYourData();
+    } else {
+      systemMessage.innerText='❌ You must login to view this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
+}
+window.openProfile=openProfile;
+
+function openSaved(){
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      closeNav();
+      fetchSavedPosts();
+      document.getElementById('saved-posts').style.display='block';
+    } else {
+      systemMessage.innerText='❌ You must login to view this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
+}
+window.openSaved=openSaved;
+
+function openFavourite(){
+  checkCurrentUser().then(isUserLoggedIn => {
+    if (isUserLoggedIn) {
+      loadFavourites();
+      closeNav();
+      document.getElementById('favourite-games').style.display='block';
+    } else {
+      systemMessage.innerText='❌ You must login to view this';
+      systemMessage.style.opacity='1';
+      setTimeout(closeMessage,2000);
+      closePopup();
+    }
+  });
+}
+window.openFavourite=openFavourite;
+
+function closePopup() {
+    document.getElementById('login-popup').style.display = 'none';
+    document.getElementById('register-popup').style.display = 'none';
+    document.getElementById('logout-popup').style.display = 'none';
+    document.getElementById('upload-popup').style.display = 'none';
+    document.getElementById('comments-popup').style.display = 'none';
+
+    history.replaceState(null, '', '/M00980001');
+}
+window.closePopup = closePopup;
+
+window.addEventListener('popstate', function(event) {
+    if (document.getElementById('login-popup').style.display === 'block' || 
+        document.getElementById('register-popup').style.display === 'block'||
+        document.getElementById('logout-popup').style.display === 'block'||
+        document.getElementById('upload-popup').style.display === 'block') {
+        closePopup();
+    }
+});
+
+function closeSection(){
+  document.querySelectorAll('.main-section').forEach(sct => sct.style.display='none');
+}
+window.closeSection=closeSection;
+
+function closeSectionButton(){
+  document.querySelectorAll('.section-button').forEach(btn => btn.style.display='none');
+}
+window.closeSectionButton=closeSectionButton;
+
+function closeProfile(){
+  document.getElementById('your-profile').style.display='none';
+  closeNav();
+}
+window.closeProfile=closeProfile;
+
+function closeSaved(){
+  document.getElementById('saved-posts').style.display='none';
+  closeNav();
+}
+window.closeSaved=closeSaved;
+
+
+function closeFavourite(){
+  document.getElementById('favourite-games').style.display='none';
+  closeNav();
+}
+window.closeFavourite=closeFavourite;
 
 function closeMessage(){
     systemMessage.style.opacity='0';
@@ -279,67 +267,4 @@ function closeMessage(){
 window.closeMessage=closeMessage;
 
 
-function publishPost(event) {
-  event.preventDefault();
-  
-  const newOwner = document.getElementById('currentUser').innerText;
-  const newTitle = document.getElementById("upload-title").value;
-  const newContent = document.getElementById("upload-content").value;
-  const newTags = document.getElementById("tags").value;
-  const mediaFiles = document.getElementById("media").files; 
-
- 
-  const now = new Date();
-  
- 
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0'); 
-  const year = String(now.getFullYear());
-  const formattedDate = `${day}/${month}/${year}`;
-
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const formattedTime = `${hours}:${minutes}`;
-
-  const formData = new FormData();
-  
-
-  formData.append('owner', newOwner);
-  formData.append('title', newTitle);
-  formData.append('content', newContent);
-  formData.append('tags', newTags);
-  formData.append('level',0);
-  formData.append('date', formattedDate); 
-  formData.append('time', formattedTime);
-
-
-  for (let i = 0; i < mediaFiles.length; i++) {
-    formData.append('media', mediaFiles[i]); 
-  }
-
- 
-  fetch('http://localhost:8000/M00980001/contents', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.json())
-  .then(message => {
-    systemMessage.innerText=message.message;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  })
-  .catch(error => {
-    systemMessage.innerText='❌ Error: ' + error;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  });
-
-
-document.getElementById("upload-title").value=null;
-document.getElementById("upload-content").value=null;
-document.getElementById("tags").value=null;
-document.getElementById("media").value=''; 
-}
 
