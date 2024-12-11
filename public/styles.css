@@ -1219,6 +1219,7 @@ body{
 .dark-mode .post-bottom button,
 .dark-mode .user-comment,
 .dark-mode .user-text,
+.dark-mode .search-person,
 .dark-mode .send-message{
     background-color: hsl(0, 0%, 10%);
     color: white;

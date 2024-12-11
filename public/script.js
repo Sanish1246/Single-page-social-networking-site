@@ -1706,11 +1706,11 @@ async function searchPeople(){
         peopleElement.innerHTML = `
           <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
           <a id=${person.username} class="visit-link">${person.username}</a>
-          <a id="chat-link" class="chat-link">💬</a>
         `;
         
         if (!isCurrentUser) {
           peopleElement.innerHTML += `
+            <a id="chat-link" class="chat-link" id=${person.username}>💬</a>
             <button class="follow-user ${isFollowing ? 'following' : ''}" id=${person.username}>
               ${isFollowing ? 'Following' : '+ Follow'}
             </button>
@@ -1740,9 +1740,24 @@ async function searchPeople(){
       document.querySelectorAll('.visit-link').forEach(function(element) {
         element.addEventListener('click', async function() {
           const targetUser = this.id;
-          displayUserProfile(targetUser);
+          if (targetUser!=data.username){
+            displayUserProfile(targetUser);
+          } else {
+            closeSection();
+            closeSectionButton();
+            openProfile();
+          }
         });
       });
+
+      document.querySelectorAll('.chat-link').forEach(function(element) {
+       element.addEventListener('click', async function() {
+        const targetUser = this.id;
+        if (targetUser!=data.username){
+          openChat(targetUser);
+        }
+      });
+    });
 
     } 
     document.getElementById("searched-people-container").style.display="block"
