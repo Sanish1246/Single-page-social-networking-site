@@ -1,14 +1,20 @@
+import {followUser, unfollowUser, likePost, removeLike, dislikePost, removeDislike, loadComments, postComment, savePost, removeSavedPost} from './reactions.js';
+import {openLogin} from './loginRegister.js';
+import {displayFeedPosts} from './feed.js';
+import { displayFollowingPosts } from './following.js';
+import {closeNav} from './navBar.js'
+
 const modeButton=document.getElementById("mode-button");
-const top_bar=document.getElementById("top-bar");
 const systemMessage=document.getElementById('system-message');
-const loginLink=document.getElementById('login-link');
-const currentUser=document.getElementById('currentUser');
+
 let pageNo=1;
 let searchPageNo=1;
 let sortBy="recent";
 let searchFilter="recent";
 let targetText='';
 let newsPage='1';
+
+
 
 window.onload = async() => {
   history.pushState(null, '', '/M00980001');
@@ -38,6 +44,7 @@ async function checkCurrentUser() {
     return false;
   }
 }
+window.checkCurrentUser=checkCurrentUser;
 
 function switchMode(){
   document.body.classList.toggle('dark-mode');
@@ -69,57 +76,6 @@ document.querySelectorAll('.section-button').forEach(button => {
     });
 });
 
-document.querySelectorAll('.sort-feed-button').forEach(button => {
-  button.addEventListener('click', function() {
-      document.querySelectorAll('.sort-feed-button').forEach(btn => btn.classList.remove('active'));
-      
-      this.classList.add('active');
-
-      if (this.id=='feed-recent'){
-          sortBy="recent";
-      } else if (this.id=='feed-level'){
-          sortBy="level";
-      } else if (this.id=='feed-comments'){
-         sortBy="comments";
-      } else {
-         sortBy="old";
-      }
-
-      document.getElementById('feed-old').style.display = 'block';
-      displayFeedPosts()
-  });
-});
-
-async function openNav() {
-    document.getElementById("side-menu").style.width = "250px";
-    document.getElementById("menu-opener").style.opacity = "0";
-    try {
-      const response = await fetch(`http://localhost:8000/M00980001/login`);
-      const data = await response.json();
-      
-      const profileImageElement = document.getElementById("user-img");
-      profileImageElement.src = data.profileImg ? data.profileImg : './images/default-photo.jpg';
-
-    } catch(error){
-      console.log("Error: " + error)
-    }
-
-  }
-  
-  function closeNav() {
-    document.getElementById("side-menu").style.width = "0";
-    document.getElementById("menu-opener").style.opacity = "1";
-  }
-
-
-function openLogin() {
-    closePopup();
-    if (loginLink.innerText=="Log out"){
-      openLogOut();
-    } else{
-      document.getElementById('login-popup').style.display = 'block';
-    };
-}
 
 function openRegister() {
     closePopup();
@@ -131,6 +87,7 @@ function openComments(id){
   document.getElementById('comments-popup').style.display = 'block';
   loadComments(id);
 }
+window.openComments=openComments;
 
 function closePopup() {
     document.getElementById('login-popup').style.display = 'none';
@@ -141,6 +98,8 @@ function closePopup() {
 
     history.replaceState(null, '', '/M00980001');
 }
+
+window.closePopup = closePopup;
 
 function openLogOut(){
   closeNav();
@@ -352,6 +311,8 @@ function openFeed(){
     displayFeedPosts();
 }
 
+
+
 function openPeople(){
     closeChat();
     closeSection();
@@ -400,6 +361,7 @@ function openUpload(){
 function closeMessage(){
     systemMessage.style.opacity='0';
 }
+window.closeMessage=closeMessage;
 
 function registerUser(event){
     event.preventDefault();
@@ -473,64 +435,6 @@ function registerUser(event){
       document.getElementById('newPassword').value="";
 }
 
-function loginUser(event){
-    closeNav();
-    event.preventDefault();
-    const newEmail=document.getElementById('email').value;
-    const newPassword=document.getElementById('password').value;
-    const emailError=document.getElementById('emailError');
-    const passwordError=document.getElementById('passwordError');
-
-    emailError.innerText="";
-    passwordError.innerText="";
-
-    const user={
-        email:newEmail,
-        password:newPassword
-    }
-
-    fetch('http://localhost:8000/M00980001/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(user)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.userId) {
-          closePopup();
-          systemMessage.innerText='✅ User logged in successfully';
-          systemMessage.style.opacity='1';
-          setTimeout(closeMessage,2000);
-          document.getElementById("feed-button").classList.add('active');
-          displayFeedPosts();
-          checkCurrentUser().then(isUserLoggedIn => {
-            if (isUserLoggedIn) {
-              loginLink.innerText = "Log out";
-            } else {
-              loginLink.innerText = "Login";
-            }
-          });
-
-        } else {
-          if(data.error=="Invalid email"){
-            emailError.innerText=' ❌ ' + data.error;
-          } else {
-            passwordError.innerText=' ❌ ' + data.error;
-          }
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        systemMessage.innerText='❌ Error: ' + error;
-        systemMessage.style.opacity='1';
-        setTimeout(closeMessage,2000);
-      });
-
-      document.getElementById('email').value="";
-      document.getElementById('password').value="";
-}
 
 function publishPost(event) {
   event.preventDefault();
@@ -886,372 +790,6 @@ async function fetchPeople() {
   }
 }
 
-  async function followUser(id){
-      fetch(`http://localhost:8000/M00980001/follow/${id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => response.json())
-      .then(message => {
-        console.log(message.message)
-      })
-      .catch(error => {
-        systemMessage.innerText='❌ Error: ' + error;
-        systemMessage.style.opacity='1';
-        setTimeout(closeMessage,2000);
-        closePopup();
-      });
-  }
-
-  async function unfollowUser(id){
-    fetch(`http://localhost:8000/M00980001/follow/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(message => {
-      console.log(message.message)
-    })
-    .catch(error => {
-      systemMessage.innerText='❌ Error: ' + error;
-      systemMessage.style.opacity='1';
-      setTimeout(closeMessage,2000);
-      closePopup();
-    });
-  }
-
-  async function displayFeedPosts(){
-    try {
-    const response = await fetch('http://localhost:8000/M00980001/login');
-    const data = await response.json();
-
-    if(Object.keys(data).length === 0){
-      const postsResponse = await fetch(`http://localhost:8000/M00980001/latest/${sortBy}`);
-      const posts = await postsResponse.json();
-      loadLatestPosts(posts);
-    } else {
-      const postsResponse = await fetch(`http://localhost:8000/M00980001/contents/${sortBy}`);
-      const posts = await postsResponse.json();
-      loadFeedPosts(posts, data);
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
-async function loadFeedPosts(posts, data) {
-  const postsContainer = document.getElementById('feed-posts-container');
-  postsContainer.innerHTML = '';
-  let following = data.following;
-
-  for (const post of posts) {
-    const postElement = document.createElement('div');
-    postElement.classList.add('post');
-    const isFollowing = following.includes(post.owner);
-    const isLiked = post.likedBy.includes(data.username); 
-    const isDisliked = post.dislikedBy.includes(data.username); 
-    const isSaved = data.savedPosts.includes(post._id);
-
-    try {
-      const response = await fetch(`/M00980001/postOwner/${post.owner}`);
-      const profileData = await response.json();
-
-      postElement.innerHTML = `
-        <div class="post-head">
-            <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
-            <p>${profileData.username} <span class="post-date">on ${post.date}</span></p>
-            <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
-              ${isFollowing ? 'Unfollow' : '+ Follow'}
-            </button>
-        </div>
-        <hr>
-        <div class="title-section">
-            <p class="post-title">${post.title}</p>
-        </div>
-        <hr>
-        <div class="post-content">
-            <p>${post.content || ''}</p>
-            ${post.media && post.media.length ? post.media.map(file => 
-              file.path.endsWith('.mp4') 
-                ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
-                : `<img src="${file.path}" alt="Post Image" class="post-image">`
-            ).join('') : ''}
-        </div>
-        <hr>
-        <div class="post-info">
-            <p>Level: <span id="level-count">${post.level || 0}</span></p>
-            <p>Comments: <span id="comment-count">${post.comments ? post.comments.length : 0}</span></p>
-            <p>${post.time}</p>
-        </div>
-        <hr>
-        <div class="post-bottom">
-            <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
-            <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
-            <button class="view-comments" id=${post._id}>💬Comments</button>
-            <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
-        </div>
-        <hr>
-        <div class="post-comment">
-           <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="publish-comment" id=${post._id}>Post</button>
-        </div>
-        <div class="tags" id=${post.tags}><div>
-      `;
-
-      postsContainer.appendChild(postElement);
-
-    } catch (error) {
-      console.error('Error fetching profile image:', error);
-    }
-  }
-
-  document.querySelectorAll('.follow-user').forEach(function(element) {
-    element.addEventListener('click', async function(event) {
-      event.preventDefault();
-      const targetId = this.id;
-      if (following.includes(targetId)) {
-        this.classList.remove('following');
-        this.innerText = '+ Follow';
-        unfollowUser(targetId); 
-      } else {
-        this.classList.add('following');
-        this.innerText = 'Unfollow';
-        followUser(targetId); 
-      }
-    });
-  });
-
-  document.querySelectorAll('.level-up').forEach(function(element) {
-    element.addEventListener('click', async function(event) {
-      event.preventDefault();
-      const targetId = this.id;
-      const levelCountElement = this.closest('.post').querySelector("#level-count");
-      
-      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
-      const levelDownButton = this.closest('.post').querySelector(".level-down");
-      const tagsElement = this.closest('.post').querySelector(".tags");
-      let tagsArray = [];
-
-      
-      if (tagsElement && tagsElement.id) {
-        const tags = tagsElement.id;
-        tagsArray = tags.split(',').map(tag => tag.trim());
-      }
-  
-      if (this.classList.contains("active")) {
-        this.classList.remove('active');
-        currentLevel--;  
-        removeLike(targetId);
-      } else {
-        this.classList.add('active');
-        if(levelDownButton.classList.contains("active")) {
-          levelDownButton.classList.remove("active"); 
-          currentLevel++;
-          removeDislike(targetId); 
-        }
-        currentLevel++; 
-        likePost(targetId,tagsArray);  
-      }
-
-      levelCountElement.innerText = currentLevel;
-    });
-  });
-  
-  document.querySelectorAll('.level-down').forEach(function(element) {
-    element.addEventListener('click', async function(event) {
-      event.preventDefault();
-      const targetId = this.id;
-      const levelCountElement = this.closest('.post').querySelector("#level-count");
-      
-      let currentLevel = parseInt(levelCountElement.innerText) || 0; 
-      const levelUpButton = this.closest('.post').querySelector(".level-up");
-  
-      if (this.classList.contains("active")) {
-        this.classList.remove('active');
-        currentLevel++;  
-        removeDislike(targetId);  
-      } else {
-        this.classList.add('active');
-        if(levelUpButton.classList.contains("active")) {
-          levelUpButton.classList.remove("active"); 
-          currentLevel--;
-          removeLike(targetId); 
-        } 
-        currentLevel--;  
-        dislikePost(targetId);  
-      }
-
-      levelCountElement.innerText = currentLevel;
-    });
-  });
-
-  document.querySelectorAll('.save-post').forEach(function(element) {
-    element.addEventListener('click', async function(event) {
-      event.preventDefault();
-      const targetId = this.id;
-  
-      if (this.classList.contains("active")) {
-        this.classList.remove('active');  
-        removeSavedPost(targetId);  
-      } else {
-        this.classList.add('active');
-        savePost(targetId);  
-      }
-
-    });
-  });
-
-  document.querySelectorAll('.view-comments').forEach(function(element) {
-    element.addEventListener('click', function(event) {
-      event.preventDefault();
-      openComments(this.id);
-    });
-  });
-
-  document.querySelectorAll('.publish-comment').forEach(function(element) {
-    element.addEventListener('click', function(event) {
-      event.preventDefault();
-      const commentCountElement = this.closest('.post').querySelector("#comment-count");
-
-      let currentComments= parseInt(commentCountElement.innerText) || 0;
-      currentComments++;
-      commentCountElement.innerText = currentComments;
-      const commentInput = this.previousElementSibling;  
-      const newComment = commentInput.value;
-  
-      commentInput.value = '';
-      postComment(this.id,newComment);
-    });
-  });
-}
-
-async function likePost(id,tags){
-  fetch(`http://localhost:8000/M00980001/like/${id}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(message => {
-    console.log(message.message)
-    addTags(tags);
-  })
-  .catch(error => {
-    systemMessage.innerText='❌ Error: ' + error;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  });
-}
-
-async function removeLike(id){
-  fetch(`http://localhost:8000/M00980001/removeLike/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(message => {
-    systemMessage.innerText=message.message;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  })
-  .catch(error => {
-    systemMessage.innerText='❌ Error: ' + error;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  });
-}
-
-async function dislikePost(id){
-  fetch(`http://localhost:8000/M00980001/dislike/${id}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(message => {
-    console.log(message.message)
-  })
-  .catch(error => {
-    systemMessage.innerText='❌ Error: ' + error;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  });
-}
-
-async function removeDislike(id){
-  fetch(`http://localhost:8000/M00980001/removeDislike/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(message => {
-    console.log(message.message)
-  })
-  .catch(error => {
-    systemMessage.innerText='❌ Error: ' + error;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  });
-}
-
-async function savePost(id){
-  fetch(`http://localhost:8000/M00980001/save/${id}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(message => {
-    systemMessage.innerText=message.message;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  })
-  .catch(error => {
-    systemMessage.innerText='❌ Error: ' + error;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  });
-}
-
-async function removeSavedPost(id){
-  fetch(`http://localhost:8000/M00980001/removeSaved/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(message => {
-    systemMessage.innerText=message.message;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  })
-  .catch(error => {
-    systemMessage.innerText='❌ Error: ' + error;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  });
-}
-
 async function fetchSavedPosts(){
   const response = await fetch('http://localhost:8000/M00980001/login');
   const data = await response.json();
@@ -1436,237 +974,6 @@ async function fetchSavedPosts(){
       commentInput.value = '';
       postComment(this.id,newComment);
     });
-  });
-}
-
-
-async function loadLatestPosts(posts) {
-  const postsContainer = document.getElementById('feed-posts-container');
-  postsContainer.innerHTML = ''; 
-
-  for (const post of posts) {
-    const postElement = document.createElement('div');
-    postElement.classList.add('post');
-
-    try {
-      const response = await fetch(`/M00980001/postOwner/${post.owner}`);
-      const profileData = await response.json();
-
-      postElement.innerHTML = `
-        <div class="post-head">
-            <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
-            <p>${post.owner} <span class="post-date">on ${post.date}</span></p>
-            <button class="follow-user" onclick="openLogin()">+ Follow</button>
-        </div>
-        <hr>
-        <div class="title-section">
-            <p class="post-title">${post.title}</p>
-        </div>
-        <hr>
-        <div class="post-content">
-            <p>${post.content || ''}</p>
-            ${post.media && post.media.length ? post.media.map(file => 
-              file.path.endsWith('.mp4') 
-                ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
-                : `<img src="${file.path}" alt="Post Image" class="post-image">`
-            ).join('') : ''}
-        </div>
-        <hr>
-        <div class="post-info">
-            <p>Level: ${post.level || 0}</p>
-            <p>Comments: <span id="comment-count">${post.comments ? post.comments.length : 0}</span></p>
-            <p>${post.time}</p>
-        </div>
-        <hr>
-        <div class="post-bottom">
-            <button onclick="openLogin()">⬆️Level up</button>
-            <button onclick="openLogin()">⬇️Level down</button>
-            <button class="view-comments" id=${post._id}>💬Comments</button>
-            <button onclick="openLogin()">⚲Save</button>
-        </div>
-        <hr>
-        <div class="post-comment">
-            <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="post-comment" id=${post._id} onclick="openLogin()">Post</button>
-        </div>
-      `;
-
-      postsContainer.appendChild(postElement);
-
-    } catch (error) {
-      console.error('Error fetching profile image:', error);
-    }
-  }
-
-  document.querySelectorAll('.view-comments').forEach(function(element) {
-    element.addEventListener('click', function(event) {
-      event.preventDefault();
-      openComments(this.id);
-    });
-  });
-}
-
-async function displayFollowingPosts(){
-  const response = await fetch('http://localhost:8000/M00980001/login');
-  const data = await response.json();
-
-  const postsResponse = await fetch('http://localhost:8000/M00980001/following');
-  let posts = await postsResponse.json();
-  const postsContainer = document.getElementById('following-container');
-  postsContainer.innerHTML = '';
-  let following = data.following;
-
-  posts=posts.reverse();
-
-  for (const post of posts) {
-    const postElement = document.createElement('div');
-    postElement.classList.add('post');
-    const isFollowing = following.includes(post.owner);
-    const isLiked = post.likedBy.includes(data.username); 
-    const isDisliked = post.dislikedBy.includes(data.username); 
-    const isSaved = data.savedPosts.includes(post._id);
-
-    try {
-      const response = await fetch(`/M00980001/postOwner/${post.owner}`);
-      const profileData = await response.json();
-
-      postElement.innerHTML = `
-        <div class="post-head">
-            <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
-            <p>${profileData.username} <span class="post-date">on ${post.date}</span></p>
-            <button class="follow-user ${isFollowing ? 'following' : ''}" id=${post.owner}>
-              ${isFollowing ? 'Unfollow' : '+ Follow'}
-            </button>
-        </div>
-        <hr>
-        <div class="title-section">
-            <p class="post-title">${post.title}</p>
-        </div>
-        <hr>
-        <div class="post-content">
-            <p>${post.content || ''}</p>
-            ${post.media && post.media.length ? post.media.map(file => 
-              file.path.endsWith('.mp4') 
-                ? `<video controls><source src="${file.path}" type="video/mp4"></video>` 
-                : `<img src="${file.path}" alt="Post Image" class="post-image">`
-            ).join('') : ''}
-        </div>
-        <hr>
-        <div class="post-info">
-            <p>Level: <span id="level-count">${post.level || 0}</span></p>
-            <p>Comments: <span id="comment-count">${post.comments ? post.comments.length : 0}</span></p>
-            <p>${post.time}</p>
-        </div>
-        <hr>
-        <div class="post-bottom">
-            <button class="level-up ${isLiked ? 'active' : ''}"  id=${post._id}>⬆️Level up</button>
-            <button class="level-down ${isDisliked ? 'active' : ''}" id=${post._id}>⬇️Level down</button>
-            <button class="view-comments" id=${post._id}>💬Comments</button>
-            <button class="save-post ${isSaved ? 'active' : ''}" id=${post._id}>⚲Save</button>
-        </div>
-        <hr>
-        <div class="post-comment">
-            <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="post-comment" id=${post._id}>Post</button>
-        </div>
-      `;
-
-      postsContainer.appendChild(postElement);
-
-    } catch (error) {
-      console.error('Error fetching profile image:', error);
-    }
-  }
-
-  document.querySelectorAll('.view-comments').forEach(function(element) {
-    element.addEventListener('click', function(event) {
-      event.preventDefault();
-      openComments(this.id);
-    });
-  });
-
-  document.querySelectorAll('.publish-comment').forEach(function(element) {
-    element.addEventListener('click', function(event) {
-      event.preventDefault();
-      const commentCountElement = this.closest('.post').querySelector("#comment-count");
-
-      let currentComments= parseInt(commentCountElement.innerText) || 0;
-      currentComments++;
-      commentCountElement.innerText = currentComments;
-      const newComment = this.previousElementSibling.value;
-      postComment(this.id,newComment);
-    });
-  });
-}
-
-async function loadComments(id){
-  const commentsResponse = await fetch(`http://localhost:8000/M00980001/comments/${id}`);
-  let comments = await commentsResponse.json();
-  const commentsContainer = document.getElementById('comments-container');
-  commentsContainer.innerHTML = '';
-
-  comments=comments.reverse();
-
-  for (const comment of comments) {
-    const commentElement = document.createElement('div');
-    commentElement.classList.add('comment');
-
-    try {
-      const response = await fetch(`/M00980001/postOwner/${comment.username}`);
-      const profileData = await response.json();
-
-      console.log(profileData);
-
-      commentElement.innerHTML = `
-        <img src="${profileData.profileImg || './images/default-photo.jpg'}">
-        <div class="comment-content">
-          <p class="comment-details">${comment.username} on ${comment.date}</p>
-          <p>${comment.content}</p>
-        </div>
-      `;
-
-      commentsContainer.appendChild(commentElement);
-
-    } catch (error) {
-      console.error('Error fetching profile image:', error);
-    }
-  }
-}
-
-async function postComment(id,newComment){
-  const response = await fetch('http://localhost:8000/M00980001/login');
-  const data = await response.json();
-
-  const now = new Date();
-
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0'); 
-  const year = String(now.getFullYear());
-  const formattedDate = `${day}/${month}/${year}`;
-
-  comment = {
-    username:data.username,
-    date:formattedDate,
-    content: newComment
-  }
-
-  fetch(`http://localhost:8000/M00980001/comment/${id}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(comment)
-  })
-  .then(response => response.json())
-  .then(message => {
-    systemMessage.innerText=message.message;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
-  })
-  .catch(error => {
-    systemMessage.innerText='❌ Error: ' + error;
-    systemMessage.style.opacity='1';
-    setTimeout(closeMessage,2000);
-    closePopup();
   });
 }
 
@@ -2290,7 +1597,6 @@ document.querySelector('.previous-button').addEventListener('click', function(ev
 async function displayGames() {
   const gameContainer = document.getElementById("game-container");
   gameContainer.innerHTML = ''; 
-  document.querySelector('game-page-no').innerText=pageNo;
 
   try {
     const userResponse = await fetch(`http://localhost:8000/M00980001/login`);

@@ -9,6 +9,7 @@ import { ObjectId } from 'mongodb';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import puppeteer from 'puppeteer'
+import { error } from 'console';
 
 const app = express();
 dotenv.config();
@@ -49,7 +50,7 @@ app.get('/M00980001/login', (req, res) => {
       favTags:req.session.user.favTags
     });
   } else {
-    res.status(200).json({});
+    res.status(200).json({error});
   }
 });
 
@@ -622,6 +623,8 @@ async function startServer() {
               maxTag = item;
             }
           }
+          maxTag=maxTag.toLowerCase();
+          console.log(maxTag);
           url = `https://api.rawg.io/api/games?key=${apiKey}&genres=${maxTag}&page=${pageNo}`;
         } else {
           url = `https://api.rawg.io/api/games?key=${apiKey}&page=${pageNo}`;
