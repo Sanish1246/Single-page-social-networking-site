@@ -2,7 +2,7 @@ export async function displayFollowingPosts(){
     const response = await fetch('http://localhost:8000/M00980001/login');
     const data = await response.json();
   
-    const postsResponse = await fetch('http://localhost:8000/M00980001/following');
+    const postsResponse = await fetch('http://localhost:8000/M00980001/contents');
     let posts = await postsResponse.json();
     const postsContainer = document.getElementById('following-container');
     postsContainer.innerHTML = '';

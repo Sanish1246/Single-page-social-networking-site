@@ -13,9 +13,7 @@ export async function searchPosts(searchTarget){
     } else {
       targetText=searchTarget;
     }
-  
-    console.log(targetText);
-  
+
     try {
       const response = await fetch(`http://localhost:8000/M00980001/contents/search/${targetText}/${searchFilter}`);
       let posts = await response.json();

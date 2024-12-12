@@ -49,8 +49,9 @@ export function loginUser(event){
           systemMessage.innerText='✅ User logged in successfully';
           systemMessage.style.opacity='1';
           setTimeout(closeMessage,2000);
+          document.querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
           document.getElementById("feed-button").classList.add('active');
-          displayFeedPosts();
+          openFeed();
           checkCurrentUser().then(isUserLoggedIn => {
             if (isUserLoggedIn) {
               loginLink.innerText = "Log out";

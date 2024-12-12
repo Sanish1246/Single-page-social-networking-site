@@ -6,12 +6,14 @@ export async function displayFeedPosts(){
     const response = await fetch('http://localhost:8000/M00980001/login');
     const data = await response.json();
 
-    if(Object.keys(data).length === 0){
+    if(!data.username){
+      console.log("not loggedin")
       const postsResponse = await fetch(`http://localhost:8000/M00980001/latest/${sortBy}`);
       const posts = await postsResponse.json();
       loadLatestPosts(posts);
     } else {
-      const postsResponse = await fetch(`http://localhost:8000/M00980001/contents/${sortBy}`);
+      console.log("loggedin")
+      const postsResponse = await fetch(`http://localhost:8000/M00980001/feed/${sortBy}`);
       const posts = await postsResponse.json();
       loadFeedPosts(posts, data);
     }
