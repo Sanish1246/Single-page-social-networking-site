@@ -249,11 +249,11 @@ body{
 
 .post-head .profile-img{
     width:4.5rem;
+    height:4.5rem;
     border:1px solid black;
     border-radius:50%;
     margin-left:5px;
     margin-top:5px;
-    object-fit: cover;
 }
 
 .post-head p{
@@ -1242,6 +1242,24 @@ body{
 .dark-mode .game{
     background: none;
 }
+
+::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: black;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, hsl(0, 96%, 40%, 0.8), hsl(0, 96%, 65%, 0.8));
+    border-radius:5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: red;
+    cursor: pointer;
+  }
 
 
 

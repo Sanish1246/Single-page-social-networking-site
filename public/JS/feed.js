@@ -9,12 +9,10 @@ export async function displayFeedPosts(){
     if(Object.keys(data).length === 0){
       const postsResponse = await fetch(`http://localhost:8000/M00980001/latest/${sortBy}`);
       const posts = await postsResponse.json();
-      console.log("Not login")
       loadLatestPosts(posts);
     } else {
       const postsResponse = await fetch(`http://localhost:8000/M00980001/contents/${sortBy}`);
       const posts = await postsResponse.json();
-      console.log("loggedin")
       loadFeedPosts(posts, data);
     }
   } catch (error) {

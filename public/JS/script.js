@@ -12,7 +12,7 @@ const systemMessage=document.getElementById('system-message');
 
 window.onload = async() => {
   history.pushState(null, '', '/M00980001');
-  console.log(await checkCurrentUser());
+  checkCurrentUser();
   document.getElementById("feed-button").classList.add('active');
   document.getElementById('feed-recent').classList.add('active');
   document.getElementById('search-recent').classList.add('active');
@@ -89,6 +89,7 @@ function openFeed(){
   document.getElementById('feed-recent').classList.add('active');
   displayFeedPosts();
 }
+window.openFeed=openFeed;
 
 function openFollowing(){
   closeSection();

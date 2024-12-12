@@ -148,8 +148,6 @@ window.openComments=openComments;
         const response = await fetch(`/M00980001/postOwner/${comment.username}`);
         const profileData = await response.json();
   
-        console.log(profileData);
-  
         commentElement.innerHTML = `
           <img src="${profileData.profileImg || './images/default-photo.jpg'}">
           <div class="comment-content">

@@ -1,3 +1,5 @@
+const systemMessage=document.getElementById('system-message');
+
 document.getElementById('profile-button').addEventListener('click', function(event){
     event.preventDefault();
     closeSection();
