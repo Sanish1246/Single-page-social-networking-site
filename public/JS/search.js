@@ -117,7 +117,7 @@ export async function searchPosts(searchTarget){
         event.preventDefault();
         const targetId = this.id;
         if (data.username){
-          if (following.includes(targetId)) {
+          if (this.classList.contains('following')) {
             this.classList.remove('following');
             this.innerText = '+ Follow';
             unfollowUser(targetId); 

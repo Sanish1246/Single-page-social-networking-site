@@ -343,7 +343,7 @@ export async function fetchSavedPosts(){
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
-        if (following.includes(targetId)) {
+        if (this.classList.contains("following")) {
           this.classList.remove('following');
           this.innerText = '+ Follow';
           unfollowUser(targetId); 

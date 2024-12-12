@@ -36,7 +36,7 @@ export async function fetchPeople() {
           event.preventDefault();
           const targetId = this.id;
   
-          if (following.includes(targetId)) {
+          if (this.classList.contains('following')) {
             this.classList.remove('following');
             this.innerText = '+ Follow';
             unfollowUser(targetId);
@@ -395,34 +395,48 @@ export async function sendMessage(){
     })
     .then(() => {
       const chatContainer = document.getElementById("chat-container");
-  
-      const lastDateElement = chatContainer.querySelector(".chat-date:last-of-type");
-      let lastDate = lastDateElement ? lastDateElement.innerHTML : null;
-  
-      if (!lastDate || lastDate !== message.date) {
+    
+      const dateElements = chatContainer.querySelectorAll(".chat-date");
+      let lastDate = null;
+
+      if (dateElements.length > 0) {
+        lastDate = dateElements[dateElements.length - 1].innerHTML;
+      }
+    
+      const now = new Date(); 
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); 
+    
+      let lastMessageDate = null;
+      if (lastDate) {
+        const [day, month, year] = lastDate.split('/');
+        lastMessageDate = new Date(year, month - 1, day); 
+      }
+
+      if (!lastMessageDate || lastMessageDate < today) {
         const dateElement = document.createElement('div');
         dateElement.classList.add('chat-date');
         dateElement.innerHTML = message.date;
-        chatContainer.appendChild(dateElement); 
+        chatContainer.appendChild(dateElement);
       }
-  
+    
       if (message.content && message.time) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('right-message');
-  
+    
         messageElement.innerHTML = `
           <div class="message-body">${message.content}</div>
           <div class="message-time">${message.time}</div>
         `;
-  
+    
         chatContainer.appendChild(messageElement);
       }
-    })
+    })    
     .catch(error => {
       systemMessage.innerText='❌ Error: ' + error;
       systemMessage.style.opacity='1';
       setTimeout(closeMessage,2000);
       closePopup();
     });
+    document.querySelector(".user-text").value='';
   }
 window.sendMessage=sendMessage;  

@@ -803,26 +803,29 @@ async function startServer() {
 
     const newTags=req.body;
 
-    for (const newTag of newTags) {
-      if (newFavTags.length===30){
+    for (let newTag of newTags) {
+      if (newFavTags.length==30){
         newFavTags.shift();
       }
 
-      if(newTag.toLowerCase().contains("rpg") ||newTag.toLowerCase().contains("role play") ) {
+      console.log("Before: " + newTag);
+
+      if(newTag.toLowerCase().includes("rpg") ||newTag.toLowerCase().includes("role play") ) {
         newTag="role-playing-games-rpg";
-      } else if (newTag.toLowerCase().contains("open world") || newTag.toLowerCase().contains("exploration")){
+      } else if (newTag.toLowerCase().includes("open world") || newTag.toLowerCase().includes("exploration")){
         newTag="adventure";
-      } else if (newTag.toLowerCase().contains("tactic")){
+      } else if (newTag.toLowerCase().includes("tactic")){
         newTag="strategy";
-      } else if (newTag.toLowerCase().contains("fps") || newTag.toLowerCase().contains("shoot")){
+      } else if (newTag.toLowerCase().includes("fps") || newTag.toLowerCase().includes("shoot")){
         newTag="shooter";
-      } else if (newTag.toLowerCase().contains("mmo")){
+      } else if (newTag.toLowerCase().includes("mmo")){
         newTag="massively-multiplayer";
-      } else if (newTag.toLowerCase().contains("board")){
+      } else if (newTag.toLowerCase().includes("board")){
         newTag="board-games";
-      } else if (newTag.toLowerCase().contains("tcg")){
-        newTag="cards";
+      } else if (newTag.toLowerCase().includes("tcg")){
+        newTag="card";
       }
+      console.log(newTag);
       newFavTags.push(newTag.toLowerCase());
     }
 

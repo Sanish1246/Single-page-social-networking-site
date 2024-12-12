@@ -1,5 +1,6 @@
 import {displayFeedPosts} from './feed.js';
 const loginLink = document.getElementById('login-link');
+const systemMessage=document.getElementById('system-message');
 
 document.querySelectorAll('.login-link').forEach(function(element) {
   element.addEventListener('click', function(event) {
@@ -21,7 +22,6 @@ window.openLogin = openLogin;
 export function loginUser(event){
     closeNav();
     event.preventDefault();
-    const systemMessage=document.getElementById('system-message');
     const newEmail=document.getElementById('email').value;
     const newPassword=document.getElementById('password').value;
     const emailError=document.getElementById('emailError');

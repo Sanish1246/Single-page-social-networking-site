@@ -68,6 +68,102 @@ export async function displayFollowingPosts(){
         console.error('Error fetching profile image:', error);
       }
     }
+
+    document.querySelectorAll('.follow-user').forEach(function(element) {
+      element.addEventListener('click', async function(event) {
+        event.preventDefault();
+        const targetId = this.id;
+        if (this.classList.contains('following')) {
+          this.classList.remove('following');
+          this.innerText = '+ Follow';
+          unfollowUser(targetId); 
+        } else {
+          this.classList.add('following');
+          this.innerText = 'Unfollow';
+          followUser(targetId); 
+        }
+      });
+    });
+  
+    document.querySelectorAll('.level-up').forEach(function(element) {
+      element.addEventListener('click', async function(event) {
+        event.preventDefault();
+        const targetId = this.id;
+        const levelCountElement = this.closest('.post').querySelector("#level-count");
+        
+        let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+        const levelDownButton = this.closest('.post').querySelector(".level-down");
+        const tagsElement = this.closest('.post').querySelector(".tags");
+        let tagsArray = [];
+  
+        
+        if (tagsElement && tagsElement.id) {
+          let tags = tagsElement.id;
+          tagsArray = tags.split(',').map(tag => tag.trim());
+        }
+    
+        if (this.classList.contains("active")) {
+          this.classList.remove('active');
+          currentLevel--;  
+          removeLike(targetId);
+        } else {
+          this.classList.add('active');
+          if(levelDownButton.classList.contains("active")) {
+            levelDownButton.classList.remove("active"); 
+            currentLevel++;
+            removeDislike(targetId); 
+          }
+          currentLevel++; 
+          likePost(targetId,tagsArray);  
+        }
+  
+        levelCountElement.innerText = currentLevel;
+      });
+    });
+    
+    document.querySelectorAll('.level-down').forEach(function(element) {
+      element.addEventListener('click', async function(event) {
+        event.preventDefault();
+        const targetId = this.id;
+        const levelCountElement = this.closest('.post').querySelector("#level-count");
+        
+        let currentLevel = parseInt(levelCountElement.innerText) || 0; 
+        const levelUpButton = this.closest('.post').querySelector(".level-up");
+    
+        if (this.classList.contains("active")) {
+          this.classList.remove('active');
+          currentLevel++;  
+          removeDislike(targetId);  
+        } else {
+          this.classList.add('active');
+          if(levelUpButton.classList.contains("active")) {
+            levelUpButton.classList.remove("active"); 
+            currentLevel--;
+            removeLike(targetId); 
+          } 
+          currentLevel--;  
+          dislikePost(targetId);  
+        }
+  
+        levelCountElement.innerText = currentLevel;
+      });
+    });
+
+    document.querySelectorAll('.save-post').forEach(function(element) {
+      element.addEventListener('click', async function(event) {
+        event.preventDefault();
+        const targetId = this.id;
+    
+        if (this.classList.contains("active")) {
+          this.classList.remove('active');  
+          removeSavedPost(targetId);  
+        } else {
+          this.classList.add('active');
+          savePost(targetId);  
+        }
+  
+      });
+    });
   
     document.querySelectorAll('.view-comments').forEach(function(element) {
       element.addEventListener('click', function(event) {

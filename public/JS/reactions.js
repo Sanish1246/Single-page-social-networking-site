@@ -50,7 +50,7 @@ export async function likePost(id,tags){
     })
     .then(response => response.json())
     .then(message => {
-      console.log(message.message)
+      console.log(message.message);
       addTags(tags);
     })
     .catch(error => {
@@ -153,7 +153,7 @@ window.openComments=openComments;
         commentElement.innerHTML = `
           <img src="${profileData.profileImg || './images/default-photo.jpg'}">
           <div class="comment-content">
-            <p class="comment-details">${comment.username} on ${comment.date}</p>
+            <p class="comment-details">${comment.username} on ${comment.date} at ${comment.time}</p>
             <p>${comment.content}</p>
           </div>
         `;
@@ -177,11 +177,16 @@ export async function postComment(id,newComment){
     const month = String(now.getMonth() + 1).padStart(2, '0'); 
     const year = String(now.getFullYear());
     const formattedDate = `${day}/${month}/${year}`;
+
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const formattedTime = `${hours}:${minutes}`;
   
     const comment = {
       username:data.username,
       date:formattedDate,
-      content: newComment
+      content: newComment,
+      time:formattedTime
     }
   
     fetch(`http://localhost:8000/M00980001/comment/${id}`, {

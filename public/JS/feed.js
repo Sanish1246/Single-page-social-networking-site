@@ -1,4 +1,5 @@
 let sortBy="recent";
+const systemMessage=document.getElementById('system-message');
 
 export async function displayFeedPosts(){
     try {
@@ -158,7 +159,7 @@ window.loadLatestPosts=loadLatestPosts;
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
-        if (following.includes(targetId)) {
+        if (this.classList.contains('following')) {
           this.classList.remove('following');
           this.innerText = '+ Follow';
           unfollowUser(targetId); 
@@ -183,7 +184,7 @@ window.loadLatestPosts=loadLatestPosts;
   
         
         if (tagsElement && tagsElement.id) {
-          const tags = tagsElement.id;
+          let tags = tagsElement.id;
           tagsArray = tags.split(',').map(tag => tag.trim());
         }
     
