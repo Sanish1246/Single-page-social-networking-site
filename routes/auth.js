@@ -50,7 +50,7 @@ router.get('/login', (req, res) => {
   }
 });
 
-router.post('/register', async (req, res) => {
+router.post('/users', async (req, res) => {
   const user = req.body;
   const db = req.app.locals.db;
 

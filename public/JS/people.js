@@ -80,12 +80,10 @@ export async function displayUserProfile(targetUser) {
       document.getElementById('user-following').innerText = userData.following.length;
       document.getElementById('user-followers').innerText = userData.followers.length;
   
-      console.log(userData.userame);
-  
       const followersElement = document.getElementById('user-followers');
       let followerCount = userData.followers.length;
   
-      const profileImageElement = document.getElementById("profileImage");
+      const profileImageElement = document.getElementById("profile-image");
       profileImageElement.src = userData.profileImg ? userData.profileImg : './images/default-photo.jpg';
   
       const postsResponse = await fetch(`http://localhost:8000/M00980001/posts/${targetUser}`);
@@ -361,7 +359,6 @@ export async function sendMessage(){
     try{
       const response = await fetch(`http://localhost:8000/M00980001/login`);
       user = await response.json();
-      console.log(user.username);
     } catch(error){
       console.error(error);
     }
@@ -383,8 +380,6 @@ export async function sendMessage(){
       time: formattedTime,
       owner: user.username,
     }
-  
-    console.log(message);
   
     fetch(`http://localhost:8000/M00980001/send/${otherUser}`, {
       method: 'POST',

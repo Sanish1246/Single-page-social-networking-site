@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet"> <!--Link to the CSS font for the title-->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css"> <!--Link to CSS stylesheet-->
     <title>Website</title>
 </head>
 
 <body>
+
+    <!--Top navigation bar-->
     <nav class="top-bar" id="top-bar">
         <span><p>Save👾Point</p></span>
         <span class="search-bar">
@@ -20,7 +22,8 @@
         <button onclick="openUpload()">+ New Post</button>
         <button id="mode-button"onclick="switchMode()">🌙 Dark mode</button>
     </nav>
-
+    
+    <!--Main sections buttons and side menu opener button-->
     <div class="content" id="content">
         <nav class="button-container">
             <span style="font-size:30px;cursor:pointer" onclick="openNav()" id="menu-opener" class="menu-opener">&#9776;</span>
@@ -31,10 +34,11 @@
             <button id="news-button" class="section-button">News</button>
         </nav>
 
+        <!--Side menu options-->
         <div class="side-menu" id="side-menu">
             <hr>
             <div class ="current-user-container">
-                <img src="./images/default-photo.jpg" class="user-img" id="user-img"><a id="currentUser">No user</a>
+                <img src="./images/default-photo.jpg" class="user-img" id="user-img"><a id="current-user">No user</a>
             </div>
 
             <hr>
@@ -51,6 +55,8 @@
             <hr>
         </div>
 
+        <!--Main sections-->
+        <!--Feed section-->
         <div class="main-section" id="feed-posts">
             <div class="sort-feed" id="sort-feed">
                 <p>Sort by</p>
@@ -64,21 +70,54 @@
         </div>
     </div>
 
+    <!--Following section-->
     <div class="main-section" id="following-posts">
         <div class="following-container" id="following-container">
         </div>
     </div>
 
+    <!--News section-->
     <div class="main-section" id="news">
         <h1>News</h1>
         <div class="news-container" id="news-container">
         </div>
-        <div class="navigation-arrows" id="game-navigation">
+        <div class="navigation-buttons" id="game-navigation">
             <button id="previous-news" class="previous-news">Previous</button>
             <button id="next-news" class="next-news">Next</button>
         </div>
     </div>
 
+    <!--People section-->
+    <div class="main-section" id="people-section">
+        <div class="search-people">
+            <input type="text" id="search-person" class="search-person" placeholder="🔍Search for a person..">
+            <button onclick="searchPeople()">Search</button>
+            <button onclick="clearPeopleResults()">Clear</button>
+        </div>
+        <div class="people-container" id="people-container">
+        </div>
+        <div class="people-container" id="searched-people-container">
+        </div>
+    </div>
+
+    <!--User profile-->
+    <div class="main-section" id="user-profile">
+        <div class="user-data">
+            <div class="img-section">
+                <img src="./images/default-photo.jpg" id="profile-image">
+            </div>
+            <h1 id="profile-username"></h1>
+            <div class="follow-info">
+                <p>Following: <span id="user-following">0</span></p>
+                <button id="user-follow-button">+ Follow</button>
+                <p>Followers: <span id="user-followers">0</span></p>
+            </div>
+        </div>
+        <div class="posts-container" id="user-posts-container">
+        </div>
+    </div>
+
+    <!--Chat section-->
     <div class="main-section" id="chat">
         <div class="chat-wrapper">
             <div class="chat-container" id="chat-container">
@@ -93,44 +132,7 @@
         </div>
     </div>
 
-    <div class="main-section" id="people-section">
-        <div class="search-people">
-            <input type="text" id="search-person" class="search-person" placeholder="🔍Search for a person..">
-            <button onclick="searchPeople()">Search</button>
-            <button onclick="clearPeopleResults()">Clear</button>
-        </div>
-        <div class="people-container" id="people-container">
-        </div>
-        <div class="people-container" id="searched-people-container">
-        </div>
-    </div>
-
-    <div class="main-section" id="user-profile">
-        <div class="user-data">
-            <div class="img-section">
-                <img src="./images/default-photo.jpg" id="profileImage">
-            </div>
-            <h1 id="profile-username"></h1>
-            <div class="follow-info">
-                <p>Following: <span id="user-following">0</span></p>
-                <button id="user-follow-button">+ Follow</button>
-                <p>Followers: <span id="user-followers">0</span></p>
-            </div>
-        </div>
-
-        <div class="posts-container" id="user-posts-container">
-        </div>
-    </div>
-
-    <div id="comments-popup" class="popup">
-        <div class="popup-content" id="comments-section">
-            <h2>Comments</h2>
-            <span class="close-popup" onclick="closePopup()">&times;</span>
-            <div class="comments-container" id="comments-container">
-            </div>
-        </div>
-    </div>
-
+    <!--Games section-->
     <div class="main-section" id="games-section">
         <div class="search-games">
             <input type="text" id="search-game" class="search-game" placeholder="🔍Search for a game..">
@@ -143,22 +145,48 @@
                 <div class="game-container" id="game-container">
                 </div>
             </div>
-            <div class="navigation-arrows" id="game-navigation">
+            <div class="navigation-button" id="game-navigation">
                 <button id="previous-button" class="previous-button">Previous</button>
                 <button id="next-button" class="next-button">Next</button>
             </div>
-        </div>
+    </div>
 
-        <div class="searched-games" id="searched-games">
-            <div class="game-container" id="searched-games-container">
-            </div>
-            <div class="navigation-arrows" id="game-search-navigation">
-                <button id="previous-search-button" class="previous-search-button">Previous</button>
-                <button id="next-search-button" class="next-search-button">Next</button>
+    <!--Container for searched games-->
+    <div class="searched-games" id="searched-games">
+        <div class="game-container" id="searched-games-container">
+        </div>
+        <div class="navigation-buttons" id="game-search-navigation">
+            <button id="previous-search-button" class="previous-search-button">Previous</button>
+            <button id="next-search-button" class="next-search-button">Next</button>
+        </div>
+        </div>
+    </div>
+
+    <!--Post search section-->
+    <div class="content" id="searched-posts">
+        <div class="sort-search" id="sort-search">
+            <p>Sort by</p>
+            <button id="search-recent" class="search-sort-button">Most recent</button>
+            <button id="search-level" class="search-sort-button">Highest level</button>
+            <button id="search-old" class="search-sort-button">Oldest</button>
+            <button id="search-comments" class="search-sort-button">Most discussed</button>
+        </div>
+        <div class="post-search-container" id="post-search-container">
+        </div>
+    </div>
+
+    <!--Popups-->
+    <!--Popup for comments-->
+    <div id="comments-popup" class="popup">
+        <div class="popup-content" id="comments-section">
+            <h2>Comments</h2>
+            <span class="close-popup" onclick="closePopup()">&times;</span>
+            <div class="comments-container" id="comments-container">
             </div>
         </div>
     </div>
 
+    <!--Popup login-->
     <div id="login-popup" class="popup">
         <div class="popup-content">
             <span class="close-popup" onclick="closePopup()">&times;</span>
@@ -166,10 +194,10 @@
             <form class="login-form">
                 <p>Please enter your details to login.</p>
           
-                <label for="email"><b>Email</b><span id="emailError" class="login-error"></span></label>
+                <label for="email"><b>Email</b><span id="email-error" class="login-error"></span></label>
                 <input type="text" placeholder="Enter email" name="email" id="email" required>
             
-                <label for="psw"><b>Password</b><span id="passwordError" class="login-error"></span></label>
+                <label for="psw"><b>Password</b><span id="password-error" class="login-error"></span></label>
                 <input type="password" placeholder="Enter Password" name="psw" id="password" required>
             
                 <p>Always remember to keep your credentials secure.</p>
@@ -180,16 +208,17 @@
         </div>
     </div>
 
+    <!--Registration popup-->
     <div id="register-popup" class="popup">
         <div class="popup-content" id="register">
             <span class="close-popup" onclick="closePopup()">&times;</span>
             <h2>Register</h2>
             <form class="login-form" method="post">
                 <p>Please enter your details to register.</p>
-                <label for="username"><b>Username</b><span id="newUsernameError" class="login-error"></span></label>
+                <label for="username"><b>Username</b><span id="new-username-error" class="login-error"></span></label>
                 <input type="text" placeholder="Enter Username" name="username" id="newUsername" required>
           
-                <label for="email"><b>Email</b><span id="newEmailError" class="login-error"></span></label>
+                <label for="email"><b>Email</b><span id="new-email-error" class="login-error"></span></label>
                 <input type="text" placeholder="Enter Email" name="email" id="newEmail" required>
             
                 <label for="psw"><b>Password</b></label>
@@ -203,6 +232,7 @@
         </div>
     </div>
 
+    <!--Logout popup-->
     <div id="logout-popup" class="popup">
         <div class="popup-content" id="logout">
             <span class="close-popup" onclick="closePopup()">&times;</span>
@@ -215,10 +245,7 @@
         <span class="close-popup" onclick="closePopup()">&times;</span>
     </div>
 
-    <div id="system-message">
-        <p>Account created successfully</p>
-    </div>
-
+    <!--Post upload popup-->
     <div id="upload-popup" class="popup">
         <div class="popup-content" id="upload">
             <span class="close-popup" onclick="closePopup()">&times;</span>
@@ -243,10 +270,12 @@
         </div>
     </div>
 
+    <!--Side navigation bar sections-->
+    <!--Your profile section-->
     <div class="content" id="your-profile">
         <div class="user-data">
             <div class="img-section">
-                <img src="./images/default-photo.jpg" id="yourImage">
+                <img src="./images/default-photo.jpg" id="your-image">
                 <label for="media">Change picture</label>
                 <input type="file" id="change-profile-pic" name="media" accept="image/*">
                 <button class="upload-button" id="upload-button">Upload Picture</button>
@@ -262,12 +291,14 @@
         </div>
     </div>
 
+    <!--Saved post section-->
     <div class="content" id="saved-posts">
         <h1>Saved Posts</h1>
         <div class="saved-container" id="saved-container">
         </div>
     </div>
 
+    <!--Favourite games section-->
     <div class="content" id="favourite-games">
         <div class="game-section">
             <h1>Favourite Games</h1>
@@ -276,18 +307,12 @@
         </div>
     </div>
 
-    <div class="content" id="searched-posts">
-        <div class="sort-search" id="sort-search">
-            <p>Sort by</p>
-            <button id="search-recent" class="search-sort-button">Most recent</button>
-            <button id="search-level" class="search-sort-button">Highest level</button>
-            <button id="search-old" class="search-sort-button">Oldest</button>
-            <button id="search-comments" class="search-sort-button">Most discussed</button>
-        </div>
-        <div class="post-search-container" id="post-search-container">
-        </div>
+    <!--Container for system messages sent from the backend-->
+    <div id="system-message">
+        <p>Account created successfully</p>
     </div>
     
+    <!--Scripts-->
     <script type="module" src="./JS/feed.js"></script>
     <script type="module" src="./JS/following.js"></script>
     <script type="module" src="./JS/people.js"></script>

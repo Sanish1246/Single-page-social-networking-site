@@ -24,8 +24,8 @@ export function loginUser(event){
     event.preventDefault();
     const newEmail=document.getElementById('email').value;
     const newPassword=document.getElementById('password').value;
-    const emailError=document.getElementById('emailError');
-    const passwordError=document.getElementById('passwordError');
+    const emailError=document.getElementById('email-error');
+    const passwordError=document.getElementById('password-error');
 
     emailError.innerText="";
     passwordError.innerText="";
@@ -92,8 +92,8 @@ export function registerUser(event){
     const newUsername= document.getElementById('newUsername').value;
     const newEmail=document.getElementById('newEmail').value;
     const newPassword=document.getElementById('newPassword').value;
-    const newUsernameError=document.getElementById('newUsernameError');
-    const newEmailError=document.getElementById('newEmailError');
+    const newUsernameError=document.getElementById('new-username-error');
+    const newEmailError=document.getElementById('new-email-error');
     
     newUsernameError.innerText="";
     newEmailError.innerText="";
@@ -175,7 +175,6 @@ export function logOutUser(){
             setTimeout(closeMessage,2000);
             loginLink.innerText="Login";
             document.querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById("feed-button").classList.add('active');
             document.getElementById("searched-posts").style.display="none";
             openSections()
             openFeed();

@@ -69,8 +69,7 @@ router.get('/news/:page', async (req, res) => {
                   { $set: article },
                   { upsert: true }
               );
-          }
-      console.log("Page 1")    
+          }  
      }
 
       let allNews = await db.collection('News')

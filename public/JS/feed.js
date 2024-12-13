@@ -7,12 +7,10 @@ export async function displayFeedPosts(){
     const data = await response.json();
 
     if(!data.username){
-      console.log("not loggedin")
       const postsResponse = await fetch(`http://localhost:8000/M00980001/latest/${sortBy}`);
       const posts = await postsResponse.json();
       loadLatestPosts(posts);
     } else {
-      console.log("loggedin")
       const postsResponse = await fetch(`http://localhost:8000/M00980001/feed/${sortBy}`);
       const posts = await postsResponse.json();
       loadFeedPosts(posts, data);

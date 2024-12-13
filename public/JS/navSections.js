@@ -59,7 +59,7 @@ export async function displayYourData() {
       document.getElementById('your-following').innerText = data.following.length;
       document.getElementById('your-followers').innerText = data.followers.length;
   
-      const profileImageElement = document.getElementById("yourImage");
+      const profileImageElement = document.getElementById("your-image");
       profileImageElement.src = data.profileImg ? data.profileImg : './images/default-photo.jpg';
   
       const postsResponse = await fetch('http://localhost:8000/M00980001/user/posts');
@@ -165,6 +165,7 @@ export async function loadYourPosts(posts, data) {
         <div class="post-comment">
             <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="publish-comment" id=${post._id}>Post</button>
         </div>
+        <div class="tags" id=${post.tags}><div>
       `;
       postsContainer.appendChild(postElement);
     });
@@ -332,6 +333,7 @@ export async function fetchSavedPosts(){
           <div class="post-comment">
               <input type="text" placeholder="💬Leave a comment." class="user-comment"><button class="post-comment" id=${post._id}>Post</button>
           </div>
+          <div class="tags" id=${post.tags}><div>
         `;
   
         postsContainer.appendChild(postElement);

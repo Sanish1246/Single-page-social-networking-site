@@ -19,14 +19,14 @@ export async function openNews() {
       
         news.forEach(article => {
             const newsElement = document.createElement('div');
-            newsElement.classList.add('newsArticle');
+            newsElement.classList.add('news-article');
 
             newsElement.innerHTML = ` 
-                <div class="newsLeft">
+                <div class="news-left">
                     <img src="${article.img || './images/default-photo.jpg'}">
                 </div>
-                <div class="newsRight">
-                    <a href="${article.link}"class="newsTitle" target="_blank">${article.title}</a>
+                <div class="news-right">
+                    <a href="${article.link}"class="news-title" target="_blank">${article.title}</a>
                     <hr>
                     <p class="newsContent">${article.content}</p>
                 </div>

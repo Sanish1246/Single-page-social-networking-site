@@ -1,4 +1,7 @@
 import express from 'express';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
 
 const router = express.Router();
 
@@ -16,6 +19,8 @@ router.get('/profile/:id', async (req, res) => {
 
 router.post('/uploadProfilePicture', async (req, res) => {
   const db = req.app.locals.db;
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send('No files were uploaded.');
   }
