@@ -1,8 +1,9 @@
+//Route for the Follow related requests
 import express from 'express';
-import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 
+//POST request to follow a user
 router.post('/follow/:id', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -26,6 +27,7 @@ router.post('/follow/:id', async (req, res) => {
   }
 });
 
+//DELETE request to unfollow a user
 router.delete('/follow/:id', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;

@@ -1,3 +1,4 @@
+//Route for the post and reactions
 import express from 'express';
 import { ObjectId } from 'mongodb';
 import path from 'path';
@@ -6,6 +7,7 @@ import { fileURLToPath } from 'url';
 
 const router = express.Router();
 
+//POST request to upload a post
 router.post('/contents', async (req, res) => {
   const db = req.app.locals.db;
   const { owner, title, content, tags, date, time, level } = req.body;
@@ -19,6 +21,7 @@ router.post('/contents', async (req, res) => {
 
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
+  //Uploading the media to the uploads folder
   const savedFiles = [];
   if (mediaFiles) {
     const fileArray = Array.isArray(mediaFiles) ? mediaFiles : [mediaFiles];
@@ -51,13 +54,16 @@ router.post('/contents', async (req, res) => {
   }
 });
 
+//GET request to get the feed posts
 router.get('/feed/:id', async (req, res) => {
   const currentUser=req.session.user.username;
   const sortBy=req.params.id;
   const db = req.app.locals.db;
 
   try {
+    //Getting all the posts, except the ones created by the current user
     let posts = await db.collection('Posts').find({ owner: { $ne: currentUser } }).toArray();
+    //Sorting the posts
     if (sortBy==="recent"){
       posts=posts.reverse();
     } else if (sortBy === "level") {
@@ -72,6 +78,7 @@ router.get('/feed/:id', async (req, res) => {
   }
 });
 
+//GET request to get the latest post
 router.get('/latest/:id', async (req, res) => {
   const sortBy=req.params.id;
   const db = req.app.locals.db;
@@ -92,6 +99,7 @@ router.get('/latest/:id', async (req, res) => {
   }
 });
 
+//GET request to get the posts from users which are being followed
 router.get('/contents', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -114,6 +122,8 @@ router.get('/contents', async (req, res) => {
   }
 });
 
+
+//GET request to get the owner of a post
 router.get('/postOwner/:id', async (req, res) => {
   const db = req.app.locals.db;
   try {
@@ -126,7 +136,7 @@ router.get('/postOwner/:id', async (req, res) => {
 });
 
 
-// GET /user/posts - Fetch current user’s posts
+// GET request to etch current user’s posts
 router.get('/user/posts', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -139,6 +149,7 @@ router.get('/user/posts', async (req, res) => {
   }
 });
 
+//GET request to fetch the posts of another user
 router.get('/posts/:id', async (req, res) => {
   const db = req.app.locals.db;
   const user=req.params.id;
@@ -152,6 +163,7 @@ router.get('/posts/:id', async (req, res) => {
   }
 });
 
+//POST request to like a post
 router.post('/like/:id', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -175,6 +187,7 @@ router.post('/like/:id', async (req, res) => {
   }
 });
 
+//DELETE request to remove like from a post
 router.delete('/removeLike/:id', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -198,6 +211,7 @@ router.delete('/removeLike/:id', async (req, res) => {
   }
 });
 
+//POST request to dislike a post
 router.post('/dislike/:id', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -221,6 +235,7 @@ router.post('/dislike/:id', async (req, res) => {
   }
 });
 
+//DELETE request to remove dislike from a post
 router.delete('/removeDislike/:id', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -244,7 +259,7 @@ router.delete('/removeDislike/:id', async (req, res) => {
   }
 });
 
-// GET /comments/:id - Fetch comments for a specific post
+// GET request to fetch comments for a specific post
 router.get('/comments/:id', async (req, res) => {
   const db = req.app.locals.db;
   const targetId = new ObjectId(req.params.id);
@@ -257,7 +272,7 @@ router.get('/comments/:id', async (req, res) => {
   }
 });
 
-// POST /comment/:id - Add a comment to a specific post
+// POST reques to add a comment to a specific post
 router.post('/comment/:id', async (req, res) => {
   const db = req.app.locals.db;
   const comment = req.body;
@@ -274,6 +289,7 @@ router.post('/comment/:id', async (req, res) => {
   }
 });
 
+//POST request to save a post
 router.post('/save/:id', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -292,6 +308,7 @@ router.post('/save/:id', async (req, res) => {
   }
 });
 
+//DELETE request to remove a post from saved
 router.delete('/removeSaved/:id', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -310,6 +327,7 @@ router.delete('/removeSaved/:id', async (req, res) => {
   }
 });
 
+//GET request to fetch the saved posts
 router.get('/savedPosts', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser = req.session.user.username;
@@ -332,6 +350,7 @@ router.get('/savedPosts', async (req, res) => {
   }
 });
 
+//GET request to get the searched posts
 router.get('/contents/search/:id/:filter', async (req, res) => {
   const db = req.app.locals.db;
   const targetContent=req.params.id;
@@ -339,6 +358,7 @@ router.get('/contents/search/:id/:filter', async (req, res) => {
 
   try {
     let posts = await db.collection('Posts').find({
+      //using case insensitive search and searching for posts whose title or content contain the target word
       $or: [
         { title: { $regex: targetContent, $options: 'i' } }, 
         { content: { $regex: targetContent, $options: 'i' } } 

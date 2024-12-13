@@ -1,8 +1,9 @@
+//Route for requests related to authorization
 import express from 'express';
-import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 
+//POST Request to login
 router.post('/login', (req, res) => {
   const user = req.body;
   const db = req.app.locals.db;
@@ -33,6 +34,7 @@ router.post('/login', (req, res) => {
     .catch(err => res.status(500).json({ error: "Internal server error" }));
 });
 
+//GET request to check login status
 router.get('/login', (req, res) => {
   if (req.session.user) {
     res.status(200).json({
@@ -50,11 +52,13 @@ router.get('/login', (req, res) => {
   }
 });
 
+//POST request to register a user
 router.post('/users', async (req, res) => {
   const user = req.body;
   const db = req.app.locals.db;
 
   try {
+    //validation
     const usernameExists = await db.collection('Users').findOne({ username: user.username });
     if (usernameExists) return res.status(401).json({ error: "Username already in use!" });
 
@@ -84,6 +88,8 @@ router.post('/users', async (req, res) => {
   }
 });
 
+
+// DELETE request to logout
 router.delete('/login', (req, res) => {
   req.session.destroy(err => {
     if (err) return res.status(500).json({ error: "Logout failed" });

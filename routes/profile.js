@@ -1,3 +1,4 @@
+//Route for the current user profile
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -5,6 +6,7 @@ import path from 'path';
 
 const router = express.Router();
 
+//GET request to get data about the current user
 router.get('/profile/:id', async (req, res) => {
   const db = req.app.locals.db;
   const targetUser = req.params.id;
@@ -17,6 +19,8 @@ router.get('/profile/:id', async (req, res) => {
   }
 });
 
+
+//POST request to upload a new profile picture
 router.post('/uploadProfilePicture', async (req, res) => {
   const db = req.app.locals.db;
   const __filename = fileURLToPath(import.meta.url);

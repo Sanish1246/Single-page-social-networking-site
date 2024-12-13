@@ -1,3 +1,5 @@
+//Main server
+//Importing needed dependencies
 import express from 'express';
 import session from 'express-session';
 import fileUpload from 'express-fileupload';
@@ -6,6 +8,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { connectToDb } from './db.js';
 
+//Routes
 import authRoutes from './routes/auth.js';
 import postRoutes from './routes/posts.js';
 import followRoutes from './routes/follow.js';
@@ -17,16 +20,21 @@ import userRoutes from './routes/users.js';
 import tagRoutes from './routes/tags.js';
 
 dotenv.config();
+//Initializing express
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(fileUpload());
 app.use(express.json());
+
+//Session data
 app.use(session({ secret: 'Sanish12', resave: false, saveUninitialized: true, cookie: { secure: false } }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+//Serving the public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Using the routes
 app.use('/M00980001', authRoutes);
 app.use('/M00980001', postRoutes);
 app.use('/M00980001', followRoutes);
@@ -37,6 +45,7 @@ app.use('/M00980001', profileRoutes);
 app.use('/M00980001', userRoutes);
 app.use('/M00980001', tagRoutes);
 
+//Serving the HTML file
 app.get('/M00980001', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -44,6 +53,7 @@ app.get('/M00980001', (req, res) => {
 const port = 8000;
 const hostname = 'localhost';
 
+//Connecting to the DB
 async function startServer() {
   try {
     const client = await connectToDb();

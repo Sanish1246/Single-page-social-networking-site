@@ -1,7 +1,9 @@
+//Route to handle the tags
 import express from 'express';
 
 const router = express.Router();
 
+//POST request to add the tags to the user data
 router.post('/tags', async (req, res) => {
   const db = req.app.locals.db;
   const currentUser=req.session.user.username;
@@ -9,13 +11,13 @@ router.post('/tags', async (req, res) => {
 
   const newTags=req.body;
 
+    //The 30 most recent tags are stored
     for (let newTag of newTags) {
       if (newFavTags.length==30){
         newFavTags.shift();
       }
 
-      console.log("Before: " + newTag);
-
+      //Relating some keywords to existing tags
       if(newTag.toLowerCase().includes("rpg") ||newTag.toLowerCase().includes("role play") ) {
         newTag="role-playing-games-rpg";
       } else if (newTag.toLowerCase().includes("open") || newTag.toLowerCase().includes("exploration")){
@@ -31,7 +33,6 @@ router.post('/tags', async (req, res) => {
       } else if (newTag.toLowerCase().includes("tcg")){
         newTag="card";
       }
-      console.log(newTag);
       newFavTags.push(newTag.toLowerCase());
     }
 

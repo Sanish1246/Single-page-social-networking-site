@@ -1,5 +1,6 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 
+//uri connection to the database
 const uri = "mongodb+srv://sanishferrari:Sanish@userdata.jnzmm.mongodb.net/?retryWrites=true&w=majority&appName=UserData";
 const client = new MongoClient(uri, {
   serverApi: {
@@ -9,7 +10,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-export async function connectToDb() {
+export async function connectToDb() { //Function to connect to the database
     try {
       await client.connect();
       await client.db("admin").command({ ping: 1 });
