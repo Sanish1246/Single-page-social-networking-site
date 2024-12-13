@@ -1,6 +1,7 @@
+//Module to handle the side bar sections
 const systemMessage=document.getElementById('system-message');
 
-document.getElementById('profile-button').addEventListener('click', function(event){
+document.getElementById('profile-button').addEventListener('click', function(event){ //Event listener to open the Your Profile section
     event.preventDefault();
     closeSection();
     closeSectionButton();
@@ -9,7 +10,7 @@ document.getElementById('profile-button').addEventListener('click', function(eve
     document.getElementById("searched-posts").style.display="none";
   });
   
-  document.getElementById('home-button').addEventListener('click', function(event){
+  document.getElementById('home-button').addEventListener('click', function(event){  //Event listener to open the Homesection
     closeFavourite();
     closeProfile();
     closeSaved();
@@ -18,7 +19,7 @@ document.getElementById('profile-button').addEventListener('click', function(eve
     document.getElementById("feed-button").classList.add('active');
   });
   
-  document.getElementById('saved-button').addEventListener('click', function(event){
+  document.getElementById('saved-button').addEventListener('click', function(event){  //Event listener to open the Saved posts section
     closeProfile();
     closeFavourite();
     closeSection();
@@ -27,7 +28,7 @@ document.getElementById('profile-button').addEventListener('click', function(eve
     document.getElementById("searched-posts").style.display="none";
   });
   
-  document.getElementById('favourite-button').addEventListener('click', function(event){
+  document.getElementById('favourite-button').addEventListener('click', function(event){ //Event listener to open the Favourite section
     closeProfile();
     closeSaved();
     closeSection();
@@ -36,7 +37,7 @@ document.getElementById('profile-button').addEventListener('click', function(eve
     document.getElementById("searched-posts").style.display="none";
   });
   
-  document.getElementById('logout-button').addEventListener('click', function(event){
+  document.getElementById('logout-button').addEventListener('click', function(event){  //Event listener to open the logout section
     checkCurrentUser().then(isUserLoggedIn => {
       if (isUserLoggedIn) {
         closeNav();
@@ -50,7 +51,7 @@ document.getElementById('profile-button').addEventListener('click', function(eve
     });
   });
 
-export async function displayYourData() {
+export async function displayYourData() { //Function to display the upper part of the Your profile section
     try {
       const response = await fetch('http://localhost:8000/M00980001/login');
       const data = await response.json();
@@ -62,7 +63,7 @@ export async function displayYourData() {
       const profileImageElement = document.getElementById("your-image");
       profileImageElement.src = data.profileImg ? data.profileImg : './images/default-photo.jpg';
   
-      const postsResponse = await fetch('http://localhost:8000/M00980001/user/posts');
+      const postsResponse = await fetch('http://localhost:8000/M00980001/user/posts'); //GET request for the posts
       const posts = await postsResponse.json();
   
       loadYourPosts(posts, data);
@@ -74,7 +75,7 @@ export async function displayYourData() {
 window.displayYourData=displayYourData;
   
   
-  document.getElementById('change-profile-pic').addEventListener('change', function(event) {
+  document.getElementById('change-profile-pic').addEventListener('change', function(event) {  //Event listener to change profile picture
     const file = event.target.files[0]; 
     if (file) {
       const imgPreview = document.getElementById('profileImage'); 
@@ -82,7 +83,7 @@ window.displayYourData=displayYourData;
     }
   });
   
-  document.getElementById('upload-button').addEventListener('click', async function() {
+  document.getElementById('upload-button').addEventListener('click', async function() {  //Event listener to upload the new profile picture
     const fileInput = document.getElementById('change-profile-pic');
     const file = fileInput.files[0]; 
     
@@ -91,7 +92,7 @@ window.displayYourData=displayYourData;
       formData.append('media', file);
   
       try {
-        const response = await fetch('/M00980001/uploadProfilePicture', {
+        const response = await fetch('/M00980001/uploadProfilePicture', { //POST request
           method: 'POST',
           body: formData
         });
@@ -101,7 +102,7 @@ window.displayYourData=displayYourData;
           systemMessage.innerText='✅ Picture updated successfully';
           systemMessage.style.opacity='1';
           setTimeout(closeMessage,2000);
-          displayYourData();
+          displayYourData(); //Displaying the new data
         } else {
           systemMessage.innerText='❌ Error: ' + error;
           systemMessage.style.opacity='1';
@@ -117,7 +118,7 @@ window.displayYourData=displayYourData;
     }
   });
   
-export async function loadYourPosts(posts, data) {
+export async function loadYourPosts(posts, data) {  //Function to load your posts
     const postsContainer = document.getElementById('posts-container');
     postsContainer.innerHTML = ''; 
   
@@ -126,7 +127,7 @@ export async function loadYourPosts(posts, data) {
     posts.forEach(post => {
       const postElement = document.createElement('div');
       postElement.classList.add('post');
-      const isLiked = post.likedBy.includes(data.username); 
+      const isLiked = post.likedBy.includes(data.username);  //Checking for previous interaction
       const isDisliked = post.dislikedBy.includes(data.username); 
       const isSaved = data.savedPosts.includes(post._id);
   
@@ -170,7 +171,7 @@ export async function loadYourPosts(posts, data) {
       postsContainer.appendChild(postElement);
     });
   
-    document.querySelectorAll('.level-up').forEach(function(element) {
+    document.querySelectorAll('.level-up').forEach(function(element) {  //Event listener to like a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -206,7 +207,7 @@ export async function loadYourPosts(posts, data) {
       });
     });
     
-    document.querySelectorAll('.level-down').forEach(function(element) {
+    document.querySelectorAll('.level-down').forEach(function(element) {  //Event listener to dislike a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -234,7 +235,7 @@ export async function loadYourPosts(posts, data) {
       });
     });
   
-    document.querySelectorAll('.save-post').forEach(function(element) {
+    document.querySelectorAll('.save-post').forEach(function(element) {  //Event listener to save a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -249,14 +250,14 @@ export async function loadYourPosts(posts, data) {
       });
     });
   
-      document.querySelectorAll('.view-comments').forEach(function(element) {
+      document.querySelectorAll('.view-comments').forEach(function(element) {  //Event listener to view comments
       element.addEventListener('click', function(event) {
         event.preventDefault();
         openComments(this.id);
       });
     });
   
-    document.querySelectorAll('.publish-comment').forEach(function(element) {
+    document.querySelectorAll('.publish-comment').forEach(function(element) {  //Event listener to post a comment
       element.addEventListener('click', function(event) {
         event.preventDefault();
         const commentCountElement = this.closest('.post').querySelector("#comment-count");
@@ -274,11 +275,11 @@ export async function loadYourPosts(posts, data) {
   }
 window.loadYourPosts=loadYourPosts;
 
-export async function fetchSavedPosts(){
+export async function fetchSavedPosts(){  //Function to display the saved posts
     const response = await fetch('http://localhost:8000/M00980001/login');
     const data = await response.json();
   
-    const postsResponse = await fetch('http://localhost:8000/M00980001/savedPosts');
+    const postsResponse = await fetch('http://localhost:8000/M00980001/savedPosts');  //GET request
     const posts = await postsResponse.json();
     const postsContainer = document.getElementById('saved-container');
     postsContainer.innerHTML = '';
@@ -343,7 +344,7 @@ export async function fetchSavedPosts(){
       }
     }
   
-    document.querySelectorAll('.follow-user').forEach(function(element) {
+    document.querySelectorAll('.follow-user').forEach(function(element) {  //Event listener to follow a user
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -359,7 +360,7 @@ export async function fetchSavedPosts(){
       });
     });
   
-    document.querySelectorAll('.level-up').forEach(function(element) {
+    document.querySelectorAll('.level-up').forEach(function(element) {  //Event listener to like a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -395,7 +396,7 @@ export async function fetchSavedPosts(){
       });
     });
     
-    document.querySelectorAll('.level-down').forEach(function(element) {
+    document.querySelectorAll('.level-down').forEach(function(element) {  //Event listener to dislike a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -423,7 +424,7 @@ export async function fetchSavedPosts(){
       });
     });
   
-    document.querySelectorAll('.save-post').forEach(function(element) {
+    document.querySelectorAll('.save-post').forEach(function(element) {  //Event listener to save a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -438,14 +439,14 @@ export async function fetchSavedPosts(){
       });
     });
   
-    document.querySelectorAll('.view-comments').forEach(function(element) {
+    document.querySelectorAll('.view-comments').forEach(function(element) {  //Event listener to view comments
       element.addEventListener('click', function(event) {
         event.preventDefault();
         openComments(this.id);
       });
     });
   
-    document.querySelectorAll('.publish-comment').forEach(function(element) {
+    document.querySelectorAll('.publish-comment').forEach(function(element) {  //Event listener to publish comments
       element.addEventListener('click', function(event) {
         event.preventDefault();
         const commentCountElement = this.closest('.post').querySelector("#comment-count");
@@ -464,12 +465,12 @@ export async function fetchSavedPosts(){
 window.fetchSavedPosts=fetchSavedPosts;
   
   
-export async function loadFavourites(){
+export async function loadFavourites(){  //Function to display the favourite games
     const gameContainer = document.getElementById("fav-game-container");
     gameContainer.innerHTML = ''; 
   
     try {
-      const response = await fetch(`http://localhost:8000/M00980001/showFavourite`);
+      const response = await fetch(`http://localhost:8000/M00980001/showFavourite`);  //GET request
       const data = await response.json();
   
       data.forEach(game => {
@@ -501,7 +502,7 @@ export async function loadFavourites(){
       console.log(error);
     }
   
-    document.querySelectorAll('.add-game').forEach(function(element) {
+    document.querySelectorAll('.add-game').forEach(function(element) {  //Event listener to add/remove a game from favourites
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;

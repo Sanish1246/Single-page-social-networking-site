@@ -1,9 +1,10 @@
+//Module to hanle the feed section
 let sortBy="recent";
 const systemMessage=document.getElementById('system-message');
 
-export async function displayFeedPosts(){
+export async function displayFeedPosts(){ //Function to choose to display the feed or the latest post
     try {
-    const response = await fetch('http://localhost:8000/M00980001/login');
+    const response = await fetch('http://localhost:8000/M00980001/login'); //Checking the login status
     const data = await response.json();
 
     if(!data.username){
@@ -22,7 +23,7 @@ export async function displayFeedPosts(){
 
 window.displayFeedPosts-displayFeedPosts;
 
-export async function loadLatestPosts(posts) {
+export async function loadLatestPosts(posts) { //Function to display the latest posts
     const postsContainer = document.getElementById('feed-posts-container');
     postsContainer.innerHTML = ''; 
   
@@ -31,10 +32,11 @@ export async function loadLatestPosts(posts) {
       postElement.classList.add('post');
   
       try {
-        const response = await fetch(`/M00980001/postOwner/${post.owner}`);
+        const response = await fetch(`/M00980001/postOwner/${post.owner}`); //Getting the post owner data
         const profileData = await response.json();
-  
-        postElement.innerHTML = `
+
+        //Displaying a post
+        postElement.innerHTML = `  
           <div class="post-head">
               <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
               <p>${post.owner} <span class="post-date">on ${post.date}</span></p>
@@ -88,7 +90,7 @@ export async function loadLatestPosts(posts) {
   }
 window.loadLatestPosts=loadLatestPosts;
 
-  export async function loadFeedPosts(posts, data) {
+  export async function loadFeedPosts(posts, data) { //Function to display the feed posts
     const postsContainer = document.getElementById('feed-posts-container');
     postsContainer.innerHTML = '';
     let following = data.following;
@@ -96,7 +98,7 @@ window.loadLatestPosts=loadLatestPosts;
     for (const post of posts) {
       const postElement = document.createElement('div');
       postElement.classList.add('post');
-      const isFollowing = following.includes(post.owner);
+      const isFollowing = following.includes(post.owner); //Checking previous user interaction with the post
       const isLiked = post.likedBy.includes(data.username); 
       const isDisliked = post.dislikedBy.includes(data.username); 
       const isSaved = data.savedPosts.includes(post._id);
@@ -105,6 +107,7 @@ window.loadLatestPosts=loadLatestPosts;
         const response = await fetch(`/M00980001/postOwner/${post.owner}`);
         const profileData = await response.json();
   
+        //Displaying a post
         postElement.innerHTML = `
           <div class="post-head">
               <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
@@ -153,7 +156,7 @@ window.loadLatestPosts=loadLatestPosts;
       }
     }
   
-    document.querySelectorAll('.follow-user').forEach(function(element) {
+    document.querySelectorAll('.follow-user').forEach(function(element) { //Event listener to follow a user
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -169,8 +172,8 @@ window.loadLatestPosts=loadLatestPosts;
       });
     });
   
-    document.querySelectorAll('.level-up').forEach(function(element) {
-      element.addEventListener('click', async function(event) {
+    document.querySelectorAll('.level-up').forEach(function(element) { //Event listener to like a post
+      element.addEventListener('click', async function(event) { 
         event.preventDefault();
         const targetId = this.id;
         const levelCountElement = this.closest('.post').querySelector("#level-count");
@@ -180,7 +183,7 @@ window.loadLatestPosts=loadLatestPosts;
         const tagsElement = this.closest('.post').querySelector(".tags");
         let tagsArray = [];
   
-        
+        //Getting all the tags, splitting them and storing them in an array
         if (tagsElement && tagsElement.id) {
           let tags = tagsElement.id;
           tagsArray = tags.split(',').map(tag => tag.trim());
@@ -192,7 +195,7 @@ window.loadLatestPosts=loadLatestPosts;
           removeLike(targetId);
         } else {
           this.classList.add('active');
-          if(levelDownButton.classList.contains("active")) {
+          if(levelDownButton.classList.contains("active")) { //If the user has disliked the post, the dislike will be removed
             levelDownButton.classList.remove("active"); 
             currentLevel++;
             removeDislike(targetId); 
@@ -205,7 +208,7 @@ window.loadLatestPosts=loadLatestPosts;
       });
     });
     
-    document.querySelectorAll('.level-down').forEach(function(element) {
+    document.querySelectorAll('.level-down').forEach(function(element) { //Event listener to dislike a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -220,7 +223,7 @@ window.loadLatestPosts=loadLatestPosts;
           removeDislike(targetId);  
         } else {
           this.classList.add('active');
-          if(levelUpButton.classList.contains("active")) {
+          if(levelUpButton.classList.contains("active")) { //If the user has liked the post, the like will be removed
             levelUpButton.classList.remove("active"); 
             currentLevel--;
             removeLike(targetId); 
@@ -233,7 +236,7 @@ window.loadLatestPosts=loadLatestPosts;
       });
     });
   
-    document.querySelectorAll('.save-post').forEach(function(element) {
+    document.querySelectorAll('.save-post').forEach(function(element) { //Event listener to save a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -249,14 +252,14 @@ window.loadLatestPosts=loadLatestPosts;
       });
     });
   
-    document.querySelectorAll('.view-comments').forEach(function(element) {
+    document.querySelectorAll('.view-comments').forEach(function(element) { //Event listener to view the comments
       element.addEventListener('click', function(event) {
         event.preventDefault();
         openComments(this.id);
       });
     });
   
-    document.querySelectorAll('.publish-comment').forEach(function(element) {
+    document.querySelectorAll('.publish-comment').forEach(function(element) { //Event listener to post a comment
       element.addEventListener('click', function(event) {
         event.preventDefault();
         const commentCountElement = this.closest('.post').querySelector("#comment-count");
@@ -274,7 +277,7 @@ window.loadLatestPosts=loadLatestPosts;
   }
   window.loadFeedPosts=loadFeedPosts;
 
-  document.querySelectorAll('.sort-feed-button').forEach(button => {
+  document.querySelectorAll('.sort-feed-button').forEach(button => {  //Event listener to sort the post in the feed section
     button.addEventListener('click', function() {
         document.querySelectorAll('.sort-feed-button').forEach(btn => btn.classList.remove('active'));
         
@@ -295,7 +298,7 @@ window.loadLatestPosts=loadLatestPosts;
     });
   });
 
-  export function publishPost(event) {
+  export function publishPost(event) { //Function to create a post
     event.preventDefault();
     
     const newOwner = document.getElementById('currentUser').innerText;
@@ -307,7 +310,7 @@ window.loadLatestPosts=loadLatestPosts;
    
     const now = new Date();
     
-   
+    //Getting the current date and time in a dd/mm/yyyy hh:mm format
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0'); 
     const year = String(now.getFullYear());
@@ -319,7 +322,7 @@ window.loadLatestPosts=loadLatestPosts;
   
     const formData = new FormData();
     
-  
+    //Appending the data to a formData
     formData.append('owner', newOwner);
     formData.append('title', newTitle);
     formData.append('content', newContent);
@@ -328,13 +331,13 @@ window.loadLatestPosts=loadLatestPosts;
     formData.append('date', formattedDate); 
     formData.append('time', formattedTime);
   
-  
+    //Checking for medias
     for (let i = 0; i < mediaFiles.length; i++) {
       formData.append('media', mediaFiles[i]); 
     }
   
    
-    fetch('http://localhost:8000/M00980001/contents', {
+    fetch('http://localhost:8000/M00980001/contents', { //AJAX POST request
       method: 'POST',
       body: formData
     })
@@ -352,7 +355,7 @@ window.loadLatestPosts=loadLatestPosts;
       closePopup();
     });
   
-  
+  //Emptying the contents of the post upload fields
    document.getElementById("upload-title").value=null;
    document.getElementById("upload-content").value=null;
    document.getElementById("tags").value=null;

@@ -1,3 +1,5 @@
+//Main JS module
+
 import {openLogin} from './loginRegister.js';
 import {displayFeedPosts} from './feed.js';
 import { displayFollowingPosts } from './following.js';
@@ -10,7 +12,7 @@ import {closeNav} from './navBar.js';
 const modeButton=document.getElementById("mode-button");
 const systemMessage=document.getElementById('system-message');
 
-window.onload = async() => {
+window.onload = async() => {  //Handling reloading and first loading of the page
   history.pushState(null, '', '/M00980001');
   checkCurrentUser();
   document.getElementById("feed-button").classList.add('active');
@@ -20,9 +22,9 @@ window.onload = async() => {
   displayFeedPosts();
 };
 
-async function checkCurrentUser() {
+async function checkCurrentUser() {  //Function to check the current login status
   try {
-    const response = await fetch('http://localhost:8000/M00980001/login');
+    const response = await fetch('http://localhost:8000/M00980001/login');  //GET request
     const data = await response.json();
     if (data.username) {
       document.getElementById("login-link").innerText="Log out";
@@ -40,7 +42,7 @@ async function checkCurrentUser() {
 }
 window.checkCurrentUser=checkCurrentUser;
 
-function switchMode(){
+function switchMode(){  //Function to switch themes
   document.body.classList.toggle('dark-mode');
 
   if (document.body.classList.contains('dark-mode')) {
@@ -51,7 +53,7 @@ function switchMode(){
 }
 window.switchMode=switchMode;
 
-document.querySelectorAll('.section-button').forEach(button => {
+document.querySelectorAll('.section-button').forEach(button => {  //Event listener to handle the main section buttons
     button.addEventListener('click', function() {
         document.querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
         
@@ -71,7 +73,8 @@ document.querySelectorAll('.section-button').forEach(button => {
     });
 });
 
-function openSections(){
+//Functions for the main sections
+function openSections(){  //Function to open the main sections
   closeFavourite();
   closeSaved();
   closeProfile();
@@ -82,7 +85,7 @@ function openSections(){
 }
 window.openSections=openSections;
 
-function openFeed(){
+function openFeed(){  //Function to open the feed section
   closeSection();
   document.getElementById('searched-posts').style.display = 'none';
   document.getElementById('feed-posts').style.display = 'block';
@@ -91,7 +94,7 @@ function openFeed(){
 }
 window.openFeed=openFeed;
 
-function openFollowing(){
+function openFollowing(){  //Function to open the following secton
   closeSection();
   document.getElementById('searched-posts').style.display = 'none';
   checkCurrentUser().then(isUserLoggedIn => {
@@ -107,7 +110,7 @@ function openFollowing(){
   });
 }
 
-function openPeople(){
+function openPeople(){  //Function to open the people section
   closeChat();
   closeSection();
   document.getElementById('searched-posts').style.display = 'none';
@@ -125,7 +128,7 @@ function openPeople(){
   });
 }
 
-function openGames(){
+function openGames(){  //Function to open the games section
   closeSection();
   document.getElementById('searched-posts').style.display = 'none';
   checkCurrentUser().then(isUserLoggedIn => {
@@ -142,20 +145,20 @@ function openGames(){
 }
 window.openGames=openGames;
 
-
-function openRegister() {
+//functions to open the popups
+function openRegister() {  //Function to open the register popup
     closePopup();
     document.getElementById('register-popup').style.display = 'block';
 }
 window.openRegister=openRegister;
 
-function openLogOut(){
+function openLogOut(){  //Function to open the logout popup
   closeNav();
   document.getElementById('logout-popup').style.display = 'block';
 }
 window.openLogOut=openLogOut;
 
-function openUpload(){
+function openUpload(){  //Function to open the post upload popup
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
       document.getElementById('upload-popup').style.display = 'block';
@@ -166,7 +169,8 @@ function openUpload(){
 }
 window.openUpload=openUpload;
 
-function openProfile(){
+//functions for the side bar sections
+function openProfile(){  //Function to open Your Profile
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
       document.getElementById('your-profile').style.display='block';
@@ -181,7 +185,7 @@ function openProfile(){
 }
 window.openProfile=openProfile;
 
-function openSaved(){
+function openSaved(){  //Function to open the Saved posts section
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
       closeNav();
@@ -197,7 +201,7 @@ function openSaved(){
 }
 window.openSaved=openSaved;
 
-function openFavourite(){
+function openFavourite(){  //Function to open the Favourite posts section
   checkCurrentUser().then(isUserLoggedIn => {
     if (isUserLoggedIn) {
       loadFavourites();
@@ -213,7 +217,7 @@ function openFavourite(){
 }
 window.openFavourite=openFavourite;
 
-function closePopup() {
+function closePopup() { //Function to close the popups
     document.getElementById('login-popup').style.display = 'none';
     document.getElementById('register-popup').style.display = 'none';
     document.getElementById('logout-popup').style.display = 'none';
@@ -224,7 +228,7 @@ function closePopup() {
 }
 window.closePopup = closePopup;
 
-window.addEventListener('popstate', function(event) {
+window.addEventListener('popstate', function(event) {  //Function in case the user press the back arrow while a popup is opened
     if (document.getElementById('login-popup').style.display === 'block' || 
         document.getElementById('register-popup').style.display === 'block'||
         document.getElementById('logout-popup').style.display === 'block'||
@@ -233,36 +237,36 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
-function closeSection(){
+function closeSection(){  //Function to close the sections
   document.querySelectorAll('.main-section').forEach(sct => sct.style.display='none');
 }
 window.closeSection=closeSection;
 
-function closeSectionButton(){
+function closeSectionButton(){ //Function to close the section buttons
   document.querySelectorAll('.section-button').forEach(btn => btn.style.display='none');
 }
 window.closeSectionButton=closeSectionButton;
 
-function closeProfile(){
+function closeProfile(){  //Function to close your profile
   document.getElementById('your-profile').style.display='none';
   closeNav();
 }
 window.closeProfile=closeProfile;
 
-function closeSaved(){
+function closeSaved(){  //Function to close Saved Posts
   document.getElementById('saved-posts').style.display='none';
   closeNav();
 }
 window.closeSaved=closeSaved;
 
 
-function closeFavourite(){
+function closeFavourite(){  //Function to close Favourite games
   document.getElementById('favourite-games').style.display='none';
   closeNav();
 }
 window.closeFavourite=closeFavourite;
 
-function closeMessage(){
+function closeMessage(){  //Function to close the system message
     systemMessage.style.opacity='0';
 }
 window.closeMessage=closeMessage;

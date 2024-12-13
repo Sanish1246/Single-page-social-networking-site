@@ -1,8 +1,10 @@
-export async function displayFollowingPosts(){
-    const response = await fetch('http://localhost:8000/M00980001/login');
+//Module for the following section
+
+export async function displayFollowingPosts(){  //Displaying the following section posts
+    const response = await fetch('http://localhost:8000/M00980001/login');  //Getting current user data
     const data = await response.json();
   
-    const postsResponse = await fetch('http://localhost:8000/M00980001/contents');
+    const postsResponse = await fetch('http://localhost:8000/M00980001/contents'); //GET request to fetch the posts
     let posts = await postsResponse.json();
     const postsContainer = document.getElementById('following-container');
     postsContainer.innerHTML = '';
@@ -13,7 +15,7 @@ export async function displayFollowingPosts(){
     for (const post of posts) {
       const postElement = document.createElement('div');
       postElement.classList.add('post');
-      const isFollowing = following.includes(post.owner);
+      const isFollowing = following.includes(post.owner);  //Checking for previous interaction
       const isLiked = post.likedBy.includes(data.username); 
       const isDisliked = post.dislikedBy.includes(data.username); 
       const isSaved = data.savedPosts.includes(post._id);
@@ -21,7 +23,8 @@ export async function displayFollowingPosts(){
       try {
         const response = await fetch(`/M00980001/postOwner/${post.owner}`);
         const profileData = await response.json();
-  
+
+        //Displaying the posts
         postElement.innerHTML = `
           <div class="post-head">
               <img src="${profileData.profileImg || './images/default-photo.jpg'}" class="profile-img">
@@ -69,7 +72,7 @@ export async function displayFollowingPosts(){
       }
     }
 
-    document.querySelectorAll('.follow-user').forEach(function(element) {
+    document.querySelectorAll('.follow-user').forEach(function(element) { //Event listener to follow a user
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -85,7 +88,7 @@ export async function displayFollowingPosts(){
       });
     });
   
-    document.querySelectorAll('.level-up').forEach(function(element) {
+    document.querySelectorAll('.level-up').forEach(function(element) { //Event listener to like a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -108,7 +111,7 @@ export async function displayFollowingPosts(){
           removeLike(targetId);
         } else {
           this.classList.add('active');
-          if(levelDownButton.classList.contains("active")) {
+          if(levelDownButton.classList.contains("active")) { //If the post was previously disliked, the dislike will be removed
             levelDownButton.classList.remove("active"); 
             currentLevel++;
             removeDislike(targetId); 
@@ -121,7 +124,7 @@ export async function displayFollowingPosts(){
       });
     });
     
-    document.querySelectorAll('.level-down').forEach(function(element) {
+    document.querySelectorAll('.level-down').forEach(function(element) {  //Event listener to dislike a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -136,7 +139,7 @@ export async function displayFollowingPosts(){
           removeDislike(targetId);  
         } else {
           this.classList.add('active');
-          if(levelUpButton.classList.contains("active")) {
+          if(levelUpButton.classList.contains("active")) {  //If the post was previously liked, the like will be removed
             levelUpButton.classList.remove("active"); 
             currentLevel--;
             removeLike(targetId); 
@@ -149,7 +152,7 @@ export async function displayFollowingPosts(){
       });
     });
 
-    document.querySelectorAll('.save-post').forEach(function(element) {
+    document.querySelectorAll('.save-post').forEach(function(element) { //Event listener to save a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -165,14 +168,14 @@ export async function displayFollowingPosts(){
       });
     });
   
-    document.querySelectorAll('.view-comments').forEach(function(element) {
+    document.querySelectorAll('.view-comments').forEach(function(element) { //Event listener to view comments
       element.addEventListener('click', function(event) {
         event.preventDefault();
         openComments(this.id);
       });
     });
   
-    document.querySelectorAll('.publish-comment').forEach(function(element) {
+    document.querySelectorAll('.publish-comment').forEach(function(element) { //Event listener to post a comment
       element.addEventListener('click', function(event) {
         event.preventDefault();
         const commentCountElement = this.closest('.post').querySelector("#comment-count");

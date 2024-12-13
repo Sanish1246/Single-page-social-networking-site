@@ -1,8 +1,10 @@
+//Module to handle the searches
+
 let searchPageNo=1;
 let searchFilter="recent";
 let targetText='';
 
-export async function searchPosts(searchTarget){
+export async function searchPosts(searchTarget){ //Function to search posts
     closeSection();
     closeSectionButton();
     closeProfile();
@@ -15,7 +17,7 @@ export async function searchPosts(searchTarget){
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/M00980001/contents/search/${targetText}/${searchFilter}`);
+      const response = await fetch(`http://localhost:8000/M00980001/contents/search/${targetText}/${searchFilter}`); //GET request
       let posts = await response.json();
       const postsContainer = document.getElementById('post-search-container');
   
@@ -29,7 +31,7 @@ export async function searchPosts(searchTarget){
       let isDisliked;
   
   
-      if (!data.username){
+      if (!data.username){  //In case a user is not logged in
         isFollowing = false;
         isLiked = false; 
         isDisliked = false; 
@@ -41,7 +43,7 @@ export async function searchPosts(searchTarget){
       const header = document.createElement('h1');
       
       if(posts.length===0){
-        header.textContent = 'No results';
+        header.textContent = 'No results';  //If no post was found
         postsContainer.appendChild(header);
       } else {
         header.textContent = 'Search results';
@@ -52,7 +54,7 @@ export async function searchPosts(searchTarget){
       postElement.classList.add('post');
   
       if (data.username){
-        isFollowing = following.includes(post.owner);
+        isFollowing = following.includes(post.owner);  //Checking for previous interaction
         isLiked = post.likedBy.includes(data.username); 
         isDisliked = post.dislikedBy.includes(data.username); 
         isSaved = data.savedPosts.includes(post._id);
@@ -110,7 +112,7 @@ export async function searchPosts(searchTarget){
     }
   
   
-    document.querySelectorAll('.follow-user').forEach(function(element) {
+    document.querySelectorAll('.follow-user').forEach(function(element) {  //Event listener to follow a user
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -130,7 +132,7 @@ export async function searchPosts(searchTarget){
       });
     });
   
-    document.querySelectorAll('.level-up').forEach(function(element) {
+    document.querySelectorAll('.level-up').forEach(function(element) {  //Event listener to like a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -166,7 +168,7 @@ export async function searchPosts(searchTarget){
       });
     });
     
-    document.querySelectorAll('.level-down').forEach(function(element) {
+    document.querySelectorAll('.level-down').forEach(function(element) {   //Event listener to dislike a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -194,7 +196,7 @@ export async function searchPosts(searchTarget){
       });
     });
   
-    document.querySelectorAll('.save-post').forEach(function(element) {
+    document.querySelectorAll('.save-post').forEach(function(element) {   //Event listener to save a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -213,14 +215,14 @@ export async function searchPosts(searchTarget){
       });
     });
   
-    document.querySelectorAll('.view-comments').forEach(function(element) {
+    document.querySelectorAll('.view-comments').forEach(function(element) {   //Event listener to view comments
       element.addEventListener('click', function(event) {
         event.preventDefault();
         openComments(this.id);
       });
     });
   
-    document.querySelectorAll('.publish-comment').forEach(function(element) {
+    document.querySelectorAll('.publish-comment').forEach(function(element) {   //Event listener to post a comment
       element.addEventListener('click', function(event) {
         event.preventDefault();
         const commentCountElement = this.closest('.post').querySelector("#comment-count");
@@ -248,7 +250,7 @@ export async function searchPosts(searchTarget){
   }
 window.searchPosts=searchPosts;
 
-export function clearPostsResults(){
+export function clearPostsResults(){  //Function to clear the results and go back to the feed sectoin
     document.getElementById("post-search-container").style.display="none";
     openSections();
     document.getElementById("feed-button").classList.add('active');
@@ -256,7 +258,7 @@ export function clearPostsResults(){
 }
 window.clearPostsResults=clearPostsResults;
 
-document.querySelectorAll('.search-sort-button').forEach(button => {
+document.querySelectorAll('.search-sort-button').forEach(button => {  //Event listener to sort the search results
     button.addEventListener('click', function() {
         document.querySelectorAll('.search-sort-button').forEach(btn => btn.classList.remove('active'));
         
@@ -279,13 +281,14 @@ document.querySelectorAll('.search-sort-button').forEach(button => {
     }); 
   });
 
-export async function searchPeople(){
+
+export async function searchPeople(){  //Function to search for people
     const targetText=document.getElementById("search-person").value;
   
     document.getElementById("people-container").style.display="none";
   
     try {
-      const response = await fetch(`http://localhost:8000/M00980001/users/search/${targetText}`);
+      const response = await fetch(`http://localhost:8000/M00980001/users/search/${targetText}`);  //GET request
       const people = await response.json();
       const peopleContainer = document.getElementById('searched-people-container');
   
@@ -317,7 +320,7 @@ export async function searchPeople(){
             <a id=${person.username} class="visit-link">${person.username}</a>
           `;
           
-          if (!isCurrentUser) {
+          if (!isCurrentUser) {  //If the searched user is not the current user, we can follow and chat with them
             peopleElement.innerHTML += `
               <a id="chat-link" class="chat-link" id=${person.username}>💬</a>
               <button class="follow-user ${isFollowing ? 'following' : ''}" id=${person.username}>
@@ -329,7 +332,7 @@ export async function searchPeople(){
           peopleContainer.appendChild(peopleElement);
         });
     
-        document.querySelectorAll('.follow-user').forEach(function(element) {
+        document.querySelectorAll('.follow-user').forEach(function(element) {  //Event listener to follow a user
           element.addEventListener('click', async function(event) {
             event.preventDefault();
             const targetId = this.id;
@@ -346,12 +349,12 @@ export async function searchPeople(){
           });
         });
   
-        document.querySelectorAll('.visit-link').forEach(function(element) {
+        document.querySelectorAll('.visit-link').forEach(function(element) {  //event listener to visit a user
           element.addEventListener('click', async function() {
             const targetUser = this.id;
             if (targetUser!=data.username){
               displayUserProfile(targetUser);
-            } else {
+            } else {  //If we try to visit our own profile, the Your Profile section will be directly opened
               closeSection();
               closeSectionButton();
               openProfile();
@@ -359,7 +362,7 @@ export async function searchPeople(){
           });
         });
   
-        document.querySelectorAll('.chat-link').forEach(function(element) {
+        document.querySelectorAll('.chat-link').forEach(function(element) {  //Event listener to open the chat
          element.addEventListener('click', async function() {
           const targetUser = this.id;
           if (targetUser!=data.username){
@@ -376,14 +379,15 @@ export async function searchPeople(){
   }
 window.searchPeople=searchPeople;
   
-export function clearPeopleResults(){
+export function clearPeopleResults(){  //Function to clear the search people results and open the people section
     document.getElementById("searched-people-container").style.display="none";
     document.getElementById("search-person").value='';
     document.getElementById("people-container").style.display="block";
   }
 window.clearPeopleResults=clearPeopleResults;
 
-export async function searchGame() {
+
+export async function searchGame() {  //Function to search for games
     document.getElementById("normal-game").style.display = "none";
     document.getElementById("searched-games").style.display = "block";
     const targetGame = document.getElementById("search-game").value;
@@ -395,7 +399,7 @@ export async function searchGame() {
       const userResponse = await fetch(`http://localhost:8000/M00980001/login`);
       const userData = await userResponse.json();
   
-      const response = await fetch(`http://localhost:8000/M00980001/searchGame/${targetGame}/${searchPageNo}`);
+      const response = await fetch(`http://localhost:8000/M00980001/searchGame/${targetGame}/${searchPageNo}`);  //GET request
       const data = await response.json();
   
       const header = document.createElement('h1');
@@ -411,7 +415,7 @@ export async function searchGame() {
           const gameElement = document.createElement('div');
           gameElement.classList.add('game');
   
-          let isFav = userData.favGames.some(favGame => favGame.name === game.name);
+          let isFav = userData.favGames.some(favGame => favGame.name === game.name);  //checking for favourites
   
           gameElement.innerHTML = `
             <div class="game-details">
@@ -439,7 +443,7 @@ export async function searchGame() {
       console.log(error);
     }
   
-    document.querySelectorAll('.add-game').forEach(function(element) {
+    document.querySelectorAll('.add-game').forEach(function(element) { //Function to add a game to favourites
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -468,13 +472,15 @@ export async function searchGame() {
   }
 window.searchGame=searchGame;
   
-export function clearGameResults(){
+
+export function clearGameResults(){  //Function to clear game search results
     document.getElementById("searched-games").style.display="none";
     document.getElementById("search-game").value='';
     document.getElementById("normal-game").style.display="block";
 }
 window.clearGameResults=clearGameResults;
   
+//Event listeners to navigate between the pages of the search game section
   document.querySelector('.next-search-button').addEventListener('click', function(event) {
     searchPageNo++
     searchGame();

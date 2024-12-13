@@ -1,7 +1,8 @@
+//Module for the games section
 const systemMessage=document.getElementById('system-message');
 let pageNo=1;
 
-export async function displayGames() {
+export async function displayGames() {  //Function to display the games
     const gameContainer = document.getElementById("game-container");
     gameContainer.innerHTML = ''; 
   
@@ -9,15 +10,16 @@ export async function displayGames() {
       const userResponse = await fetch(`http://localhost:8000/M00980001/login`);
       const userData = await userResponse.json();
   
-      const response = await fetch(`http://localhost:8000/M00980001/games/${pageNo}`);
+      const response = await fetch(`http://localhost:8000/M00980001/games/${pageNo}`);  //GET request to obtain the games, using pagination
       const data = await response.json();
   
       data.forEach(game => {
         const gameElement = document.createElement('div');
         gameElement.classList.add('game');
   
-        let isFav = userData.favGames.some(favGame => favGame.name === game.name);
+        let isFav = userData.favGames.some(favGame => favGame.name === game.name); //Checking for favourites
   
+        //Displaying the games
         gameElement.innerHTML = `
           <div class="game-details">
             <div class="game-title">
@@ -43,8 +45,8 @@ export async function displayGames() {
       console.log(error);
     }
   
-    document.querySelectorAll('.add-game').forEach(function(element) {
-      element.addEventListener('click', async function(event) {
+    document.querySelectorAll('.add-game').forEach(function(element) {  //Event listener to add/remove a game from favourites
+      element.addEventListener('click', async function(event) { 
         event.preventDefault();
         const targetId = this.id;
   
@@ -72,8 +74,8 @@ export async function displayGames() {
   }
 window.displayGames=displayGames;
 
-export async function addFavourite(newGame){
-    fetch(`http://localhost:8000/M00980001/addFavourite`, {
+export async function addFavourite(newGame){  //Function to add a game to favourites
+    fetch(`http://localhost:8000/M00980001/addFavourite`, { //POST request
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -94,8 +96,8 @@ export async function addFavourite(newGame){
   }
 window.addFavourite=addFavourite;
   
-export async function removeFavourite(game){
-    fetch(`http://localhost:8000/M00980001/removeFavourite/${game}`, {
+export async function removeFavourite(game){  //Function to remove a game from favourites
+    fetch(`http://localhost:8000/M00980001/removeFavourite/${game}`, {  //DELETE request
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -115,6 +117,7 @@ export async function removeFavourite(game){
   }
 window.removeFavourite=removeFavourite;
 
+//Event listeners to go to the next/previous page
 document.querySelector('.next-button').addEventListener('click', function(event) {
   pageNo++
   displayGames();

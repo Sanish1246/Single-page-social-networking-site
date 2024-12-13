@@ -1,6 +1,8 @@
-export async function fetchPeople() {
+//Module for the people section
+
+export async function fetchPeople() {  //Function to display the users
     try {
-      const response = await fetch('http://localhost:8000/M00980001/people');
+      const response = await fetch('http://localhost:8000/M00980001/people');  //GET request
       const people = await response.json();
       const peopleContainer = document.getElementById('people-container');
   
@@ -17,7 +19,7 @@ export async function fetchPeople() {
       people.forEach(person => {
         const peopleElement = document.createElement('div');
         peopleElement.classList.add('person');
-        const isFollowing = following.includes(person.username);
+        const isFollowing = following.includes(person.username);  //Checking if we already follow a user
   
         peopleElement.innerHTML = `
               <img src="${person.profileImg || './images/default-photo.jpg'}" class="profile-img">
@@ -31,7 +33,7 @@ export async function fetchPeople() {
         peopleContainer.appendChild(peopleElement);
       });
   
-      document.querySelectorAll('.follow-user').forEach(function(element) {
+      document.querySelectorAll('.follow-user').forEach(function(element) {  //Event listener to follow a user
         element.addEventListener('click', async function(event) {
           event.preventDefault();
           const targetId = this.id;
@@ -48,14 +50,14 @@ export async function fetchPeople() {
         });
       });
   
-      document.querySelectorAll('.visit-link').forEach(function(element) {
+      document.querySelectorAll('.visit-link').forEach(function(element) {  //Event listener to visit a user profile
         element.addEventListener('click', async function() {
           const targetUser = this.id;
           displayUserProfile(targetUser);
         });
       });
   
-      document.querySelectorAll('.chat-link').forEach(function(element) {
+      document.querySelectorAll('.chat-link').forEach(function(element) {  //Event listener to chat with a user
         element.addEventListener('click', async function() {
           const targetUser = this.id;
           openChat(targetUser);
@@ -68,12 +70,12 @@ export async function fetchPeople() {
   }
 window.fetchPeople=fetchPeople;
 
-export async function displayUserProfile(targetUser) {
+export async function displayUserProfile(targetUser) {  //Function to display the user profile
     document.getElementById('people-section').style.display = 'none';
     document.getElementById('user-profile').style.display = 'block';
   
     try {
-      const response = await fetch(`http://localhost:8000/M00980001/profile/${targetUser}`);
+      const response = await fetch(`http://localhost:8000/M00980001/profile/${targetUser}`);  //GET request
       const userData = await response.json();
   
       document.getElementById('profile-username').innerText = userData.username;
@@ -86,7 +88,7 @@ export async function displayUserProfile(targetUser) {
       const profileImageElement = document.getElementById("profile-image");
       profileImageElement.src = userData.profileImg ? userData.profileImg : './images/default-photo.jpg';
   
-      const postsResponse = await fetch(`http://localhost:8000/M00980001/posts/${targetUser}`);
+      const postsResponse = await fetch(`http://localhost:8000/M00980001/posts/${targetUser}`); //GET request for the posts
       const posts = await postsResponse.json();
   
       const res = await fetch('http://localhost:8000/M00980001/login');
@@ -100,7 +102,7 @@ export async function displayUserProfile(targetUser) {
   
       updateFollowButton(following.includes(targetUser), newFollowButton);
   
-      newFollowButton.addEventListener('click', async function () {
+      newFollowButton.addEventListener('click', async function () {  //Event listener to follow a user
         if (following.includes(targetUser)) {
           await unfollowUser(targetUser);
           followerCount--;
@@ -115,7 +117,7 @@ export async function displayUserProfile(targetUser) {
         followersElement.innerText = followerCount;
       });
   
-      loadUserPosts(posts, userData, data);
+      loadUserPosts(posts, userData, data);  //Loading the user's posts
   
     } catch (error) {
       console.error('Error:', error);
@@ -123,7 +125,7 @@ export async function displayUserProfile(targetUser) {
   }
 window.displayUserProfile=displayUserProfile;
   
-export function updateFollowButton(isFollowing, followButton) {
+export function updateFollowButton(isFollowing, followButton) {  //Function to update the follow button display
     if (isFollowing) {
       followButton.classList.add('following');
       followButton.innerText = 'Unfollow';
@@ -134,7 +136,7 @@ export function updateFollowButton(isFollowing, followButton) {
   }
 window.updateFollowButton=updateFollowButton;
   
-export async function loadUserPosts(posts,userData, data){
+export async function loadUserPosts(posts,userData, data){  //Function to display the user's post
     const postsContainer = document.getElementById('user-posts-container');
     postsContainer.innerHTML = ''; 
   
@@ -143,7 +145,7 @@ export async function loadUserPosts(posts,userData, data){
     posts.forEach(post => {
       const postElement = document.createElement('div');
       postElement.classList.add('post');
-      const isLiked = post.likedBy.includes(data.username); 
+      const isLiked = post.likedBy.includes(data.username);  //Checking for previous interaction
       const isDisliked = post.dislikedBy.includes(data.username); 
       const isSaved = data.savedPosts.includes(post._id);
   
@@ -187,7 +189,7 @@ export async function loadUserPosts(posts,userData, data){
     });
   
   
-    document.querySelectorAll('.level-up').forEach(function(element) {
+    document.querySelectorAll('.level-up').forEach(function(element) {  //Even listener to like a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -223,7 +225,7 @@ export async function loadUserPosts(posts,userData, data){
       });
     });
     
-    document.querySelectorAll('.level-down').forEach(function(element) {
+    document.querySelectorAll('.level-down').forEach(function(element) {  //Even listener to dislike a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -251,7 +253,7 @@ export async function loadUserPosts(posts,userData, data){
       });
     });
   
-    document.querySelectorAll('.save-post').forEach(function(element) {
+    document.querySelectorAll('.save-post').forEach(function(element) {  //Even listener to save a post
       element.addEventListener('click', async function(event) {
         event.preventDefault();
         const targetId = this.id;
@@ -266,14 +268,14 @@ export async function loadUserPosts(posts,userData, data){
       });
     });
   
-    document.querySelectorAll('.view-comments').forEach(function(element) {
+    document.querySelectorAll('.view-comments').forEach(function(element) {  //Even listener to view comments
       element.addEventListener('click', function(event) {
         event.preventDefault();
         openComments(this.id);
       });
     });
   
-    document.querySelectorAll('.publish-comment').forEach(function(element) {
+    document.querySelectorAll('.publish-comment').forEach(function(element) {  //Even listener to post a comment
       element.addEventListener('click', function(event) {
         event.preventDefault();
         const commentCountElement = this.closest('.post').querySelector("#comment-count");
@@ -291,7 +293,7 @@ export async function loadUserPosts(posts,userData, data){
   }
   window.loadUserPosts=loadUserPosts;
 
-export async function openChat(targetUser){
+export async function openChat(targetUser){  //Function to open a chat
     document.getElementById('people-section').style.display="none";
     document.getElementById("chat-username").innerHTML=targetUser;
     try{
@@ -316,8 +318,8 @@ export async function openChat(targetUser){
       const res = await fetch(`http://localhost:8000/M00980001/chat/${targetUser}`);
       const messages = await res.json();
   
-      messages.forEach(message => {
-        if (message.date!=messageDate){
+      messages.forEach(message => {  //Loading the previous messages
+        if (message.date!=messageDate){ //If the date changed between messages, it will add the date
           const chatDate = document.createElement('div');
           chatDate.classList.add('chat-date');
           chatDate.innerHTML=message.date;
@@ -326,8 +328,8 @@ export async function openChat(targetUser){
   
         }
         const messageElement = document.createElement('div');
-        if (message.owner===targetUser){
-          messageElement.classList.add('left-message');
+        if (message.owner===targetUser){  //Displaying the messages to the left or right according to who sent them
+          messageElement.classList.add('left-message'); 
         } else {
           messageElement.classList.add('right-message');
         }
@@ -346,12 +348,12 @@ export async function openChat(targetUser){
   }
 window.openChat=openChat;
   
-export function closeChat(){
+export function closeChat(){ //Function to close the chat
     document.getElementById('chat').style.display="none";
   }
 window.closeChat=closeChat;
   
-export async function sendMessage(){
+export async function sendMessage(){  //Function to send a message
     const messageText=document.querySelector(".user-text").value;
     let user='';
     const otherUser=document.getElementById("chat-username").innerHTML;
@@ -363,6 +365,7 @@ export async function sendMessage(){
       console.error(error);
     }
   
+    //Getting the current time and date
     const now = new Date();
     
     const day = String(now.getDate()).padStart(2, '0');
@@ -381,7 +384,7 @@ export async function sendMessage(){
       owner: user.username,
     }
   
-    fetch(`http://localhost:8000/M00980001/send/${otherUser}`, {
+    fetch(`http://localhost:8000/M00980001/send/${otherUser}`, {  //POST request
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -394,6 +397,7 @@ export async function sendMessage(){
       const dateElements = chatContainer.querySelectorAll(".chat-date");
       let lastDate = null;
 
+      //Checking if the date changed from the previous message
       if (dateElements.length > 0) {
         lastDate = dateElements[dateElements.length - 1].innerHTML;
       }
@@ -407,6 +411,7 @@ export async function sendMessage(){
         lastMessageDate = new Date(year, month - 1, day); 
       }
 
+      //Adding the current date if the date has changed
       if (!lastMessageDate || lastMessageDate < today) {
         const dateElement = document.createElement('div');
         dateElement.classList.add('chat-date');
@@ -414,6 +419,7 @@ export async function sendMessage(){
         chatContainer.appendChild(dateElement);
       }
     
+      //Immediately displaying the new message
       if (message.content && message.time) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('right-message');

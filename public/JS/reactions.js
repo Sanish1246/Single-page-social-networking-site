@@ -1,7 +1,8 @@
+//Module to handle post reactions
 const systemMessage=document.getElementById('system-message');
 
-export async function followUser(id){
-    fetch(`http://localhost:8000/M00980001/follow/${id}`, {
+export async function followUser(id){ //Function to follow a user
+    fetch(`http://localhost:8000/M00980001/follow/${id}`, {  //POST request
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -20,8 +21,8 @@ export async function followUser(id){
 }
 window.followUser=followUser;
 
-export async function unfollowUser(id){
-  fetch(`http://localhost:8000/M00980001/follow/${id}`, {
+export async function unfollowUser(id){ //Function to unfollow a user
+  fetch(`http://localhost:8000/M00980001/follow/${id}`, {  //DELETE request
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
@@ -41,8 +42,8 @@ export async function unfollowUser(id){
 window.unfollowUser=unfollowUser;
 
 
-export async function likePost(id,tags){
-    fetch(`http://localhost:8000/M00980001/like/${id}`, {
+export async function likePost(id,tags){  //Function to like a post
+    fetch(`http://localhost:8000/M00980001/like/${id}`, {  //POST request
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -51,7 +52,7 @@ export async function likePost(id,tags){
     .then(response => response.json())
     .then(message => {
       console.log(message.message);
-      addTags(tags);
+      addTags(tags);  //Adding tags to the user data
     })
     .catch(error => {
       systemMessage.innerText='❌ Error: ' + error;
@@ -62,8 +63,8 @@ export async function likePost(id,tags){
 }
 window.likePost=likePost;
   
-export async function removeLike(id){
-    fetch(`http://localhost:8000/M00980001/removeLike/${id}`, {
+export async function removeLike(id){  //Function to remove a like
+    fetch(`http://localhost:8000/M00980001/removeLike/${id}`, {  //DELETE request
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -85,8 +86,8 @@ export async function removeLike(id){
   }
 window.removeLike=removeLike;
   
-  export async function dislikePost(id){
-    fetch(`http://localhost:8000/M00980001/dislike/${id}`, {
+  export async function dislikePost(id){  //Function to dislike a post
+    fetch(`http://localhost:8000/M00980001/dislike/${id}`, {  //POST request
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -105,7 +106,7 @@ window.removeLike=removeLike;
   }
  window.dislikePost=dislikePost;
   
-  export async function removeDislike(id){
+  export async function removeDislike(id){  //Function to remove a dislike
     fetch(`http://localhost:8000/M00980001/removeDislike/${id}`, {
       method: 'DELETE',
       headers: {
@@ -125,20 +126,20 @@ window.removeLike=removeLike;
   }
   window.removeDislike=removeDislike;
 
-export function openComments(id){
+export function openComments(id){  //Function to open the comments section
   closePopup();
   document.getElementById('comments-popup').style.display = 'block';
   loadComments(id);
 }
 window.openComments=openComments;
 
-  export async function loadComments(id){
-    const commentsResponse = await fetch(`http://localhost:8000/M00980001/comments/${id}`);
+  export async function loadComments(id){  //Function to display the commments
+    const commentsResponse = await fetch(`http://localhost:8000/M00980001/comments/${id}`);  //GET request
     let comments = await commentsResponse.json();
     const commentsContainer = document.getElementById('comments-container');
     commentsContainer.innerHTML = '';
   
-    comments=comments.reverse();
+    comments=comments.reverse();  //Dislaying the comments from the most recent
   
     for (const comment of comments) {
       const commentElement = document.createElement('div');
@@ -165,10 +166,11 @@ window.openComments=openComments;
   }
  window.loadComments=loadComments;
 
-export async function postComment(id,newComment){
+export async function postComment(id,newComment){  //Function to post a comment
     const response = await fetch('http://localhost:8000/M00980001/login');
     const data = await response.json();
   
+    //Getting the current date and time
     const now = new Date();
   
     const day = String(now.getDate()).padStart(2, '0');
@@ -187,7 +189,7 @@ export async function postComment(id,newComment){
       time:formattedTime
     }
   
-    fetch(`http://localhost:8000/M00980001/comment/${id}`, {
+    fetch(`http://localhost:8000/M00980001/comment/${id}`, {  //POST request
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -199,19 +201,17 @@ export async function postComment(id,newComment){
       systemMessage.innerText=message.message;
       systemMessage.style.opacity='1';
       setTimeout(closeMessage,2000);
-      closePopup();
     })
     .catch(error => {
       systemMessage.innerText='❌ Error: ' + error;
       systemMessage.style.opacity='1';
       setTimeout(closeMessage,2000);
-      closePopup();
     });
   }
 window.postComment=postComment;
   
-  export async function savePost(id){
-    fetch(`http://localhost:8000/M00980001/save/${id}`, {
+  export async function savePost(id){  //Function to save a post
+    fetch(`http://localhost:8000/M00980001/save/${id}`, {  //POST request
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -222,19 +222,17 @@ window.postComment=postComment;
       systemMessage.innerText=message.message;
       systemMessage.style.opacity='1';
       setTimeout(closeMessage,2000);
-      closePopup();
     })
     .catch(error => {
       systemMessage.innerText='❌ Error: ' + error;
       systemMessage.style.opacity='1';
       setTimeout(closeMessage,2000);
-      closePopup();
     });
   }
 window.savePost=savePost;
   
-  export async function removeSavedPost(id){
-    fetch(`http://localhost:8000/M00980001/removeSaved/${id}`, {
+  export async function removeSavedPost(id){  //Function to remove a post from saved
+    fetch(`http://localhost:8000/M00980001/removeSaved/${id}`, {  //DELETE request
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -245,20 +243,18 @@ window.savePost=savePost;
       systemMessage.innerText=message.message;
       systemMessage.style.opacity='1';
       setTimeout(closeMessage,2000);
-      closePopup();
     })
     .catch(error => {
       systemMessage.innerText='❌ Error: ' + error;
       systemMessage.style.opacity='1';
       setTimeout(closeMessage,2000);
-      closePopup();
     });
   }
 window.removeSavedPost=removeSavedPost;
 
-export async function addTags(tags) {
+export async function addTags(tags) {  //Function to add tags to the user preferences
   try{
-    fetch(`http://localhost:8000/M00980001/tags`, {
+    fetch(`http://localhost:8000/M00980001/tags`, {  //POST request
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
