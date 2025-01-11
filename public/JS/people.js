@@ -26,7 +26,7 @@ export async function fetchPeople() {  //Function to display the users
               <a id=${person.username} class="visit-link">${person.username}</a>         
               <a id=${person.username} class="chat-link">💬</a>      
               <button class="follow-user ${isFollowing ? 'following' : ''}" id=${person.username}>
-              ${isFollowing ? 'Following' : '+ Follow'}
+              ${isFollowing ? 'Unfollow' : '+ Follow'}
               </button>
         `;
   

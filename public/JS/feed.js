@@ -301,7 +301,7 @@ window.loadLatestPosts=loadLatestPosts;
   export function publishPost(event) { //Function to create a post
     event.preventDefault();
     
-    const newOwner = document.getElementById('currentUser').innerText;
+    const newOwner = document.getElementById('current-user').innerText;
     const newTitle = document.getElementById("upload-title").value;
     const newContent = document.getElementById("upload-content").value;
     const newTags = document.getElementById("tags").value;

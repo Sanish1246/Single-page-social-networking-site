@@ -28,11 +28,11 @@ async function checkCurrentUser() {  //Function to check the current login statu
     const data = await response.json();
     if (data.username) {
       document.getElementById("login-link").innerText="Log out";
-      document.getElementById('currentUser').innerText = data.username;
+      document.getElementById('current-user').innerText = data.username;
       return true;
     } else {
       document.getElementById("login-link").innerText="Login";
-      document.getElementById('currentUser').innerText = "No user";
+      document.getElementById('current-user').innerText = "No user";
       return false;
     }
   } catch (error) {

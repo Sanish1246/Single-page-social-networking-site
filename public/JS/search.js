@@ -251,7 +251,7 @@ export async function searchPosts(searchTarget){ //Function to search posts
 window.searchPosts=searchPosts;
 
 export function clearPostsResults(){  //Function to clear the results and go back to the feed sectoin
-    document.getElementById("post-search-container").style.display="none";
+    document.getElementById("searched-posts").style.display="none";
     openSections();
     document.getElementById("feed-button").classList.add('active');
     document.getElementById("search-text").value='';

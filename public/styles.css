@@ -1219,7 +1219,7 @@ body{
 .dark-mode .post,
 .dark-mode .game,
 .dark-mode .person,
-.dark-mode .newsArticle,
+.dark-mode .news-article,
 .dark-mode .chat-container {
     background-color: hsl(0, 0%, 5%);
     color: white;
@@ -1229,7 +1229,7 @@ body{
 .dark-mode .post p,
 .dark-mode .game p,
 .dark-mode .person p,
-.dark-mode .newsArticle p,
+.dark-mode .news-article p,
 .dark-mode .post .post-title,
 .dark-mode .post .post-content {
     color: white;
