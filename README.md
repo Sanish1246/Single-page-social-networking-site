@@ -51,17 +51,17 @@ A single-page social networking app where users can register, log in, follow oth
 
 **Homepage**  
 <p align="center">
-  <img src="path/to/homepage_screenshot.png" alt="Homepage Screenshot" width="80%">
+  <img src="screenshots/Home.png" alt="Homepage Screenshot" width="80%">
 </p>
 
-**User Feed**  
+**Dark Mode**  
 <p align="center">
-  <img src="path/to/feed_screenshot.png" alt="User Feed Screenshot" width="80%">
+  <img src="screenshots/Dark.png" alt="User Feed Screenshot" width="80%">
 </p>
 
 **Postman API Testing**  
 <p align="center">
-  <img src="path/to/postman_screenshot.png" alt="Postman API Screenshot" width="80%">
+  <img src="screenshots/Postman.png" alt="Postman API Screenshot" width="80%">
 </p>
 
 ---
