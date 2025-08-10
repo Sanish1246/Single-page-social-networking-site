@@ -8,7 +8,7 @@
 ![License](https://img.shields.io/badge/License-MIT-brightgreen)
 ![Contributions](https://img.shields.io/badge/Contributions-Welcome-ff69b4)
 
-A single-page social networking app where users can register, log in, follow others, post content, and search for users or posts.  
+A single-page social networking platform where users can register, log in, follow others, post content, search for users or posts, and view additional content powered by the **RawG Video Games Database API**.
 
 ---
 
@@ -25,7 +25,6 @@ A single-page social networking app where users can register, log in, follow oth
 - [📸 Preview](#-preview)
 - [🎥 Demo](#-demo)
 - [⚙️ Installation & Setup](#️-installation--setup)
-- [📂 Project Structure](#-project-structure)
 
 ---
 
@@ -36,19 +35,19 @@ A single-page social networking app where users can register, log in, follow oth
 - Create posts (text & optional media)  
 - Search users and content  
 - Fully AJAX-powered, no page reloads  
+- **Third-party API Integration (RawG)** – Fetches and displays game data to enhance user experience
 
 ---
 
 ## 🛠️ Tech Stack
-**Frontend:** HTML5, CSS3, JavaScript, jQuery, Bootstrap  
+**Frontend:** HTML5, CSS3, JavaScript  
 **Backend:** Node.js, Express, MongoDB (`mongodb` driver)  
+**Third-party API:** [RawG Video Games Database API](https://rawg.io/apidocs) – for fetching real-time video game data  
 **Architecture:** Single Page Application (SPA), REST API  
 
 ---
 
 ## 📸 Preview
-> Replace the placeholders below with your actual screenshots  
-
 **Homepage**  
 <p align="center">
   <img src="/screenshots/Home.PNG" alt="Homepage Screenshot" width="80%">
@@ -85,5 +84,7 @@ npm install
 # Run the server
 node server.js
 
+
 # Open in your browser:
 http://localhost:8080/M00980001/
+
